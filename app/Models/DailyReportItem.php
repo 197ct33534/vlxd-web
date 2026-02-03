@@ -5,17 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Payment extends Model
+class DailyReportItem extends Model
 {
     use HasFactory;
+
     protected $fillable = [
+        'daily_report_id',
         'project_id',
-        'payment_date',
-        'amount',
-        'note',
-        'payment_type',
-        'for_project'
+        'product_name',
+        'unit',
+        'quantity',
+        'price',
     ];
+
+    public function dailyReport()
+    {
+        return $this->belongsTo(DailyReport::class);
+    }
 
     public function project()
     {

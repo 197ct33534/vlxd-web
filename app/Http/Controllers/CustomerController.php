@@ -7,9 +7,28 @@ use App\Models\Customer;
 
 class CustomerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $customers = Customer::latest()->get();
+        $query = Customer::latest();
+
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('address', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->has('status') && $request->status != 'all') {
+            $query->where('status', $request->status);
+        }
+
+        $customers = $query->withCount('projects')
+            ->withSum('projects as total_debt', 'total_debt')
+            ->get();
+            
         return view('customer.index', compact('customers'));
     }
 
@@ -17,26 +36,28 @@ class CustomerController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'address' => 'required|string|max:255',
         ]);
 
-        $customer = Customer::create($validated);
-        return response()->json(['success' => true, 'message' => 'Thêm khách hàng thành công!', 'data' => $customer]);
+        Customer::create($validated);
+        return redirect()->route('customers.index')->with('success', 'Customer added successfully!');
     }
 
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'address' => 'required|string|max:255',
         ]);
 
         $customer = Customer::findOrFail($id);
         $customer->update($validated);
 
-        return response()->json(['success' => true, 'message' => 'Cập nhật khách hàng thành công!', 'data' => $customer]);
+        return redirect()->route('customers.index')->with('success', 'Customer updated successfully!');
     }
 
     public function destroy($id)
@@ -44,6 +65,6 @@ class CustomerController extends Controller
         $customer = Customer::findOrFail($id);
         $customer->delete();
 
-        return response()->json(['success' => true, 'message' => 'Xóa khách hàng thành công!']);
+        return redirect()->route('customers.index')->with('success', 'Customer deleted successfully!');
     }
 }

@@ -1,5 +1,5 @@
-@extends('layouts.app')
-
+@extends('layouts.dashboard')
+    
 @section('title', 'Import Hóa Đơn')
 
 @section('content')
@@ -24,6 +24,9 @@
           @submit="loading = true"
           class="space-y-4">
         @csrf
+        @if(isset($projectId))
+            <input type="hidden" name="project_id" value="{{ $projectId }}">
+        @endif
         <div>
             <label class="block mb-1 font-medium text-gray-700">Chọn file Excel (.xlsx, .xls)</label>
             <input type="file" name="file" accept=".xlsx,.xls"

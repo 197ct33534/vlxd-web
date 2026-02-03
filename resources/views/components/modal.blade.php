@@ -24,7 +24,13 @@
         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
     >
         <div class="flex items-center justify-between pb-4 border-b border-border-light dark:border-border-dark mb-6">
-            <h3 class="text-xl font-bold text-text-light dark:text-text-dark">{{ $title }}</h3>
+            <h3 class="text-xl font-bold text-text-light dark:text-text-dark">
+                @if(isset($header))
+                    {{ $header }}
+                @else
+                    {{ $title }}
+                @endif
+            </h3>
             <button @click="{{ $name }} = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
                 <span class="material-symbols-outlined">close</span>
             </button>

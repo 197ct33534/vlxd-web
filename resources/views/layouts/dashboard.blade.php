@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>{{ $title ?? 'CMS Inc.' }}</title>
+    <title>@yield('title', $title ?? 'CMS Inc.')</title>
     
     {{-- Tailwind & Plugins --}}
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -58,8 +58,8 @@
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
-    <!-- Main App Container with Global State (Toast) -->
-    <div class="flex h-screen w-full" x-data="{ toastVisible: false, toastMessage: '' }">
+    <!-- Main App Container with Global State (Toast & Loading) -->
+    <div class="flex h-screen w-full" x-data="{ toastVisible: false, toastMessage: '', isLoading: false }">
         
         <!-- Sidebar -->
         <x-sidebar />
@@ -72,7 +72,7 @@
             <!-- Page Content -->
             <main class="flex-1 overflow-y-auto p-6 lg:p-8">
                 <div class="max-w-7xl mx-auto">
-                    {{ $slot }}
+                    @yield('content')
                 </div>
             </main>
 
@@ -84,6 +84,9 @@
 
         <!-- Global Toast Notification -->
         <x-toast />
+        
+        <!-- Global Loading Indicator -->
+        <x-loading />
     </div>
 </body>
 </html>

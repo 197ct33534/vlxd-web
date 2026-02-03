@@ -10,6 +10,7 @@
                     <th class="px-6 py-4 font-bold" scope="col">Email</th>
                     <th class="px-6 py-4 font-bold" scope="col">Address</th>
                     <th class="px-6 py-4 font-bold text-center" scope="col">Total Projects</th>
+                    <th class="px-6 py-4 font-bold text-center" scope="col">Total Debt</th>
                     <th class="px-6 py-4 font-bold text-center" scope="col">Status</th>
                     <th class="px-6 py-4 font-bold text-right" scope="col">Actions</th>
                 </tr>

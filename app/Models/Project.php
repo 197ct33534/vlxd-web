@@ -17,8 +17,16 @@ class Project extends Model
         'total_debt',
         'end_date'
     ];
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
+    }
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 }

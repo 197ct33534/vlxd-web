@@ -16,20 +16,72 @@ use App\Models\Payment;
 
 class ImportInvoiceController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('import-invoice');
+        $projectId = $request->get('project_id');
+        return view('import-invoice', compact('projectId'));
     }
+
     public function import(Request $request)
     {
-        $file = $request->file('file');
-        $spreadsheet = IOFactory::load($file->getRealPath());
-        $sheet = $spreadsheet->getActiveSheet();
+        $projectId = $request->input('project_id');
+
+        // Check if we are resuming from a stored file (step 2)
+        if ($request->has('stored_file_path')) {
+            $filePath = storage_path('app/' . $request->input('stored_file_path'));
+            if (!file_exists($filePath)) {
+                return redirect()->back()->with('error', 'Temporary file expired or not found. Please upload again.');
+            }
+            $spreadsheet = IOFactory::load($filePath);
+            
+            // cleanup temp file later or keep it? 
+            // Better keep it until successfully imported or simple job. 
+            // For now, let's load it.
+        } else {
+            // Step 1: Upload fresh file
+            $request->validate([
+                'file' => 'required|file|mimes:xlsx,xls',
+            ]);
+            $file = $request->file('file');
+            $spreadsheet = IOFactory::load($file->getRealPath());
+        }
+
+        $sheetCount = $spreadsheet->getSheetCount();
+        $sheetNames = $spreadsheet->getSheetNames();
+        $sheetIndex = $request->input('sheet_index');
+
+        // If multiple sheets and no specific sheet selected, ask user
+        if ($sheetCount > 1 && $sheetIndex === null) {
+            // Store file temporarily to allow user to pick sheet
+            if ($request->has('file')) {
+                $path = $request->file('file')->store('temp_imports');
+            } else {
+                // If somehow came here without file (shouldn't happen in Step 1 w/o stored), reuse stored
+                $path = $request->input('stored_file_path');
+            }
+
+            return view('import-sheet-selection', [
+                'sheetNames' => $sheetNames,
+                'storedFilePath' => $path,
+                'projectId' => $projectId,
+            ]);
+        }
+
+        // Determine which sheet to load
+        $targetIndex = $sheetIndex ?? 0;
+        $sheet = $spreadsheet->getSheet($targetIndex);
 
         $data = [];
+        $advancePayments = [];
         $stt = 1;
         $tongTien = 0;
+        $tongTienUng = 0;
         $ngayCuoi = null;
+        
+        // Clean up temp file if we used one
+        if ($request->has('stored_file_path')) {
+            \Illuminate\Support\Facades\Storage::delete($request->input('stored_file_path'));
+        }
 
         // Duyệt toàn bộ các dòng
         foreach ($sheet->getRowIterator() as $row) {
@@ -62,22 +114,55 @@ class ImportInvoiceController extends Controller
                 }
             }
             if ($ngay) {
-                $ngayCuoi = $ngayCuoi ? max($ngayCuoi, $ngay) : $ngay;
+                // Parse date for comparison (d/m/Y -> Y-m-d)
+                try {
+                    $currentDate = Carbon::createFromFormat('d/m/Y', $ngay);
+                    if (!$ngayCuoi) {
+                        $ngayCuoi = $ngay;
+                    } else {
+                        $lastDate = Carbon::createFromFormat('d/m/Y', $ngayCuoi);
+                        if ($currentDate->gt($lastDate)) {
+                            $ngayCuoi = $ngay;
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Fallback string compare or ignore
+                }
             }
 
             // Thành tiền
             $thanhTien = (float)$soLuong * (float)$donGia;
-            $tongTien += $thanhTien;
 
-            $data[] = [
-                'stt'          => $stt++,
-                'ngay_thang'   => $ngay,
-                'ten_vat_lieu' => trim($tenVL),
-                'don_vi_tinh'  => trim($donVi),
-                'so_luong'     => (float)$soLuong,
-                'don_gia'      => (float)$donGia,
-                'thanh_tien'   => $thanhTien,
-            ];
+            // Check for advance payment (ứng tiền)
+            $lowerName = mb_strtolower($tenVL, 'UTF-8');
+            $isAdvance = false;
+            $advanceKeywords = ['ứng', 'trả trước', 'ck', 'chuyển khoản', 'đặt cọc'];
+            foreach ($advanceKeywords as $kw) {
+                if (str_contains($lowerName, $kw) && !str_contains($lowerName, 'ứng dụng')) { // exclude false positives if any
+                    $isAdvance = true;
+                    break;
+                }
+            }
+
+            if ($isAdvance) {
+                $tongTienUng += $thanhTien;
+                $advancePayments[] = [
+                    'ngay_thang' => $ngay,
+                    'noi_dung'   => trim($tenVL),
+                    'so_tien'    => $thanhTien,
+                ];
+            } else {
+                $tongTien += $thanhTien;
+                $data[] = [
+                    'stt'          => $stt++,
+                    'ngay_thang'   => $ngay,
+                    'ten_vat_lieu' => trim($tenVL),
+                    'don_vi_tinh'  => trim($donVi),
+                    'so_luong'     => (float)$soLuong,
+                    'don_gia'      => (float)$donGia,
+                    'thanh_tien'   => $thanhTien,
+                ];
+            }
         }
 
         // Thông tin khách hàng (lấy ở vùng trên cùng)
@@ -97,9 +182,12 @@ class ImportInvoiceController extends Controller
             'diaChi'      => str_replace('_', '',  str_replace('Địa chỉ: ','',$diaChi)),
             'dienThoai'   => str_replace('_', '', str_replace('Điện thoại:','',$dienThoai)),
             'items'       => $data,
+            'advancePayments' => $advancePayments,
             'tongTien'    => $tongTien,
+            'tongTienUng' => $tongTienUng,
             'tongTienChu' => $tongTienChu,
             'ngayCuoi'    => $ngayCuoi,
+            'projectId'   => $projectId, // Pass project_id result view
         ]);
     }
 
@@ -111,10 +199,11 @@ class ImportInvoiceController extends Controller
     }
 
 
-    public function save1(Request $request)
+    public function save(Request $request)
     {
         // Giải mã items đã được chuyển từ preview
         $items = json_decode(base64_decode($request->input('items')), true) ?: [];
+        $advancePayments = json_decode(base64_decode($request->input('advance_payments')), true) ?: [];
 
         // Lấy thông tin từ form (nếu có)
         $customerName = trim($request->input('khachHang', 'Khách hàng chưa rõ'));
@@ -126,9 +215,6 @@ class ImportInvoiceController extends Controller
         $totalAmountText = $request->input('tongTienChu', '');
 
         // Payment info (tùy chọn)
-        // payment_amount: số tiền khách trả trong lần này (có thể 0)
-        // payment_type: 'mot_lan' hoặc 'tung_dot' (mặc định 'tung_dot')
-        // payment_for: 'project' hoặc 'all' (mặc định 'project')
         $paymentAmount = (float) $request->input('payment_amount', 0);
         $paymentType = $request->input('payment_type', 'tung_dot');
         $paymentFor = $request->input('payment_for', 'project'); // 'project' | 'all'
@@ -150,6 +236,7 @@ class ImportInvoiceController extends Controller
                 $project = Project::find($request->input('project_id'));
             }
             if (!$project) {
+                // IMPORTANT: If creating new project, ensure we use the FOUND customer ID
                 $project = Project::firstOrCreate(
                     ['customer_id' => $customer->id, 'name' => $projectName],
                     ['address' => $customerAddress, 'note' => 'Tạo tự động khi import']
@@ -177,7 +264,6 @@ class ImportInvoiceController extends Controller
             foreach ($items as $it) {
                 InvoiceItem::create([
                     'invoice_id' => $invoice->id,
-                    // dùng các tên trường từ migration; điều chỉnh nếu khác
                     'date' => $it['ngay_thang'] ?? null,
                     'product_name' => $it['ten_vat_lieu'] ?? $it['material_name'] ?? null,
                     'unit' => $it['don_vi_tinh'] ?? $it['unit'] ?? null,
@@ -186,12 +272,25 @@ class ImportInvoiceController extends Controller
                     'amount' => isset($it['thanh_tien']) ? (float)$it['thanh_tien'] : ((float)$it['so_luong'] * (float)$it['don_gia']),
                 ]);
             }
+            
+            // Xử lý Advance Payments (Ứng tiền từ file Excel)
+            foreach ($advancePayments as $ap) {
+                $pDate = $ap['ngay_thang'] ? \Carbon\Carbon::createFromFormat('d/m/Y', $ap['ngay_thang'])->format('Y-m-d') : $invoiceDate;
+                Payment::create([
+                    'project_id' => $project->id,
+                    'payment_date' => $pDate,
+                    'amount' => (float)$ap['so_tien'],
+                    'payment_type' => 'ung_truoc',
+                    'for_project' => 'project',
+                    'note' => $ap['noi_dung'] . ' (Import từ file)',
+                ]);
+            }
 
             // 5) Cập nhật tổng cho project (tăng total_invoice, tính total_debt)
             // Tính lại tổng hóa đơn của project từ DB (an toàn nếu có nhiều hóa đơn)
             $totalInvoiceSum = (float) Invoice::where('project_id', $project->id)->sum('total_amount');
-
-            // Tổng thanh toán hiện có trên project
+            
+            // Tổng thanh toán hiện có trên project (bao gồm cả advance payments vừa tạo)
             $totalPaidSum = (float) Payment::where('project_id', $project->id)->sum('amount');
 
             // Nếu sẽ có payment trong cùng request, thêm tạm trước khi lưu project
@@ -277,6 +376,12 @@ class ImportInvoiceController extends Controller
 
             DB::commit();
 
+            // Redirect back to project view if project_id exists
+            if ($project) {
+                return redirect()->route('customers.projects.index', $project->customer_id)
+                    ->with('success', 'Import và lưu hóa đơn thành công.');
+            }
+
             return redirect()->route('invoice.index')->with('success', 'Import và lưu hóa đơn thành công.');
         } catch (\Throwable $e) {
             DB::rollBack();
@@ -288,7 +393,7 @@ class ImportInvoiceController extends Controller
         }
     }
 
-    public function save(Request $request)
+    public function saveSimple(Request $request)
     {
         $data = $request->all();
 

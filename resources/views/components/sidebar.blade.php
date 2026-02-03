@@ -10,7 +10,9 @@
         </div>
         <nav class="flex flex-col gap-2">
             <x-nav-link href="#" icon="dashboard">Dashboard</x-nav-link>
-            <x-nav-link href="#" icon="group" :active="request()->routeIs('customer.index') || true">Customers</x-nav-link>
+            <x-nav-link href="{{ route('customers.index') }}" icon="group" :active="request()->routeIs('customers.*')">Customers</x-nav-link>
+            <x-nav-link href="{{ route('employees.index') }}" icon="badge" :active="request()->routeIs('employees.*')">Employees</x-nav-link>
+            <x-nav-link href="{{ route('daily-reports.index') }}" icon="assignment" :active="request()->routeIs('daily-reports.*')">Daily Reports</x-nav-link>
             <x-nav-link href="#" icon="folder">Projects</x-nav-link>
             <x-nav-link href="#" icon="receipt_long">Invoices</x-nav-link>
             <x-nav-link href="#" icon="bar_chart">Reports</x-nav-link>

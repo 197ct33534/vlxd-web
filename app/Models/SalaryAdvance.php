@@ -5,20 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Payment extends Model
+class SalaryAdvance extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'project_id',
-        'payment_date',
+        'employee_id',
         'amount',
+        'date',
         'note',
-        'payment_type',
-        'for_project'
     ];
 
-    public function project()
+    protected $casts = [
+        'date' => 'date',
+    ];
+
+    public function employee()
     {
-        return $this->belongsTo(Project::class);
+        return $this->belongsTo(Employee::class);
     }
 }

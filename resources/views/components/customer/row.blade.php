@@ -5,13 +5,37 @@
     <td class="px-6 py-4">{{ $customer->phone }}</td>
     <td class="px-6 py-4">{{ $customer->email ?? '-' }}</td>
     <td class="px-6 py-4">{{ $customer->address ?? '-' }}</td>
-    <td class="px-6 py-4 text-center">{{ $customer->projects_count ?? 0 }}</td>
     <td class="px-6 py-4 text-center">
-        <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Active</span>
+        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800">
+            {{ $customer->projects_count ?? 0 }}
+        </span>
+    </td>
+    <td class="px-6 py-4 text-center font-bold text-red-600">
+        {{ number_format($customer->total_debt ?? 0, 0, ',', '.') }} đ
+    </td>
+    <td class="px-6 py-4 text-center">
+        @if($customer->status == 'active')
+            <span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Active</span>
+        @else
+            <span class="px-2 py-1 text-xs font-semibold text-gray-800 bg-gray-100 rounded-full">Inactive</span>
+        @endif
     </td>
     <td class="px-6 py-4 text-right">
+        <a href="{{ route('customers.projects.index', $customer->id) }}" 
+           class="inline-flex p-1 text-gray-500 dark:text-gray-400 hover:text-blue-500 rounded-full transition-colors"
+           title="View Projects">
+            <span class="material-symbols-outlined text-xl">folder_open</span>
+        </a>
         <button class="p-1 text-gray-500 dark:text-gray-400 hover:text-primary rounded-full transition-colors"><span class="material-symbols-outlined text-xl">visibility</span></button>
-        <button class="p-1 text-gray-500 dark:text-gray-400 hover:text-primary rounded-full transition-colors"><span class="material-symbols-outlined text-xl">edit</span></button>
-        <button class="p-1 text-gray-500 dark:text-gray-400 hover:text-red-500 rounded-full transition-colors"><span class="material-symbols-outlined text-xl">delete</span></button>
+        <button 
+            @click="$dispatch('open-edit-customer', { customer: {{ json_encode($customer) }} })"
+            class="p-1 text-gray-500 dark:text-gray-400 hover:text-primary rounded-full transition-colors">
+            <span class="material-symbols-outlined text-xl">edit</span>
+        </button>
+        <button 
+            @click="$dispatch('open-delete-customer', { url: '{{ route('customers.destroy', $customer->id) }}' })"
+            class="p-1 text-gray-500 dark:text-gray-400 hover:text-red-500 rounded-full transition-colors">
+            <span class="material-symbols-outlined text-xl">delete</span>
+        </button>
     </td>
 </tr>

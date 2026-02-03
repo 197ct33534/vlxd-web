@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('title', 'Kết quả nhập hóa đơn')
 
@@ -52,17 +52,58 @@
                         @endforeach
                     </tbody>
                 </table>
+                </table>
             </div>
+
+            @if(!empty($advancePayments))
+            <div class="mt-8">
+                <h3 class="text-lg font-semibold text-green-700 mb-3 flex items-center gap-2">
+                    <span>💵</span> Các khoản ứng tiền / thanh toán
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm border border-green-200 rounded-lg">
+                        <thead class="bg-green-50 text-green-700">
+                            <tr>
+                                <th class="border-b p-3 text-center font-semibold">Ngày</th>
+                                <th class="border-b p-3 text-left font-semibold">Nội dung</th>
+                                <th class="border-b p-3 text-right font-semibold">Số tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($advancePayments as $ap)
+                                <tr class="hover:bg-green-50/50 transition duration-150">
+                                    <td class="border-b p-3 text-center">{{ $ap['ngay_thang'] }}</td>
+                                    <td class="border-b p-3">{{ $ap['noi_dung'] }}</td>
+                                    <td class="border-b p-3 text-right font-bold text-green-700">
+                                        {{ number_format($ap['so_tien'], 0, ',', '.') }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                            <tr class="bg-green-100 font-bold">
+                                <td colspan="2" class="p-3 text-right">Tổng ứng:</td>
+                                <td class="p-3 text-right text-green-800">{{ number_format($tongTienUng ?? 0, 0, ',', '.') }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-sm text-gray-500 mt-2 italic">* Các khoản này sẽ được lưu vào lịch sử thanh toán (trừ nợ) thay vì hóa đơn.</p>
+            </div>
+            @endif
 
             <form action="{{ route('invoice.save') }}" method="POST" class="mt-8 text-center" @submit="loading = true">
                 @csrf
                 <input type="hidden" name="khachHang" value="{{ $khachHang }}">
                 <input type="hidden" name="diaChi" value="{{ $diaChi }}">
                 <input type="hidden" name="dienThoai" value="{{ $dienThoai }}">
+                @if(isset($projectId))
+                    <input type="hidden" name="project_id" value="{{ $projectId }}">
+                @endif
+
                 <input type="hidden" name="tongTien" value="{{ $tongTien }}">
                 <input type="hidden" name="tongTienChu" value="{{ $tongTienChu }}">
                 <input type="hidden" name="ngayCuoi" value="{{ $ngayCuoi }}">
                 <input type="hidden" name="items" value="{{ base64_encode(json_encode($items)) }}">
+                <input type="hidden" name="advance_payments" value="{{ base64_encode(json_encode($advancePayments ?? [])) }}">
 
                 <button type="submit"
                     class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition duration-200 flex items-center justify-center gap-2 mx-auto">
