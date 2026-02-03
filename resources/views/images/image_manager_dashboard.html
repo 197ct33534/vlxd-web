@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Image Manager Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100">
+<div class="flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary rounded-lg p-2 text-white">
+<span class="material-symbols-outlined block">grid_view</span>
+</div>
+<div>
+<h1 class="text-base font-bold leading-none">Admin Panel</h1>
+<p class="text-xs text-slate-500 mt-1">Laravel Dashboard</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-medium">Dashboard</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary cursor-pointer">
+<span class="material-symbols-outlined active-icon">image</span>
+<p class="text-sm font-bold">Image Manager</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">folder</span>
+<p class="text-sm font-medium">Collections</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-medium">Settings</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">help</span>
+<p class="text-sm font-medium">Help Center</p>
+</div>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 p-2">
+<div class="size-8 rounded-full bg-cover bg-center" data-alt="User avatar profile picture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDjwnId2Fs46vjGIvSMRc5YWql-BGLs2s8fe4qhiDc9gRKzVP5vpN6l42YjSzRCw_HPIPYh022CF15wXj5jTxfpgnySr8jUUYk4BtK5VE2tkjExHCOVU0JgsfxKhmhFzOk_jFLvFJiEhLbui4P0IhynepLDboAQHLtPKv68cKsQWMm2PA6v1MWMNihic09z3MrFNKFs7gQXbO07LcMj_0SMClo4NQj3bOBURxMZf2E9i7fYJw41U8hc9G1Ba5veb5M-cA6pMkaIHyI')"></div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-bold truncate">Alex Rivier</p>
+<p class="text-[10px] text-slate-500 truncate">Administrator</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">logout</span>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-hidden">
+<!-- TopNavBar -->
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-8 shrink-0">
+<div class="flex items-center gap-8 flex-1">
+<h2 class="text-lg font-bold">Image Manager</h2>
+<div class="max-w-md w-full">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search your assets..." type="text"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 h-10 rounded-lg text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+<span>Upload</span>
+</button>
+<button class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 h-10 rounded-lg text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-[20px]">link</span>
+<span>Upload by URL</span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-8">
+<!-- SectionHeader & Tabs -->
+<div class="mb-6">
+<div class="flex items-end justify-between border-b border-slate-200 dark:border-slate-800">
+<div class="flex gap-8">
+<a class="pb-3 border-b-2 border-primary text-primary text-sm font-bold" href="#">All Images</a>
+<a class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium" href="#">Recently Added</a>
+<a class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium" href="#">Folders</a>
+<a class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium" href="#">Favorites</a>
+</div>
+<div class="pb-3 flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">grid_view</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">list</span>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Recent Uploads</h3>
+</div>
+<!-- ImageGrid -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+<!-- Image Card 1: Hover State Demo -->
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 relative mb-3">
+<div class="w-full h-full bg-cover bg-center" data-alt="Sunset at the beach with purple and orange sky" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCFa8EAf8xugaToxqHXRyGRznGf-QdWO6pk-FgqIUbw2JDKBZvIok5KRBTi-12M_uaokYYLkqXFdBOIRs9ycsMfqiJMjGVLS-mn9FdCwyhItnxtPeIdT_e0jjdl35zkjM-DM2GBiWTlVegqVg4y3kEz_lD5Vn5WIZ2lGmS46XV69XFfxwJb0G2TcCJJBIatlMHLpqGtnoRGjirXpMxlCXY_XBtgMd0OrLrwcWq13YrxcbR9iLbi7ZvZTt_0o4ZY-SmrlwGOHcFNWtw')"></div>
+<!-- Hover Overlay -->
+<div class="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+<button class="w-10 h-10 rounded-full bg-white text-slate-900 flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">link</span>
+</button>
+<button class="w-10 h-10 rounded-full bg-white text-slate-900 flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">delete</span>
+</button>
+</div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">sunset-at-beach...jpg</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 24, 2023 • 2.4 MB</p>
+</div>
+</div>
+<!-- Image Card 2 -->
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" data-alt="Snowy mountain peaks under clear blue sky" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBf_SLLX95XyWOy38vw4TfI8AZ4OZZeIkQO5P4GcHDUUYZLiG_s5buJszpQDzoDOn_heG3k3gQ-3G8kEdfeL-z6HkDeMh-Rwc_COpePT6M66ki9pAMJkR329HZXaMUDGZqKF-uuv1CPs5yt-8vi9k1x-0JE9wbV72WwmFe8Ri_76abJp00ZrP3nb9NoxjylkvSakOc6c4yw6Hk7fGpxdja42E0LUm0o4MVmNvAfKjYZo3xl2TkKkhXDipKWtfF-O-zspnLix0D9Cfo')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">mountain-view.png</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 23, 2023 • 5.1 MB</p>
+</div>
+</div>
+<!-- Image Card 3 -->
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" data-alt="Night city lights with long exposure car trails" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDkgQEvMnX8F66qRNvAz4tPikNTXGUh1Ty5j-RleCJ7IKXmVbrEUodeXCPsjSuZW18eCGv5ZKJ44-ywBfaF0JIMdzcb7PAvkz9XnxmbpHk1JWs5En01V6Og74fK_t-DfCWMk4LeQ35kQDVksNvGmyGVV8t-dh_dnDvYrQuM08QNqdvDVKDe5Igv5JuZxIrnwtaAXsP-721Dz1VJ94qMk-MLPVsqY9sETDHQoD2fbdvWi-6oJ4aOqMtS4t7Td7gLpZQEacwyxHbzAcc')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">city-lights.jpg</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 22, 2023 • 1.8 MB</p>
+</div>
+</div>
+<!-- Image Card 4 -->
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" data-alt="Modern office interior with plants and desks" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCiFw_FwuDMmXC_KEgU2oQeljrNJOWAXL6pg-bIlZhKf6lRfmwYhpjUeVuy0x6PEABIXW_kzNb9BTVo7k7pnJ9xFu4FN3FNR7eHkrevFm5NeP_wGXZxhdBe2VN92sjCFMgT9SPJZbpLDA4wptY9B-qdakOQPdk3jASJZBcX0j12iH9nJoBNeQs7-JUO1HjCRL2yAtT3njt5L4XmBqeTZpLeGzqfmpFnawdYArSqu1RnFGKnYhK4pLa4BqcUvmMJipjUMQyKZ1d9AwQ')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">office-interior.jpg</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 21, 2023 • 3.2 MB</p>
+</div>
+</div>
+<!-- Image Card 5 -->
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" data-alt="Product showcase of a clean minimalist watch" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAtWTvhzYn0mDPwUDQPYydpaSDuqmrKv7eBuwF3sN0E14XFLgw5M1sVCBGJI8J5oWyWKq6InqgwDhc3fWuIm8G8wNJl2wBneWdx6De9XOyKkmw88h-AKUFCTVgAKDbhusZRWzeFGF6vj40aiaNsk0-l9Q8-hCBNmCVUJRxbWg67pMz3vQMDLgwyxzDKyXSBbjHpct6_RcfIWnSg7tcXnPRp8kIT-kAAjVIoG5cyB3sf-9yKOjpjE2bb275o7Tq8AvENSKj3TFQtb7w')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">product-showcase.png</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 20, 2023 • 4.5 MB</p>
+</div>
+</div>
+<!-- Image Card 6 -->
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" data-alt="Group of diverse team members smiling together" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCLEYk0zRFOw1vgflUAOTrd7EDb-Mo7MJkvmIj4MG6zXp6iGqxgKecFEXH3V1z108-fZLlW32EvgROZ91fcLMl6cGsecZ0PUEQzDV2ywqHJV_EChSNTHnN9VSUapiQJjaVW39vFHQrOTq-AihO2CblJYoFaTMFZqTeLAly_8nF_5geZEuObC8_DmlY66zWQob5E4lxTVJi5_Rg1bBA6VYe4zsPPQNeW5-uNfLkhaMN-vx0bEoaSOlcBaF222iIwcXTI1JAniVdTyrM')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">team-photo.jpg</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 20, 2023 • 2.9 MB</p>
+</div>
+</div>
+<!-- Row 2 -->
+<!-- Image Card 7 -->
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" data-alt="Abstract colorful geometric vector logo design" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCcFXc1qIZBPfm43i5uhuLgGV2VIfabB9ZNRrjRJVWWqIEKzhqIOsX8anAVC9zlAB3bZPdTrc1Tz_yUjcX0Hab8m5GSamzFlYyr4RWW_32itspo3gPWehqhp_ukOYWwXV1Bbv9e8dVZhonOqJZSJkDy4Za3kdMH0dHNqIKB84gK-A-cat37TwQTNKLK5YCPa15eIdub6EQVf4X7HRXTFm1deT584f0f2gf8SPtCcbOvG54kcer7VbmXmmA3seq67BU_1v6QDLhwqqc')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">logo-v2.svg</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 19, 2023 • 0.4 MB</p>
+</div>
+</div>
+<!-- Image Card 8 -->
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" data-alt="Hero banner image for a technology website" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDvw6W1uy8dBGL0_uIpXkMUR4PvmBn7dXskReyl6D6dWnpPtNxLAI5H0ZeMWFOCsNVhTu2tryom_JNxJZFDvujafzcTIUISia1hSoBdLEn2Q2UsgHe6HvSZZ3YFO9sXykw-A4bds-E_WRwmxlD1eqZ0jod0D79oXgCANfRR6OVxbaIN7KkW-JtLNOooGLt6xgVybz1_FMyxVUN3vgwNVNxsi2c5DtsbZuDUkhbwq8VsQ_Y6p23XuBW8Xw8J-GoZxuosiNe9XZh8-Qs')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">banner-hero.jpg</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 18, 2023 • 6.7 MB</p>
+</div>
+</div>
+<!-- Image Card 9 -->
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" data-alt="Abstract fluid art with blue and gold swirls" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDgBRf2cWJ07azUiR_JWvGQnPx5948ENSlWVH5I55CYeOLhDjYFtjVBvZtNdUK4tn0iIXb5VyVBnf6NiHmqJw2dSSjDE9JUOMpIl086mr0IAVH29HauT7hooKwMQ9i9HdnvhbGuUcMZNDCM6eA-Dhck9DK7dRE7f3X_eyXPR-1T-j2kxgAEvt3qMXbLINmNY4Xzg8AnPX8Q4gXuNlAe9Kkw_qXGHQ3d27RWLGC4E4G6Z3kv55-FxvL4GYU5bDwsQm6wqC9-9ZLF7Zo')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">abstract-art.png</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 17, 2023 • 8.2 MB</p>
+</div>
+</div>
+<!-- Image Card 10 -->
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" data-alt="Generic male user profile placeholder icon" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCut9Olngv2PFa3KJ8qC9b1mXAmTboCI8vDqYUhIyysAHlVOo5ILJGPCTeDC_oj5WucTkXzOBUxJ9WIMaigSfo7aaeVhnZtnmYuzl7cH8gyvECECAFN4a3aLQvAisE2Gzxq0Mpj_7eqb6xnpLOLM2CHm_9oto0i6lH7cGmPHQJnW9nCjw5gQq6E2-RZlQgun2taA821U39Xa6LCAnCj8QNcOyPMnqYAQxMASoSj2X068yIdzbwx8hesRzuiGoS4nUIwdWc2eINMs5c')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">profile-placeholder.jpg</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 15, 2023 • 0.2 MB</p>
+</div>
+</div>
+<!-- Image Card 11 -->
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" data-alt="Macro photo of a garden flower with morning dew" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCBoYkPK-VAPiaZYtOmJ19HP8uoh7Qc1lVs6zfLlUwvYzLGgcsp5bTXPHubmYH2-xhov6Gbcp7_K0-BHr9OYYcdNrACw-ERQEBocJnKNeCSG5Uj14fUARY0BFPnGXhVE6SRtXeLGR1tPSayw9LXIobP-y1VIZkvZLtCq39G5yMCBVDhrUNjtZELzVwVlMyNcro-EUhH6hq7OXzzlh5drNNslaZrFFgHaJ35NMAwPHGMycCz8qoasPIUlSjv8cP6ro5mnwYEePARWwg')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">garden-macro.jpg</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 14, 2023 • 4.1 MB</p>
+</div>
+</div>
+<!-- Image Card 12 -->
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 hover:shadow-md transition-all">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" data-alt="Nebula and stars in the night sky" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBDDXTTMaz4ZgvdTHNGhYpAWJkVG2twIIEWdKRWVs1ob83zJLAXd9an5TDd3tEliEg0MNec5_4Hjw-FO5Hr196R6wXjUaDpIZhJfmK0Y5zMIsX5fGESU_qWmmB781Gnjs2gae29O9qOQV4aQfXy-WjLyh5rJ7GKJd3NBqN8tLq7f7wXErehi7jZ7iWWH4UcjHGnclD6nxKgSYr8hJi2oOEgCZ3MrINFRJcDID-gtDFY4p-llLc5CB2Tcgkvz4LrZ6o-BRcCFxX-W8g')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">night-sky.webp</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 12, 2023 • 1.3 MB</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

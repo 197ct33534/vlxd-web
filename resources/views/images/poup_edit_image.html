@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Image Manager Dashboard - Edit Image</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 overflow-hidden">
+<div class="flex h-screen overflow-hidden">
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary rounded-lg p-2 text-white">
+<span class="material-symbols-outlined block">grid_view</span>
+</div>
+<div>
+<h1 class="text-base font-bold leading-none">Admin Panel</h1>
+<p class="text-xs text-slate-500 mt-1">Laravel Dashboard</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-medium">Dashboard</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary cursor-pointer">
+<span class="material-symbols-outlined active-icon">image</span>
+<p class="text-sm font-bold">Image Manager</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">folder</span>
+<p class="text-sm font-medium">Collections</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-medium">Settings</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">help</span>
+<p class="text-sm font-medium">Help Center</p>
+</div>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 p-2">
+<div class="size-8 rounded-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDjwnId2Fs46vjGIvSMRc5YWql-BGLs2s8fe4qhiDc9gRKzVP5vpN6l42YjSzRCw_HPIPYh022CF15wXj5jTxfpgnySr8jUUYk4BtK5VE2tkjExHCOVU0JgsfxKhmhFzOk_jFLvFJiEhLbui4P0IhynepLDboAQHLtPKv68cKsQWMm2PA6v1MWMNihic09z3MrFNKFs7gQXbO07LcMj_0SMClo4NQj3bOBURxMZf2E9i7fYJw41U8hc9G1Ba5veb5M-cA6pMkaIHyI')"></div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-bold truncate">Alex Rivier</p>
+<p class="text-[10px] text-slate-500 truncate">Administrator</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">logout</span>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-hidden">
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-8 shrink-0">
+<div class="flex items-center gap-8 flex-1">
+<h2 class="text-lg font-bold">Image Manager</h2>
+<div class="max-w-md w-full">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search your assets..." type="text"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 h-10 rounded-lg text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+<span>Upload</span>
+</button>
+<button class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 h-10 rounded-lg text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-[20px]">link</span>
+<span>Upload by URL</span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-8 relative">
+<div class="mb-6">
+<div class="flex items-end justify-between border-b border-slate-200 dark:border-slate-800">
+<div class="flex gap-8">
+<a class="pb-3 border-b-2 border-primary text-primary text-sm font-bold" href="#">All Images</a>
+<a class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium" href="#">Recently Added</a>
+<a class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium" href="#">Folders</a>
+<a class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium" href="#">Favorites</a>
+</div>
+<div class="pb-3 flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">grid_view</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">list</span>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Recent Uploads</h3>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCFa8EAf8xugaToxqHXRyGRznGf-QdWO6pk-FgqIUbw2JDKBZvIok5KRBTi-12M_uaokYYLkqXFdBOIRs9ycsMfqiJMjGVLS-mn9FdCwyhItnxtPeIdT_e0jjdl35zkjM-DM2GBiWTlVegqVg4y3kEz_lD5Vn5WIZ2lGmS46XV69XFfxwJb0G2TcCJJBIatlMHLpqGtnoRGjirXpMxlCXY_XBtgMd0OrLrwcWq13YrxcbR9iLbi7ZvZTt_0o4ZY-SmrlwGOHcFNWtw')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">sunset-at-beach.jpg</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 24, 2023 • 2.4 MB</p>
+</div>
+</div>
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBf_SLLX95XyWOy38vw4TfI8AZ4OZZeIkQO5P4GcHDUUYZLiG_s5buJszpQDzoDOn_heG3k3gQ-3G8kEdfeL-z6HkDeMh-Rwc_COpePT6M66ki9pAMJkR329HZXaMUDGZqKF-uuv1CPs5yt-8vi9k1x-0JE9wbV72WwmFe8Ri_76abJp00ZrP3nb9NoxjylkvSakOc6c4yw6Hk7fGpxdja42E0LUm0o4MVmNvAfKjYZo3xl2TkKkhXDipKWtfF-O-zspnLix0D9Cfo')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">mountain-view.png</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 23, 2023 • 5.1 MB</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+<div class="bg-white dark:bg-slate-900 w-full max-w-5xl rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+<div class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+<h2 class="text-lg font-bold">Edit Image</h2>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto flex">
+<div class="w-1/2 p-8 border-r border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50">
+<div class="aspect-video rounded-lg overflow-hidden shadow-inner bg-slate-200 dark:bg-slate-800 mb-8 border border-slate-200 dark:border-slate-700">
+<div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCFa8EAf8xugaToxqHXRyGRznGf-QdWO6pk-FgqIUbw2JDKBZvIok5KRBTi-12M_uaokYYLkqXFdBOIRs9ycsMfqiJMjGVLS-mn9FdCwyhItnxtPeIdT_e0jjdl35zkjM-DM2GBiWTlVegqVg4y3kEz_lD5Vn5WIZ2lGmS46XV69XFfxwJb0G2TcCJJBIatlMHLpqGtnoRGjirXpMxlCXY_XBtgMd0OrLrwcWq13YrxcbR9iLbi7ZvZTt_0o4ZY-SmrlwGOHcFNWtw')"></div>
+</div>
+<div class="space-y-4">
+<h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Image Details</h3>
+<div class="grid grid-cols-2 gap-y-4">
+<div>
+<p class="text-[11px] text-slate-500 font-medium">Filename</p>
+<p class="text-sm font-medium truncate pr-4 dark:text-slate-200">sunset-at-beach.jpg</p>
+</div>
+<div>
+<p class="text-[11px] text-slate-500 font-medium">File Size</p>
+<p class="text-sm font-medium dark:text-slate-200">2.4 MB</p>
+</div>
+<div>
+<p class="text-[11px] text-slate-500 font-medium">Dimensions</p>
+<p class="text-sm font-medium dark:text-slate-200">1920 x 1080 px</p>
+</div>
+<div>
+<p class="text-[11px] text-slate-500 font-medium">Uploaded</p>
+<p class="text-sm font-medium dark:text-slate-200">Oct 24, 2023</p>
+</div>
+</div>
+</div>
+</div>
+<div class="w-1/2 p-8 space-y-6">
+<div>
+<label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Title</label>
+<input class="w-full h-11 px-4 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" placeholder="Enter image title..." type="text" value="Golden Sunset at Beach"/>
+</div>
+<div>
+<label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Alt Text</label>
+<input class="w-full h-11 px-4 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" placeholder="Describe for accessibility..." type="text" value="A beautiful sunset with purple and orange clouds over a calm beach"/>
+</div>
+<div>
+<label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Description/Notes</label>
+<textarea class="w-full px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none min-h-[100px] resize-none" placeholder="Add additional details or notes...">Captured during the summer trip to the coast. High dynamic range used.</textarea>
+</div>
+<div>
+<label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Tags</label>
+<div class="flex flex-wrap items-center gap-2 p-2 min-h-11 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary rounded-md text-xs font-bold">
+<span>sunset</span>
+<span class="material-symbols-outlined text-[14px] cursor-pointer">close</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary rounded-md text-xs font-bold">
+<span>beach</span>
+<span class="material-symbols-outlined text-[14px] cursor-pointer">close</span>
+</div>
+<input class="flex-1 bg-transparent border-none focus:ring-0 text-sm h-7 min-w-[60px]" placeholder="Add..." type="text"/>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-700">
+<div class="flex flex-col">
+<span class="text-sm font-bold text-slate-700 dark:text-slate-200">Visibility</span>
+<span class="text-[11px] text-slate-500">Enable to make this image public</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-300 peer-focus:outline-none dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</div>
+<div class="px-6 py-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-end gap-3 bg-slate-50/50 dark:bg-slate-900/50">
+<button class="px-5 h-10 text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                Cancel
+            </button>
+<button class="bg-primary hover:bg-primary/90 text-white px-6 h-10 rounded-lg text-sm font-bold shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">check</span>
+<span>Save Changes</span>
+</button>
+</div>
+</div>
+</div>
+
+</body></html>

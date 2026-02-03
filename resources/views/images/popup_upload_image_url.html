@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Image Manager Dashboard - Upload by URL</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#101622",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .blur-sm {
+            filter: blur(4px);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 overflow-hidden">
+<div class="flex h-screen overflow-hidden blur-sm pointer-events-none">
+<aside class="w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col">
+<div class="p-6 flex items-center gap-3">
+<div class="bg-primary rounded-lg p-2 text-white">
+<span class="material-symbols-outlined block">grid_view</span>
+</div>
+<div>
+<h1 class="text-base font-bold leading-none">Admin Panel</h1>
+<p class="text-xs text-slate-500 mt-1">Laravel Dashboard</p>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1">
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+<p class="text-sm font-medium">Dashboard</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary/10 text-primary cursor-pointer">
+<span class="material-symbols-outlined active-icon">image</span>
+<p class="text-sm font-bold">Image Manager</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">folder</span>
+<p class="text-sm font-medium">Collections</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">settings</span>
+<p class="text-sm font-medium">Settings</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+<span class="material-symbols-outlined">help</span>
+<p class="text-sm font-medium">Help Center</p>
+</div>
+</nav>
+<div class="p-4 border-t border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 p-2">
+<div class="size-8 rounded-full bg-cover bg-center" data-alt="User avatar profile picture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDjwnId2Fs46vjGIvSMRc5YWql-BGLs2s8fe4qhiDc9gRKzVP5vpN6l42YjSzRCw_HPIPYh022CF15wXj5jTxfpgnySr8jUUYk4BtK5VE2tkjExHCOVU0JgsfxKhmhFzOk_jFLvFJiEhLbui4P0IhynepLDboAQHLtPKv68cKsQWMm2PA6v1MWMNihic09z3MrFNKFs7gQXbO07LcMj_0SMClo4NQj3bOBURxMZf2E9i7fYJw41U8hc9G1Ba5veb5M-cA6pMkaIHyI')"></div>
+<div class="flex-1 min-w-0">
+<p class="text-xs font-bold truncate">Alex Rivier</p>
+<p class="text-[10px] text-slate-500 truncate">Administrator</p>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-sm">logout</span>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-hidden">
+<header class="h-16 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between px-8 shrink-0">
+<div class="flex items-center gap-8 flex-1">
+<h2 class="text-lg font-bold">Image Manager</h2>
+<div class="max-w-md w-full">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full h-10 pl-10 pr-4 bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search your assets..." type="text"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-4 h-10 rounded-lg text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+<span>Upload</span>
+</button>
+<button class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 px-4 h-10 rounded-lg text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-[20px]">link</span>
+<span>Upload by URL</span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-8">
+<div class="mb-6">
+<div class="flex items-end justify-between border-b border-slate-200 dark:border-slate-800">
+<div class="flex gap-8">
+<a class="pb-3 border-b-2 border-primary text-primary text-sm font-bold" href="#">All Images</a>
+<a class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium" href="#">Recently Added</a>
+<a class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium" href="#">Folders</a>
+<a class="pb-3 border-b-2 border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-sm font-medium" href="#">Favorites</a>
+</div>
+<div class="pb-3 flex items-center gap-2 text-slate-400">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">grid_view</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">list</span>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Recent Uploads</h3>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+<div class="group relative bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="aspect-square rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 mb-3">
+<div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCFa8EAf8xugaToxqHXRyGRznGf-QdWO6pk-FgqIUbw2JDKBZvIok5KRBTi-12M_uaokYYLkqXFdBOIRs9ycsMfqiJMjGVLS-mn9FdCwyhItnxtPeIdT_e0jjdl35zkjM-DM2GBiWTlVegqVg4y3kEz_lD5Vn5WIZ2lGmS46XV69XFfxwJb0G2TcCJJBIatlMHLpqGtnoRGjirXpMxlCXY_XBtgMd0OrLrwcWq13YrxcbR9iLbi7ZvZTt_0o4ZY-SmrlwGOHcFNWtw')"></div>
+</div>
+<div class="space-y-1 px-1">
+<p class="text-sm font-semibold truncate dark:text-slate-200">sunset-at-beach...jpg</p>
+<p class="text-[10px] text-slate-500 font-medium uppercase">Oct 24, 2023 • 2.4 MB</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px]">
+<div class="w-full max-w-lg bg-white dark:bg-slate-900 rounded-xl shadow-2xl overflow-hidden mx-4">
+<div class="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white">Upload Image by URL</h3>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-6">
+<p class="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                Paste an image URL below. The system will download and save the image.
+            </p>
+<div class="space-y-2">
+<label class="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider" for="image-url">Image URL</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">link</span>
+<input class="w-full h-11 pl-10 pr-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" id="image-url" name="image-url" placeholder="https://example.com/image.jpg" type="text"/>
+</div>
+<p class="text-[11px] text-slate-500 dark:text-slate-500">
+                    Supported formats: <span class="font-medium">JPG, PNG, WEBP</span> • Max file size: <span class="font-medium">5MB</span>
+</p>
+</div>
+</div>
+<div class="px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
+<button class="px-5 py-2.5 rounded-lg text-sm font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                Cancel
+            </button>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold text-white bg-primary hover:bg-primary/90 transition-all shadow-sm">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Download &amp; Save</span>
+</button>
+</div>
+</div>
+</div>
+
+</body></html>

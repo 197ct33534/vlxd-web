@@ -1,0 +1,148 @@
+<html class="light"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#135bec",
+            "background-light": "#f6f6f8",
+            "background-dark": "#101622",
+          },
+          fontFamily: {
+            "display": ["Inter"]
+          },
+          borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display overflow-hidden">
+<!-- Background Dashboard (Blurred) -->
+<div class="fixed inset-0 z-0 blur-md pointer-events-none opacity-50">
+<div class="relative flex h-full w-full flex-col bg-background-light dark:bg-background-dark">
+<div class="layout-container flex h-full grow flex-col">
+<div class="px-40 flex flex-1 justify-center py-5">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1">
+<header class="flex items-center justify-between border-b border-solid border-[#e7ebf3] dark:border-slate-800 px-10 py-3">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-[#0d121b] dark:text-white">
+<div class="size-4 bg-primary rounded-sm"></div>
+<h2 class="text-lg font-bold">Laravel Admin Panel</h2>
+</div>
+</div>
+</header>
+<div class="grid grid-cols-4 gap-4 p-10">
+<div class="aspect-square bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
+<div class="aspect-square bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
+<div class="aspect-square bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
+<div class="aspect-square bg-slate-200 dark:bg-slate-800 rounded-lg"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+<!-- Modal Container -->
+<div class="bg-white dark:bg-[#1a2234] w-full max-w-[1000px] max-h-[90vh] overflow-hidden rounded-xl shadow-2xl flex flex-col md:flex-row">
+<!-- Close Button (Mobile/Tablet visible) -->
+<button class="absolute top-4 right-4 text-white md:hidden">
+<span class="material-symbols-outlined">close</span>
+</button>
+<!-- Left: Image Preview Section -->
+<div class="flex-1 bg-slate-100 dark:bg-slate-900 flex items-center justify-center p-6 min-h-[400px]">
+<div class="relative w-full h-full flex items-center justify-center">
+<img alt="Modern abstract design" class="max-w-full max-h-[70vh] rounded-lg shadow-lg object-contain" data-alt="Modern high quality abstract architectural photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXm0wRhGS4hh0JxNnE5sTzdBVm9NAeIALLYWAQPO6c4YKLq1uZtnS7dFERYqDkgqntcC4rW0M7HYSQEqz1_dX9cNZBq6GJ6psU7ACsKlV8oxLdTxZgpFMRx2fHXxtq59h1C0QYAyiNvmUuAchbz6HKUWtS6KcSBwBcn_HOLZpXelSAXY_WaY9nabouasAMmljvlMmmkyvfCKHWYWvr1jpK6Ypc4YOXHvh7b8Tc9rdmwYvZyUJEv-6yMgEm_sgb7fDRsR3lRj8kfJY"/>
+<div class="absolute top-4 right-4">
+<button class="bg-white/80 dark:bg-black/40 hover:bg-white dark:hover:bg-black/60 p-2 rounded-full transition-colors backdrop-blur-md">
+<span class="material-symbols-outlined text-slate-800 dark:text-white">zoom_in</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Right: Details Sidebar -->
+<div class="w-full md:w-[380px] bg-white dark:bg-[#1a2234] border-l border-slate-200 dark:border-slate-800 flex flex-col h-full">
+<div class="p-6 flex-1 overflow-y-auto">
+<!-- Header -->
+<div class="flex justify-between items-start mb-6">
+<h2 class="text-[#0d121b] dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">Image Details</h2>
+<button class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors hidden md:block">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Metadata List -->
+<div class="space-y-0">
+<div class="grid grid-cols-2 border-t border-slate-200 dark:border-slate-800 py-4">
+<p class="text-[#4c669a] dark:text-slate-400 text-sm font-normal">Filename</p>
+<p class="text-[#0d121b] dark:text-white text-sm font-medium text-right truncate">hero-banner-v2.jpg</p>
+</div>
+<div class="grid grid-cols-2 border-t border-slate-200 dark:border-slate-800 py-4">
+<p class="text-[#4c669a] dark:text-slate-400 text-sm font-normal">Dimensions</p>
+<p class="text-[#0d121b] dark:text-white text-sm font-medium text-right">1920 x 1080 px</p>
+</div>
+<div class="grid grid-cols-2 border-t border-slate-200 dark:border-slate-800 py-4">
+<p class="text-[#4c669a] dark:text-slate-400 text-sm font-normal">File Size</p>
+<p class="text-[#0d121b] dark:text-white text-sm font-medium text-right">450 KB</p>
+</div>
+<div class="grid grid-cols-2 border-t border-b border-slate-200 dark:border-slate-800 py-4">
+<p class="text-[#4c669a] dark:text-slate-400 text-sm font-normal">Upload Date</p>
+<p class="text-[#0d121b] dark:text-white text-sm font-medium text-right">October 24, 2023</p>
+</div>
+</div>
+<!-- URL Action Section -->
+<div class="mt-8">
+<h3 class="text-[#0d121b] dark:text-white text-sm font-bold uppercase tracking-wider mb-3">Image URL</h3>
+<div class="flex flex-col gap-3">
+<div class="flex w-full items-stretch rounded-lg h-11">
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 h-full px-4 text-sm font-normal truncate" readonly="" value="https://cdn.site.com/media/hero-banner-v2.jpg"/>
+</div>
+<button class="flex w-full items-center justify-center gap-2 rounded-lg bg-primary h-11 px-4 text-white text-sm font-bold transition-opacity hover:opacity-90">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+<span>Copy Direct Link</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="p-6 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800 flex gap-3">
+<button class="flex-1 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 py-2.5 text-sm font-medium hover:bg-red-100 transition-colors">
+            Delete File
+          </button>
+<button class="flex-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white py-2.5 text-sm font-medium hover:bg-slate-50 transition-colors">
+            Edit Metadata
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Toast Notification -->
+<div class="fixed bottom-8 right-8 z-[60] flex items-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl rounded-xl px-5 py-4 animate-in fade-in slide-in-from-bottom-5">
+<div class="flex items-center justify-center bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-full size-8">
+<span class="material-symbols-outlined text-[20px]">check</span>
+</div>
+<div class="flex flex-col">
+<p class="text-sm font-bold text-slate-800 dark:text-white">Copied!</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">URL added to clipboard</p>
+</div>
+<button class="ml-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+
+```</body></html>

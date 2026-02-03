@@ -79,4 +79,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/daily-reports/{dailyReport}/approve', [\App\Http\Controllers\DailyReportController::class, 'approve'])->name('daily-reports.approve');
     Route::put('/daily-reports/{dailyReport}/reject', [\App\Http\Controllers\DailyReportController::class, 'reject'])->name('daily-reports.reject');
     Route::get('/api/latest-price', [\App\Http\Controllers\DailyReportController::class, 'getLatestPrice'])->name('api.latest-price');
+    
+    // Image Manager
+    Route::get('/image-manager', [\App\Http\Controllers\ImageManagerController::class, 'index'])->name('images.index');
+    Route::get('/image-manager/upload', [\App\Http\Controllers\ImageManagerController::class, 'create'])->name('images.create');
 });

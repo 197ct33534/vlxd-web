@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('/upload/image', [\App\Http\Controllers\Api\ImageUploadController::class, 'store']);
+Route::post('/upload/image-url', [\App\Http\Controllers\Api\ImageUploadController::class, 'storeFromUrl']);
+Route::get('/images', [\App\Http\Controllers\Api\ImageUploadController::class, 'index']);
+Route::delete('/images/{id}', [\App\Http\Controllers\Api\ImageUploadController::class, 'destroy']);
+
