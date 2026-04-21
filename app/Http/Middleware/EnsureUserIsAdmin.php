@@ -14,7 +14,7 @@ class EnsureUserIsAdmin
         $user = Auth::user();
 
         if (! $user || $user->role !== 'admin') {
-            abort(403, 'Chỉ quản trị viên được thực hiện thao tác này.');
+            abort(403, __('admin.forbidden'));
         }
 
         return $next($request);

@@ -1,160 +1,150 @@
 @extends('layouts.dashboard')
 
+@section('title', __('invoices.price_history_title').' — '.$project->name)
+
+@section('page_heading', __('invoices.price_history_title'))
+
 @section('content')
     <div class="flex flex-col gap-6">
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
-                <nav class="flex text-sm text-gray-500 mb-2">
-                    <a href="{{ route('customers.projects.index', $project->customer_id) }}" class="hover:text-primary transition-colors">Projects</a>
-                    <span class="mx-2">/</span>
+                <nav class="mb-2 flex flex-wrap gap-x-2 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
+                    <a href="{{ route('customers.projects.index', $project->customer_id) }}" class="hover:text-primary transition-colors">{{ __('nav.customers') }}</a>
+                    <span class="text-gray-400">/</span>
                     <a href="{{ route('projects.invoices.index', $project->id) }}" class="hover:text-primary transition-colors">{{ $project->name }}</a>
-                    <span class="mx-2">/</span>
-                    <span class="font-semibold text-gray-700 dark:text-gray-300">Price History</span>
+                    <span class="text-gray-400">/</span>
+                    <span class="font-semibold text-gray-700 dark:text-gray-300">{{ __('invoices.price_history') }}</span>
                 </nav>
-                <h1 class="text-text-light dark:text-text-dark text-3xl font-black tracking-tight">Product Price History</h1>
-                <p class="text-gray-500 dark:text-gray-400 mt-1">Track price changes of products over time.</p>
+                <h1 class="text-3xl font-black tracking-tight text-text-light dark:text-text-dark">{{ __('invoices.price_history_title') }}</h1>
+                <p class="mt-1 max-w-3xl text-gray-500 dark:text-gray-400">{{ __('invoices.price_history_subtitle') }}</p>
             </div>
-            
-            <a href="{{ route('projects.invoices.index', $project->id) }}" class="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 px-4 py-2 rounded-lg transition-colors text-sm font-semibold">
+
+            <a href="{{ route('projects.invoices.index', $project->id) }}" class="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600">
                 <span class="material-symbols-outlined text-lg">arrow_back</span>
-                Back to Invoices
+                {{ __('invoices.price_history.back') }}
             </a>
         </div>
 
-        @if($history->isEmpty())
-            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-12 text-center border-2 border-dashed border-gray-200 dark:border-gray-700">
-                <div class="bg-gray-100 dark:bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span class="material-symbols-outlined text-3xl text-gray-400">history_edu</span>
+        @if(!$hasInvoices)
+            <div class="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 p-12 text-center dark:border-gray-700 dark:bg-gray-800/50">
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+                    <span class="material-symbols-outlined text-3xl text-gray-400">receipt_long</span>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">No History Data</h3>
-                <p class="text-gray-500 dark:text-gray-400 max-w-md mx-auto">There are no invoices recorded for this project yet. Create an invoice to see price history.</p>
+                <h3 class="mb-2 text-lg font-bold text-gray-900 dark:text-white">{{ __('invoices.price_history.empty_title') }}</h3>
+                <p class="mx-auto max-w-md text-gray-500 dark:text-gray-400">{{ __('invoices.price_history.empty_no_invoices') }}</p>
+            </div>
+        @elseif(!$hasLineItems)
+            <div class="rounded-xl border-2 border-dashed border-amber-200 bg-amber-50/80 p-12 text-center dark:border-amber-900/40 dark:bg-amber-950/20">
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
+                    <span class="material-symbols-outlined text-3xl text-amber-600 dark:text-amber-400">inventory_2</span>
+                </div>
+                <h3 class="mb-2 text-lg font-bold text-gray-900 dark:text-white">{{ __('invoices.price_history.empty_title') }}</h3>
+                <p class="mx-auto max-w-md text-gray-600 dark:text-gray-400">{{ __('invoices.price_history.empty_no_lines') }}</p>
             </div>
         @else
-            <div class="grid grid-cols-1 gap-6" x-data="{ searchQuery: '' }">
-                <!-- Simple Filter -->
-                <div class="bg-container-light dark:bg-container-dark p-4 rounded-xl shadow-subtle sticky top-4 z-10">
+            <div
+                class="flex flex-col gap-4"
+                x-data="{
+                    searchQuery: '',
+                    matchesProduct(name) {
+                        const q = this.searchQuery.trim().toLowerCase();
+                        if (!q) return true;
+                        return name.toLowerCase().includes(q);
+                    }
+                }"
+            >
+                <div class="sticky top-4 z-10 rounded-xl bg-container-light p-4 shadow-subtle dark:bg-container-dark">
                     <div class="relative">
-                        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-                        <input x-model="searchQuery" type="text" placeholder="Filter products by name..." 
-                               class="w-full pl-12 pr-4 py-3 rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors">
+                        <span class="material-symbols-outlined pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                        <input
+                            x-model="searchQuery"
+                            type="search"
+                            autocomplete="off"
+                            placeholder="{{ __('invoices.price_history.filter_placeholder') }}"
+                            class="w-full rounded-lg border border-gray-200 py-3 pl-12 pr-4 transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-gray-700 dark:bg-gray-800/80"
+                            aria-label="{{ __('common.search') }}"
+                        />
                     </div>
                 </div>
 
-                @foreach($history as $key => $items)
-                    @php
-                        [$productName, $unit, $quantity] = explode('|', $key);
-                    @endphp
-                    <div class="bg-container-light dark:bg-container-dark rounded-xl shadow-subtle overflow-hidden" 
-                         x-show="searchQuery === '' || '{{ strtolower($productName) }}'.includes(searchQuery.toLowerCase())">
-                        <div class="p-6 border-b border-border-light dark:border-border-dark bg-gray-50/50 dark:bg-gray-800/50 flex justify-between items-center">
-                            <h2 class="text-xl font-bold text-text-light dark:text-text-dark flex items-center gap-2">
-                                <span class="material-symbols-outlined text-primary">inventory_2</span>
-                                {{ $productName }}
-                            </h2>
-                            <div class="flex gap-4 text-sm text-gray-500 font-medium">
-                                <span class="bg-white dark:bg-gray-700 px-3 py-1 rounded border border-gray-200 dark:border-gray-600">
-                                    Qty: {{ $quantity }}
-                                </span>
-                                <span class="bg-white dark:bg-gray-700 px-3 py-1 rounded border border-gray-200 dark:border-gray-600">
-                                    Unit: {{ $unit }}
-                                </span>
-                            </div>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left">
-                                <thead class="text-xs text-gray-500 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-400">
-                                    <tr>
-                                        <th class="px-6 py-3">Date</th>
-                                        <th class="px-6 py-3">Invoice</th>
-                                        <th class="px-6 py-3 text-right">Price</th>
-                                        <th class="px-6 py-3 text-right">Change</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                                    @php 
-                                        $previousPrice = null; 
-                                        $items = $items->sortBy('invoice_date'); 
-                                    @endphp
-                                    @foreach($items as $item)
-                                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                            <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
-                                                {{ \Carbon\Carbon::parse($item->invoice_date)->format('d/m/Y') }}
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <a href="#" @click="$dispatch('open-invoice-modal', { id: {{ $item->invoice_id }} })" class="text-blue-600 hover:underline">
-                                                    #{{ $item->invoice_code ?? $item->invoice_id }}
-                                                </a>
-                                            </td>
-                                            <td class="px-6 py-4 text-right font-bold">
-                                                {{ number_format($item->price, 0, ',', '.') }} đ
-                                            </td>
-                                            <td class="px-6 py-4 text-right">
-                                                @if($previousPrice !== null)
-                                                    @if($item->price > $previousPrice)
-                                                        <div class="inline-flex items-center text-red-600 bg-red-50 dark:bg-red-900/30 px-2 py-1 rounded text-xs font-bold">
-                                                            <span class="material-symbols-outlined text-sm mr-1">trending_up</span>
-                                                            +{{ number_format($item->price - $previousPrice, 0, ',', '.') }}
-                                                        </div>
-                                                    @elseif($item->price < $previousPrice)
-                                                        <div class="inline-flex items-center text-green-600 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded text-xs font-bold">
-                                                            <span class="material-symbols-outlined text-sm mr-1">trending_down</span>
-                                                            -{{ number_format($previousPrice - $item->price, 0, ',', '.') }}
-                                                        </div>
-                                                    @else
-                                                        <span class="text-gray-400 text-xs">—</span>
-                                                    @endif
+                <div class="overflow-hidden rounded-xl border border-border-light bg-container-light shadow-subtle dark:border-border-dark dark:bg-container-dark">
+                    <div class="overflow-x-auto">
+                        <table class="w-full min-w-[900px] text-left text-sm">
+                            <thead class="border-b border-border-light bg-background-light text-xs font-bold uppercase tracking-wide text-gray-600 dark:border-border-dark dark:bg-background-dark dark:text-gray-400">
+                                <tr>
+                                    <th class="px-4 py-3 sm:px-6">{{ __('invoices.price_history.table.product') }}</th>
+                                    <th class="px-4 py-3 sm:px-6">{{ __('invoices.price_history.table.unit') }}</th>
+                                    <th class="px-4 py-3 text-right sm:px-6">{{ __('invoices.price_history.table.latest_price') }}</th>
+                                    <th class="px-4 py-3 sm:px-6">{{ __('invoices.price_history.table.last_invoice') }}</th>
+                                    <th class="whitespace-nowrap px-4 py-3 sm:px-6">{{ __('invoices.price_history.table.last_date') }}</th>
+                                    <th class="px-4 py-3 text-center sm:px-6">{{ __('invoices.price_history.table.variation') }}</th>
+                                    <th class="min-w-[220px] px-4 py-3 sm:px-6">{{ __('invoices.price_history.table.detail') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-border-light dark:divide-border-dark">
+                                @foreach($summaries as $row)
+                                    <tr
+                                        class="transition-colors hover:bg-gray-50/80 dark:hover:bg-gray-800/40"
+                                        x-show="matchesProduct(@js($row->product_name))"
+                                    >
+                                        <td class="px-4 py-4 font-semibold text-gray-900 dark:text-white sm:px-6">
+                                            {{ $row->product_name }}
+                                        </td>
+                                        <td class="px-4 py-4 text-gray-700 dark:text-gray-300 sm:px-6">
+                                            {{ $row->unit !== '' ? $row->unit : '—' }}
+                                        </td>
+                                        <td class="px-4 py-4 text-right text-base font-bold tabular-nums text-gray-900 dark:text-white sm:px-6">
+                                            {{ number_format($row->latest_price, 0, ',', '.') }} đ
+                                        </td>
+                                        <td class="px-4 py-4 sm:px-6">
+                                            <a href="{{ route('invoices.show', $row->latest_invoice_id) }}" class="font-medium text-primary hover:underline">
+                                                {{ $row->latest_invoice_code ?: '#'.$row->latest_invoice_id }}
+                                            </a>
+                                        </td>
+                                        <td class="whitespace-nowrap px-4 py-4 text-gray-700 dark:text-gray-300 sm:px-6">
+                                            {{ $row->latest_date ? \Carbon\Carbon::parse($row->latest_date)->format('d/m/Y') : '—' }}
+                                        </td>
+                                        <td class="px-4 py-4 text-center sm:px-6">
+                                            @if($row->has_variation)
+                                                <span class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
+                                                    {{ __('invoices.price_history.variation_yes') }}
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                                                    {{ __('invoices.price_history.variation_no') }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="px-4 py-4 sm:px-6">
+                                            @if(!$row->has_variation)
+                                                <span class="text-gray-500 dark:text-gray-400">
+                                                    {{ $row->line_count <= 1 ? __('invoices.price_history.detail_once') : __('invoices.price_history.detail_fixed') }}
+                                                </span>
+                                            @else
+                                                @if($row->direction === 'up')
+                                                    <span class="inline-flex items-center gap-1 font-semibold text-red-600 dark:text-red-400">
+                                                        <span class="material-symbols-outlined text-lg">trending_up</span>
+                                                        {{ __('invoices.price_history.detail_up', ['amount' => number_format($row->abs_change, 0, ',', '.')]) }}
+                                                    </span>
+                                                @elseif($row->direction === 'down')
+                                                    <span class="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
+                                                        <span class="material-symbols-outlined text-lg">trending_down</span>
+                                                        {{ __('invoices.price_history.detail_down', ['amount' => number_format($row->abs_change, 0, ',', '.')]) }}
+                                                    </span>
                                                 @else
-                                                    <span class="text-gray-400 text-xs text-italic">Initial</span>
+                                                    <span class="text-gray-700 dark:text-gray-300" title="{{ __('invoices.price_history.detail_same_vs_prev_hint') }}">
+                                                        {{ __('invoices.price_history.detail_same_vs_prev') }}
+                                                    </span>
                                                 @endif
-                                            </td>
-                                        </tr>
-                                        @php $previousPrice = $item->price; @endphp
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
-                @endforeach
+                </div>
             </div>
         @endif
-    </div>
-
-    <!-- Reusing Invoice Detail Modal -->
-    <div x-data="{ open: false, content: '', loading: false }"
-         @open-invoice-modal.window="
-            open = true; 
-            loading = true; 
-            content = '';
-            fetch('/invoices/' + $event.detail.id, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                .then(res => res.text())
-                .then(html => { content = html; loading = false; })
-                .catch(() => { content = 'Error loading invoice.'; loading = false; });
-         "
-         class="relative z-50" 
-         aria-labelledby="modal-title" 
-         role="dialog" 
-         aria-modal="true"
-         x-show="open" 
-         style="display: none;">
-        
-        <div x-show="open" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="open = false"></div>
-
-        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <div x-show="open" class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl">
-                    <div class="bg-white dark:bg-gray-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                        <div class="flex justify-end absolute top-4 right-4 z-10">
-                            <button @click="open = false" class="text-gray-400 hover:text-gray-500">
-                                <span class="material-symbols-outlined">close</span>
-                            </button>
-                        </div>
-                        <div x-show="loading" class="flex justify-center py-12">
-                            <span class="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
-                        </div>
-                        <div x-show="!loading" x-html="content"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 @endsection

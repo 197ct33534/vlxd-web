@@ -16,10 +16,10 @@
                 type="button"
                 class="inline-flex max-w-[9rem] items-center gap-1 rounded-lg p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 lg:hidden"
                 @click="$store.layout.closeSidebar()"
-                aria-label="{{ __('nav.close_menu') }}"
+                
             >
                 <span class="material-symbols-outlined shrink-0 text-2xl">close</span>
-                <span class="truncate text-xs font-semibold">{{ __('nav.close_menu') }}</span>
+                <span class="truncate text-xs font-semibold"></span>
             </button>
         </div>
         <nav
@@ -31,9 +31,14 @@
             <x-nav-link href="{{ route('projects.index') }}" icon="folder" :active="request()->routeIs('projects.index')">Tất cả dự án</x-nav-link>
             <x-nav-link href="{{ route('material-prices.index') }}" icon="sell" :active="request()->routeIs('material-prices.*')">Báo giá vật tư</x-nav-link>
             <x-nav-link href="{{ route('invoice.index') }}" icon="upload_file" :active="request()->routeIs('invoice.*')">Nhập hóa đơn Excel</x-nav-link>
-            <x-nav-link href="{{ route('employees.index') }}" icon="badge" :active="request()->routeIs('employees.*')">Nhân viên</x-nav-link>
+            @if(auth()->user()->isAdmin())
+                <x-nav-link href="{{ route('admin.reports.index') }}" icon="analytics" :active="request()->routeIs('admin.reports.*')">{{ __('nav.reports') }}</x-nav-link>
+                <x-nav-link href="{{ route('employees.index') }}" icon="badge" :active="request()->routeIs('employees.*')">Nhân viên</x-nav-link>
+            @endif
             <x-nav-link href="{{ route('daily-reports.index') }}" icon="assignment" :active="request()->routeIs('daily-reports.*')">Báo cáo ngày</x-nav-link>
-            <x-nav-link href="{{ route('store-settings.edit') }}" icon="storefront" :active="request()->routeIs('store-settings.*')">Thông tin cửa hàng</x-nav-link>
+            @if(auth()->user()->isAdmin())
+                <x-nav-link href="{{ route('store-settings.edit') }}" icon="storefront" :active="request()->routeIs('store-settings.*')">Thông tin cửa hàng</x-nav-link>
+            @endif
         </nav>
     </div>
     <div class="mt-4 flex flex-col gap-2 border-t border-border-light pt-4 dark:border-border-dark">

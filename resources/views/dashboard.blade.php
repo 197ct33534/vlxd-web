@@ -57,11 +57,23 @@
                     <h3 class="mt-3 font-bold text-text-light dark:text-text-dark">Nhập hóa đơn</h3>
                     <p class="mt-1 text-sm text-gray-500">Import Excel</p>
                 </a>
+                @if(auth()->user()->isAdmin())
+                <a href="{{ route('admin.reports.index') }}" class="rounded-xl border border-border-light dark:border-border-dark bg-container-light dark:bg-container-dark p-5 shadow-subtle hover:border-primary/40 hover:bg-primary/5 transition-colors">
+                    <span class="material-symbols-outlined text-primary text-3xl">analytics</span>
+                    <h3 class="mt-3 font-bold text-text-light dark:text-text-dark">{{ __('nav.reports') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ __('reports.subtitle_short') }}</p>
+                </a>
                 <a href="{{ route('store-settings.edit') }}" class="rounded-xl border border-border-light dark:border-border-dark bg-container-light dark:bg-container-dark p-5 shadow-subtle hover:border-primary/40 hover:bg-primary/5 transition-colors">
                     <span class="material-symbols-outlined text-primary text-3xl">storefront</span>
                     <h3 class="mt-3 font-bold text-text-light dark:text-text-dark">Thông tin cửa hàng</h3>
                     <p class="mt-1 text-sm text-gray-500">PDF / in</p>
                 </a>
+                <a href="{{ route('employees.index') }}" class="rounded-xl border border-border-light dark:border-border-dark bg-container-light dark:bg-container-dark p-5 shadow-subtle hover:border-primary/40 hover:bg-primary/5 transition-colors">
+                    <span class="material-symbols-outlined text-primary text-3xl">badge</span>
+                    <h3 class="mt-3 font-bold text-text-light dark:text-text-dark">{{ __('nav.employees') }}</h3>
+                    <p class="mt-1 text-sm text-gray-500">{{ __('reports.employees_desc') }}</p>
+                </a>
+                @endif
                 <a href="{{ route('daily-reports.index') }}" class="rounded-xl border border-border-light dark:border-border-dark bg-container-light dark:bg-container-dark p-5 shadow-subtle hover:border-primary/40 hover:bg-primary/5 transition-colors">
                     <span class="material-symbols-outlined text-primary text-3xl">assignment</span>
                     <h3 class="mt-3 font-bold text-text-light dark:text-text-dark">Báo cáo ngày</h3>

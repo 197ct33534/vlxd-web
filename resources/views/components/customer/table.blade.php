@@ -5,7 +5,7 @@
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-background-light dark:bg-background-dark">
                 <tr>
-                    <th class="px-6 py-4 font-bold cursor-pointer hover:bg-primary/10 transition-colors" scope="col">{{ __('customer.table.name') }} <span class="material-symbols-outlined text-base align-middle">unfold_more</span></th>
+                    <th class="px-6 py-4 font-bold" scope="col">{{ __('customer.table.name') }}</th>
                     <th class="px-6 py-4 font-bold" scope="col">{{ __('customer.table.phone') }}</th>
                     <th class="px-6 py-4 font-bold" scope="col">{{ __('customer.table.email') }}</th>
                     <th class="px-6 py-4 font-bold" scope="col">{{ __('customer.table.address') }}</th>

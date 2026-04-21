@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Project;
 use App\Models\StoreInfo;
+use App\Support\VietnameseCurrency;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
@@ -35,8 +36,9 @@ class InvoiceController extends Controller
     {
         // Load relationships if necessary
         $invoice->load(['items', 'project.customer']);
-        
-        if ($request->ajax()) {
+
+        // Modal xem nhanh trên danh sách: fetch gửi X-Requested-With; thêm ?modal=1 để chắc chắn trả partial
+        if ($request->ajax() || $request->boolean('modal')) {
             return view('invoices.partials.details', compact('invoice'));
         }
 
@@ -55,8 +57,9 @@ class InvoiceController extends Controller
     {
         $invoice->load(['items', 'project.customer']);
         $storeInfo = StoreInfo::first();
+        $amountInWords = VietnameseCurrency::toWords($invoice->total_amount);
 
-        $html = view('invoices.pdf', compact('invoice', 'storeInfo'))->render();
+        $html = view('invoices.pdf', compact('invoice', 'storeInfo', 'amountInWords'))->render();
 
         $options = new Options;
         $options->set('defaultFont', 'DejaVu Sans');

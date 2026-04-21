@@ -56,7 +56,7 @@
 <div class="flex items-center gap-3">
 <button type="button" class="inline-flex max-w-[9rem] items-center gap-1 -ml-2 rounded-lg p-2 text-slate-600 dark:text-slate-300">
 <span class="material-symbols-outlined shrink-0">menu</span>
-<span class="truncate text-xs font-semibold">{{ __('nav.open_menu') }}</span>
+<span class="truncate text-xs font-semibold"></span>
 </button>
 <div class="flex items-center gap-2">
 <div class="bg-primary p-1.5 rounded-lg">

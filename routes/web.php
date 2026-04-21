@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ImportInvoiceController;
+use App\Http\Controllers\AdminReportController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MaterialPriceController;
 use App\Http\Controllers\StoreInfoController;
 use App\Models\StoreInfo;
 
@@ -33,13 +35,27 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/projects', [\App\Http\Controllers\ProjectController::class, 'indexAll'])->name('projects.index');
 
-    Route::get('/store-settings', [StoreInfoController::class, 'edit'])->name('store-settings.edit');
-    Route::put('/store-settings', [StoreInfoController::class, 'update'])->name('store-settings.update');
+    Route::get('material-prices', [MaterialPriceController::class, 'index'])->name('material-prices.index');
 
-    // Quản lý báo giá vật tư (bulk phải khai báo trước resource để không bị coi là id)
-    Route::delete('material-prices/bulk', [App\Http\Controllers\MaterialPriceController::class, 'destroyBulk'])->name('material-prices.bulk-destroy');
-    Route::resource('material-prices', App\Http\Controllers\MaterialPriceController::class);
-    Route::post('material-prices/sync', [App\Http\Controllers\MaterialPriceController::class, 'syncFromHistory'])->name('material-prices.sync');
+    Route::middleware('admin')->group(function () {
+        Route::get('/store-settings', [StoreInfoController::class, 'edit'])->name('store-settings.edit');
+        Route::put('/store-settings', [StoreInfoController::class, 'update'])->name('store-settings.update');
+
+        Route::delete('material-prices/bulk', [MaterialPriceController::class, 'destroyBulk'])->name('material-prices.bulk-destroy');
+        Route::post('material-prices/sync', [MaterialPriceController::class, 'syncFromHistory'])->name('material-prices.sync');
+        Route::resource('material-prices', MaterialPriceController::class)->except(['index', 'show']);
+
+        Route::resource('employees', \App\Http\Controllers\EmployeeController::class);
+        Route::post('/employees/{employee}/advances', [\App\Http\Controllers\EmployeeController::class, 'storeAdvance'])->name('employees.advances.store');
+        Route::get('/employees/{employee}/advances', [\App\Http\Controllers\EmployeeController::class, 'getAdvances'])->name('employees.advances.index');
+
+        Route::prefix('reports')->name('admin.reports.')->group(function () {
+            Route::get('/', [AdminReportController::class, 'index'])->name('index');
+            Route::get('/export/debt-excel', [AdminReportController::class, 'exportDebtExcel'])->name('export.debt_excel');
+            Route::get('/export/revenue-excel', [AdminReportController::class, 'exportRevenueExcel'])->name('export.revenue_excel');
+            Route::get('/export/summary-pdf', [AdminReportController::class, 'exportSummaryPdf'])->name('export.summary_pdf');
+        });
+    });
 
     Route::get('/test-db', function () {
         try {
@@ -97,11 +113,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/invoices/{invoice}/pay', 'markAsPaid')->name('invoices.pay');
         Route::get('/projects/{project}/price-history', [\App\Http\Controllers\PriceHistoryController::class, 'index'])->name('projects.price_history');
     });     
-
-    // Routes for EmployeeController
-    Route::resource('employees', \App\Http\Controllers\EmployeeController::class);
-    Route::post('/employees/{employee}/advances', [\App\Http\Controllers\EmployeeController::class, 'storeAdvance'])->name('employees.advances.store');
-    Route::get('/employees/{employee}/advances', [\App\Http\Controllers\EmployeeController::class, 'getAdvances'])->name('employees.advances.index');
 
     // Routes for DailyReportController
     Route::resource('daily-reports', \App\Http\Controllers\DailyReportController::class);

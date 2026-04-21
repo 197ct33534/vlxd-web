@@ -16,6 +16,15 @@
                         "primary": "#2a8ff4",
                         "background-light": "#f5f7f8",
                         "background-dark": "#101922",
+                        "text-light": "#212529",
+                        "text-dark": "#f5f7f8",
+                        "container-light": "#ffffff",
+                        "container-dark": "#1a242d",
+                        "border-light": "#e9ecef",
+                        "border-dark": "#2c3a47",
+                    },
+                    boxShadow: {
+                        subtle: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"]
@@ -107,7 +116,7 @@
         <div class="flex items-center gap-3">
             <button type="button" class="inline-flex h-10 max-w-[9rem] items-center gap-1.5 rounded-lg bg-slate-100 px-2 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                 <span class="material-symbols-outlined shrink-0">menu</span>
-                <span class="truncate text-xs font-semibold">{{ __('nav.open_menu') }}</span>
+                <span class="truncate text-xs font-semibold"></span>
             </button>
             <div class="flex items-center gap-2">
                 <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
@@ -128,22 +137,8 @@
         </div>
     </header>
     <main class="mx-auto max-w-lg p-4 pb-28">
-        <div class="mb-6">
-            <h2 class="text-2xl font-bold mb-4">{{ __('customer.title') }}</h2>
-            <form action="{{ route('customers.index') }}" method="GET" class="relative" @submit="isLoading = true">
-                @if(request()->has('status'))
-                    <input type="hidden" name="status" value="{{ request('status') }}">
-                @endif
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
-                <input name="search" value="{{ request('search') }}" class="w-full rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 pl-10 pr-4 py-3 text-sm focus:border-primary focus:ring-primary shadow-sm outline-none" placeholder="{{ __('customer.filter.search_placeholder') }}" type="search" aria-label="{{ __('common.search') }}"/>
-            </form>
-        </div>
-        
-        <div class="flex gap-2 overflow-x-auto pb-4 mb-2 custom-scrollbar">
-            <a href="{{ route('customers.index', array_filter(['search' => request('search')])) }}" class="whitespace-nowrap rounded-full {{ request('status', 'all') == 'all' ? 'bg-primary text-white' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400' }} px-4 py-1.5 text-xs font-semibold shadow-sm">{{ __('customer.filter.all') }}</a>
-            <a href="{{ route('customers.index', array_filter(['search' => request('search'), 'status' => 'active'])) }}" class="whitespace-nowrap rounded-full {{ request('status') == 'active' ? 'bg-primary text-white' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400' }} px-4 py-1.5 text-xs font-semibold">{{ __('customer.filter.active') }}</a>
-            <a href="{{ route('customers.index', array_filter(['search' => request('search'), 'status' => 'inactive'])) }}" class="whitespace-nowrap rounded-full {{ request('status') == 'inactive' ? 'bg-primary text-white' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400' }} px-4 py-1.5 text-xs font-semibold">{{ __('customer.filter.inactive') }}</a>
-        </div>
+        <h2 class="mb-4 text-2xl font-bold">{{ __('customer.title') }}</h2>
+        <x-customer.search-filter />
 
         <div class="space-y-4">
             @forelse($customers as $customer)

@@ -76,7 +76,7 @@
 </div>
 <button type="button" @click="mobileMenu = !mobileMenu" class="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2 py-2 dark:bg-slate-800">
 <span class="material-symbols-outlined shrink-0">menu</span>
-<span class="max-w-[6rem] truncate text-xs font-semibold">{{ __('nav.open_menu') }}</span>
+<span class="max-w-[6rem] truncate text-xs font-semibold"></span>
 </button>
 </header>
 

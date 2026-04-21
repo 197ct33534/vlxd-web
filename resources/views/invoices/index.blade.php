@@ -55,7 +55,8 @@
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex flex-wrap items-center justify-end gap-1.5">
                                         <button type="button" @click="openInvoiceModal({{ $invoice->id }})"
-                                           class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-blue-900/20">
+                                           class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-blue-900/20"
+                                           title="{{ __('invoices.view_details') }}">
                                             <span class="material-symbols-outlined text-base leading-none">visibility</span>
                                             <span>{{ __('invoices.btn_detail') }}</span>
                                         </button>
@@ -288,47 +289,67 @@
 
     </div>
 
-    <!-- Invoice Detail Modal -->
-    <div x-data="{ open: false, content: '', loading: false }"
-         @open-invoice-modal.window="
-            open = true; 
-            loading = true; 
-            content = '';
-            fetch('/invoices/' + $event.detail.id, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                .then(res => res.text())
-                .then(html => { content = html; loading = false; })
-                .catch(() => { content = @json(__('invoices.error_load_invoice')); loading = false; });
-         "
-         class="relative z-50" 
-         aria-labelledby="modal-title" 
-         role="dialog" 
+    <!-- Modal xem nhanh hóa đơn (fetch trong script) -->
+    <div x-data="invoiceDetailModal()"
+         @open-invoice-modal.window="fetchInvoice($event.detail.id)"
+         class="relative z-50"
+         aria-labelledby="invoice-modal-title"
+         role="dialog"
          aria-modal="true"
-         x-show="open" 
+         x-show="open"
          style="display: none;">
-        
-        <div x-show="open" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
-        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-                <div x-show="open" 
-                     @click.away="open = false"
-                     x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
-                     class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-4xl">
-                    
-                    <div class="bg-white dark:bg-gray-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                        <div class="flex justify-end absolute top-4 right-4 z-10">
-                            <button type="button" @click="open = false" class="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                <span class="material-symbols-outlined">close</span>
-                                <span>{{ __('common.close') }}</span>
-                            </button>
+        <div class="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto p-0 sm:items-center sm:p-4">
+            <div x-show="open"
+                 x-transition:enter="ease-out duration-200"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="ease-in duration-150"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="absolute inset-0 bg-gray-900/60 backdrop-blur-[1px]"
+                 @click="open = false"></div>
+
+            <div x-show="open"
+                 @click.stop
+                 x-transition:enter="ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-8 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-8 sm:translate-y-0 sm:scale-95"
+                 class="relative z-10 flex max-h-[min(92vh,900px)] w-full max-w-4xl flex-col overflow-hidden rounded-t-2xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700 dark:bg-gray-900 sm:mx-4 sm:rounded-2xl">
+
+                {{-- Thanh tiêu đề popup --}}
+                <div id="invoice-modal-title" class="flex shrink-0 items-center justify-between gap-3 border-b border-gray-200 bg-gradient-to-r from-primary/15 via-white to-slate-50 px-4 py-3 dark:border-gray-700 dark:from-primary/25 dark:via-gray-900 dark:to-gray-900 sm:px-5">
+                    <div class="flex min-w-0 items-center gap-3">
+                        <span class="material-symbols-outlined shrink-0 text-2xl text-primary">receipt_long</span>
+                        <div class="min-w-0">
+                            <p class="text-[10px] font-bold uppercase tracking-wider text-primary sm:text-xs">{{ __('invoices.modal.preview_title') }}</p>
+                            <p class="truncate text-base font-bold text-gray-900 dark:text-white">{{ __('invoices.detail.heading') }}</p>
                         </div>
-                        
-                        <div x-show="loading" class="flex justify-center py-12">
-                            <span class="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
-                        </div>
-                        
-                        <div x-show="!loading" x-html="content"></div>
                     </div>
+                    <button type="button" @click="open = false" class="inline-flex shrink-0 items-center gap-1 rounded-lg px-3 py-2 text-sm font-semibold text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
+                        <span class="material-symbols-outlined text-xl">close</span>
+                        <span class="hidden sm:inline">{{ __('common.close') }}</span>
+                    </button>
+                </div>
+
+                {{-- Nội dung cuộn --}}
+                <div class="min-h-0 flex-1 overflow-y-auto bg-slate-50/80 dark:bg-gray-950/50">
+                    <div x-show="loading" class="flex flex-col items-center justify-center gap-3 py-16">
+                        <span class="material-symbols-outlined animate-spin text-4xl text-primary">progress_activity</span>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('invoices.modal.loading') }}</p>
+                    </div>
+                    <div x-show="!loading" x-html="content" class="p-3 sm:p-5"></div>
+                </div>
+
+                {{-- Chân: link trang đầy đủ --}}
+                <div x-show="!loading && invoiceId" class="shrink-0 border-t border-gray-200 bg-white px-4 py-3 text-center dark:border-gray-700 dark:bg-gray-900">
+                    <a :href="'{{ url('/invoices') }}/' + invoiceId" class="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:underline">
+                        <span class="material-symbols-outlined text-lg">open_in_new</span>
+                        {{ __('invoices.open_full_page') }}
+                    </a>
                 </div>
             </div>
         </div>
@@ -337,6 +358,41 @@
     <script>
         function openInvoiceModal(id) {
             window.dispatchEvent(new CustomEvent('open-invoice-modal', { detail: { id: id } }));
+        }
+
+        function invoiceDetailModal() {
+            const invoiceBaseUrl = @json(url('/invoices'));
+            const invoiceLoadError = @json(__('invoices.error_load_invoice'));
+
+            return {
+                open: false,
+                content: '',
+                loading: false,
+                invoiceId: null,
+                async fetchInvoice(id) {
+                    this.open = true;
+                    this.loading = true;
+                    this.content = '';
+                    this.invoiceId = id;
+                    try {
+                        const res = await fetch(invoiceBaseUrl + '/' + id + '?modal=1', {
+                            credentials: 'same-origin',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                Accept: 'text/html',
+                            },
+                        });
+                        if (!res.ok) {
+                            throw new Error('HTTP ' + res.status);
+                        }
+                        this.content = await res.text();
+                    } catch (e) {
+                        this.content = '<p class="p-4 text-red-600">' + invoiceLoadError + '</p>';
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+            };
         }
     </script>
 @endsection

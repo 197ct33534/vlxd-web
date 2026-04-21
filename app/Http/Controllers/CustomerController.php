@@ -10,25 +10,55 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Customer::latest();
+        $query = Customer::query();
 
-        if ($request->has('search') && $request->search != '') {
+        if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('address', 'like', "%{$search}%");
+                    ->orWhere('phone', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%");
             });
         }
 
-        if ($request->has('status') && $request->status != 'all') {
+        if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
+        }
+
+        if ($request->get('has_projects') === 'yes') {
+            $query->has('projects');
+        } elseif ($request->get('has_projects') === 'no') {
+            $query->doesntHave('projects');
+        }
+
+        $sort = $request->get('sort', 'newest');
+        $allowedSorts = ['newest', 'oldest', 'name_asc', 'name_desc', 'debt_desc', 'projects_desc'];
+        if (! in_array($sort, $allowedSorts, true)) {
+            $sort = 'newest';
+        }
+
+        match ($sort) {
+            'name_asc' => $query->orderBy('name'),
+            'name_desc' => $query->orderByDesc('name'),
+            'oldest' => $query->oldest(),
+            'debt_desc' => $query->orderByRaw('(
+                SELECT COALESCE(SUM(p.total_debt), 0) FROM projects p WHERE p.customer_id = customers.id
+            ) DESC'),
+            'projects_desc' => $query->orderByRaw('(
+                SELECT COUNT(*) FROM projects p WHERE p.customer_id = customers.id
+            ) DESC'),
+            default => $query->latest(),
+        };
+
+        $perPage = $request->integer('per_page', 15);
+        if (! in_array($perPage, [10, 15, 25, 50], true)) {
+            $perPage = 15;
         }
 
         $customers = $query->withCount('projects')
             ->withSum('projects as total_debt', 'total_debt')
-            ->paginate(15)
+            ->paginate($perPage)
             ->withQueryString();
             
         $agent = new Agent();

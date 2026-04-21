@@ -75,7 +75,7 @@
     <div class="flex h-screen min-h-[100dvh] w-full max-w-[100vw] overflow-x-hidden" x-data="{ toastVisible: false, toastMessage: '', isLoading: false }" 
         @click="
             const link = $event.target.closest('a');
-            if (link && link.href && !link.href.includes('#') && !link.getAttribute('href').startsWith('javascript:') && !link.hasAttribute('download') && link.target !== '_blank') {
+            if (link && link.href && !link.href.includes('#') && !link.getAttribute('href').startsWith('javascript:') && !link.hasAttribute('download') && link.target !== '_blank' && !link.hasAttribute('data-no-loading')) {
                 isLoading = true;
             }
         ">

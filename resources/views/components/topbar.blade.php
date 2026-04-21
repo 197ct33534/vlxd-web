@@ -8,7 +8,7 @@
                 @click="$store.layout.toggleSidebar()"
             >
                 <span class="material-symbols-outlined text-2xl">menu</span>
-                <span class="text-xs font-bold">{{ __('nav.open_menu') }}</span>
+                <span class="text-xs font-bold"></span>
             </button>
             <div class="min-w-0">
                 <h2 class="truncate text-base font-bold tracking-tight text-text-light dark:text-text-dark sm:text-lg">

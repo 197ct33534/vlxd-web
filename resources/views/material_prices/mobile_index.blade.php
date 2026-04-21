@@ -3,6 +3,7 @@
 @section('title', __('material_prices.title'))
 
 @section('content')
+@if(auth()->user()->isAdmin())
 <form
     id="material-prices-bulk-form-mobile"
     action="{{ route('material-prices.bulk-destroy') }}"
@@ -17,12 +18,19 @@
     @csrf
     @method('DELETE')
 </form>
+@endif
 
 <div class="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-900 pb-24" x-data="{ loading: false }">
     <!-- Mobile Header -->
     <div class="sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-4">
         <div class="flex items-center justify-between mb-4">
-            <h1 class="text-xl font-bold dark:text-white">{{ __('material_prices.title') }}</h1>
+            <div>
+                <h1 class="text-xl font-bold dark:text-white">{{ __('material_prices.title') }}</h1>
+                @unless(auth()->user()->isAdmin())
+                    <p class="mt-1 text-[11px] font-medium text-amber-700 dark:text-amber-300">{{ __('material_prices.readonly_hint') }}</p>
+                @endunless
+            </div>
+            @if(auth()->user()->isAdmin())
             <div class="flex gap-2">
                 <form action="{{ route('material-prices.sync') }}" method="POST" @submit="loading = true">
                     @csrf
@@ -36,6 +44,7 @@
                     <span class="truncate text-[10px] font-bold leading-tight sm:text-xs">{{ __('material_prices.btn_add') }}</span>
                 </a>
             </div>
+            @endif
         </div>
 
         @if(session('success'))
@@ -54,10 +63,13 @@
         class="p-4 space-y-3"
         x-data="{
             selected: 0,
+            isAdmin: @json(auth()->user()->isAdmin()),
             update() {
+                if (!this.isAdmin) return;
                 this.selected = document.querySelectorAll('input[name=\'ids[]\'][form=\'material-prices-bulk-form-mobile\']:checked').length;
             },
             toggleAll(ev) {
+                if (!this.isAdmin) return;
                 document.querySelectorAll('input.row-cb-m[form=\'material-prices-bulk-form-mobile\']').forEach(cb => { cb.checked = ev.target.checked; });
                 this.update();
             }
@@ -65,6 +77,7 @@
         x-init="update()"
         @change="update()"
     >
+        @if(auth()->user()->isAdmin())
         <div class="flex items-center justify-between mb-2 pb-2 border-b border-slate-200 dark:border-slate-700">
             <label class="flex items-center gap-2 text-xs font-bold text-slate-600 dark:text-slate-300">
                 <input type="checkbox" class="rounded border-slate-300 text-primary" @change="toggleAll($event)">
@@ -81,12 +94,15 @@
                 <span x-show="selected > 0" x-text="'(' + selected + ')'"></span>
             </button>
         </div>
+        @endif
 
         @forelse($prices as $price)
         <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm relative overflow-hidden group">
             <div class="flex justify-between items-start mb-2 gap-2">
                 <div class="flex items-start gap-2 min-w-0 flex-1">
+                    @if(auth()->user()->isAdmin())
                     <input type="checkbox" name="ids[]" value="{{ $price->id }}" form="material-prices-bulk-form-mobile" class="row-cb-m mt-1 rounded border-slate-300 text-primary shrink-0">
+                    @endif
                     <div class="flex items-center gap-2 min-w-0">
                         <div class="w-9 h-9 rounded-lg bg-primary/10 flex flex-col items-center justify-center text-primary shrink-0 leading-none">
                             <span class="text-[9px] font-bold uppercase opacity-70">{{ __('material_prices.stt') }}</span>
@@ -98,6 +114,7 @@
                         </div>
                     </div>
                 </div>
+                @if(auth()->user()->isAdmin())
                 <div class="flex flex-col gap-1 shrink-0 items-end">
                     <a href="{{ route('material-prices.edit', $price->id) }}" class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-[11px] font-bold text-slate-500 hover:bg-primary/10 hover:text-primary">
                         <span class="material-symbols-outlined text-sm">edit</span>
@@ -112,6 +129,7 @@
                         </button>
                     </form>
                 </div>
+                @endif
             </div>
 
             <div class="flex justify-between items-end mt-4">
