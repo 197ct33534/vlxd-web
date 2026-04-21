@@ -3,7 +3,7 @@
 <html lang="vi"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Vật Liệu Xây Dựng - Uy Tín &amp; Giá Tốt</title>
+@include('partials.landing-meta', ['storeInfo' => $storeInfo ?? null])
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -71,6 +71,17 @@
 </div>
 </div>
 </header>
+<!-- Thanh Gọi / Zalo cố định cạnh phải (tablet & desktop) -->
+<div class="hidden md:flex fixed right-0 top-1/2 z-[60] w-[4.25rem] -translate-y-1/2 flex-col overflow-hidden rounded-l-2xl border border-white/25 border-r-0 bg-white/95 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95" role="navigation" aria-label="{{ __('landing.contact_rail_label') }}">
+<a href="tel:{{ $phoneTel }}" class="flex flex-col items-center justify-center gap-1.5 bg-primary px-2 py-5 text-center text-xs font-bold leading-tight text-white transition-colors hover:bg-primary/90" title="{{ __('landing.call_now') }}">
+<span class="material-symbols-outlined text-[1.75rem]">call</span>
+<span>{{ __('landing.call_now') }}</span>
+</a>
+<a href="https://zalo.me/{{ $phoneTel }}" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center justify-center gap-1.5 bg-[#0068ff] px-2 py-5 text-center text-xs font-bold leading-tight text-white transition-colors hover:bg-[#0056d6]" title="{{ __('landing.zalo') }}">
+<span class="material-symbols-outlined text-[1.75rem]">chat</span>
+<span>{{ __('landing.zalo') }}</span>
+</a>
+</div>
 <!-- Hero Section -->
 <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
 <div class="absolute inset-0 z-0">
@@ -86,16 +97,7 @@
                     Đơn vị cung ứng vật liệu hàng đầu cho các công trình trọng điểm. Giao hàng tận nơi trong 2 giờ, đầy đủ chứng chỉ chất lượng CO/CQ.
                 </p>
 <div class="bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 max-w-lg shadow-2xl">
-<div class="bg-white rounded-xl p-2 flex flex-col sm:flex-row gap-2">
-<div class="flex-1 flex items-center px-4">
-<span class="material-symbols-outlined text-slate-400 mr-2">phone_iphone</span>
-<input class="w-full border-0 focus:ring-0 text-slate-900 font-medium placeholder:text-slate-400" placeholder="Nhập số điện thoại" type="tel"/>
-</div>
-<button class="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-lg font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap">
-                            Nhận báo giá ngay
-                            <span class="material-symbols-outlined">trending_flat</span>
-</button>
-</div>
+@include('partials.landing-quote-form', ['variant' => 'hero'])
 </div>
 <div class="mt-6 flex items-center gap-6 text-white/80">
 <div class="flex items-center gap-1.5">

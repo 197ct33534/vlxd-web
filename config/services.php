@@ -31,4 +31,13 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    /*
+    | Gửi SĐT khách từ landing vào nhóm Telegram (Bot API).
+    | Tạo bot qua @BotFather, thêm bot vào group, lấy chat_id (vd: dùng getUpdates).
+    */
+    'telegram' => [
+        'bot_token' => env('TELEGRAM_BOT_TOKEN'),
+        'chat_id' => env('TELEGRAM_CHAT_ID'),
+    ],
+
 ];

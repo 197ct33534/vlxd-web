@@ -29,6 +29,10 @@ Route::get('/', function () {
 
 Route::get('/quotation/download', [\App\Http\Controllers\QuotationController::class, 'download'])->name('quotation.download');
 
+Route::post('/landing/quote-request', [\App\Http\Controllers\LandingQuoteRequestController::class, 'store'])
+    ->name('landing.quote-request')
+    ->middleware('throttle:8,1');
+
 // Protected Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

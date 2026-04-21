@@ -2,7 +2,7 @@
 <html class="light" lang="vi"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Vật Liệu Xây Dựng - Landing Page</title>
+@include('partials.landing-meta', ['storeInfo' => $storeInfo ?? null])
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -57,10 +57,11 @@
         body { font-family: 'Work Sans', sans-serif; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        [x-cloak] { display: none !important; }
     </style>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden" x-data="{ mobileMenu: false }">
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden" x-data="{ mobileMenu: false }" x-init="$watch('mobileMenu', v => { document.body.style.overflow = v ? 'hidden' : '' })">
 @php
     $brandName = $storeInfo?->name ?? 'Vật Liệu Sáu Phụng';
     $phoneRaw = $storeInfo?->phone ?? '0909486474';
@@ -74,37 +75,62 @@
 </div>
 <h1 class="font-bold text-lg tracking-tight uppercase">{{ $brandName }}</h1>
 </div>
-<button type="button" @click="mobileMenu = !mobileMenu" class="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2 py-2 dark:bg-slate-800">
-<span class="material-symbols-outlined shrink-0">menu</span>
-<span class="max-w-[6rem] truncate text-xs font-semibold"></span>
+<button type="button" @click="mobileMenu = !mobileMenu" :aria-expanded="mobileMenu" aria-controls="mobile-nav-drawer" class="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-xs font-bold uppercase tracking-wide text-slate-700 dark:bg-slate-800 dark:text-slate-200 active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined shrink-0 text-xl">menu</span>
+{{ __('landing.mobile_menu') }}
 </button>
 </header>
 
-<!-- Mobile Menu Overlay -->
-<div x-show="mobileMenu" x-cloak class="fixed inset-0 z-[60]">
-    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="mobileMenu = false"></div>
-    <div class="absolute right-0 top-0 bottom-0 w-64 bg-white dark:bg-slate-900 p-6 shadow-2xl transition-transform duration-300"
-         x-transition:enter="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="translate-x-full">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="font-bold text-primary">MENU</h2>
-            <button type="button" @click="mobileMenu = false" class="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2 py-2 dark:bg-slate-800">
-                <span class="material-symbols-outlined shrink-0">close</span>
-                <span class="max-w-[5rem] truncate text-xs font-bold">{{ __('common.close') }}</span>
-            </button>
-        </div>
-        <nav class="flex flex-col gap-4">
-            <a href="{{ url('/#danh-muc') }}" class="p-3 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors">Sản phẩm</a>
-            <a href="{{ url('/#bao-gia') }}" class="p-3 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors">Báo giá</a>
-            <a href="{{ url('/#lien-he') }}" class="p-3 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors">Liên hệ</a>
-            <a href="{{ route('login') }}" class="p-3 font-bold hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors">Đăng nhập</a>
-            <a href="{{ route('dashboard') }}" class="p-4 font-black bg-primary/10 text-primary rounded-xl flex items-center justify-between">
-                Vào Dashboard
-                <span class="material-symbols-outlined">dashboard</span>
-            </a>
-        </nav>
+<!-- Menu trượt từ trái (hai lớp riêng để transition Alpine chạy đúng) -->
+<div
+    x-show="mobileMenu"
+    x-cloak
+    x-transition:enter="transition-opacity ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition-opacity ease-in duration-200"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 z-[60] bg-black/55 backdrop-blur-[3px]"
+    id="mobile-nav-backdrop"
+    @click="mobileMenu = false"
+    aria-hidden="true"
+></div>
+<aside
+    x-show="mobileMenu"
+    x-cloak
+    x-transition:enter="transition transform ease-out duration-300"
+    x-transition:enter-start="-translate-x-full"
+    x-transition:enter-end="translate-x-0"
+    x-transition:leave="transition transform ease-in duration-200"
+    x-transition:leave-start="translate-x-0"
+    x-transition:leave-end="-translate-x-full"
+    class="fixed left-0 top-0 z-[61] flex h-full w-[min(20rem,88vw)] max-w-[20rem] flex-col bg-white shadow-2xl dark:bg-slate-900"
+    id="mobile-nav-drawer"
+    role="dialog"
+    aria-modal="true"
+    :aria-hidden="!mobileMenu"
+    @click.stop
+>
+    <div class="flex shrink-0 items-center justify-between border-b border-slate-100 px-4 py-4 dark:border-slate-800">
+        <h2 class="text-sm font-black uppercase tracking-wider text-primary">{{ __('landing.mobile_menu_title') }}</h2>
+        <button type="button" @click="mobileMenu = false" class="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200 active:scale-95 transition-transform">
+            <span class="material-symbols-outlined">close</span>
+            <span class="sr-only">{{ __('common.close') }}</span>
+        </button>
     </div>
-</div>
-<section id="danh-muc" class="px-4 py-6 scroll-mt-20">
+    <nav class="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain px-3 py-4" aria-label="{{ __('landing.mobile_menu_title') }}">
+        <a href="{{ url('/#danh-muc') }}" @click="mobileMenu = false" class="rounded-xl px-4 py-3.5 text-[15px] font-semibold text-slate-800 transition-colors hover:bg-primary/10 hover:text-primary dark:text-slate-100 dark:hover:bg-slate-800">{{ __('landing.nav_products') }}</a>
+        <a href="{{ url('/#bao-gia') }}" @click="mobileMenu = false" class="rounded-xl px-4 py-3.5 text-[15px] font-semibold text-slate-800 transition-colors hover:bg-primary/10 hover:text-primary dark:text-slate-100 dark:hover:bg-slate-800">{{ __('landing.nav_pricing') }}</a>
+        <a href="{{ url('/#lien-he') }}" @click="mobileMenu = false" class="rounded-xl px-4 py-3.5 text-[15px] font-semibold text-slate-800 transition-colors hover:bg-primary/10 hover:text-primary dark:text-slate-100 dark:hover:bg-slate-800">{{ __('landing.nav_contact') }}</a>
+        <div class="my-2 border-t border-slate-100 dark:border-slate-800"></div>
+        <a href="{{ route('dashboard') }}" @click="mobileMenu = false" class="mt-auto flex shrink-0 items-center justify-between gap-2 rounded-xl bg-primary/10 px-4 py-4 text-[15px] font-black text-primary">
+            {{ __('landing.nav_dashboard') }}
+            <span class="material-symbols-outlined shrink-0">dashboard</span>
+        </a>
+    </nav>
+</aside>
+<section id="danh-muc" class="scroll-mt-24 px-4 py-6">
 <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden mb-6">
 <img alt="Construction site materials" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1597974380476-fbf652dfe188?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDAzfHxjb25zdHJ1Y3Rpb258ZW58MHx8MHx8fDA%3D"/>
 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
@@ -117,23 +143,14 @@
 </div>
 </div>
 <div class="bg-slate-50 dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-<p class="text-sm font-medium mb-3 text-slate-600 dark:text-slate-400">Nhận báo giá cạnh tranh nhất ngay hôm nay</p>
-<div class="flex flex-col gap-3">
-<div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">phone_iphone</span>
-<input class="w-full pl-10 pr-4 py-3.5 rounded-lg border-slate-200 dark:border-slate-700 dark:bg-slate-900 focus:ring-primary focus:border-primary" placeholder="Số điện thoại của bạn" type="tel"/>
-</div>
-<button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2">
-<span>NHẬN BÁO GIÁ NGAY</span>
-<span class="material-symbols-outlined text-sm">arrow_forward</span>
-</button>
-</div>
+<p class="text-sm font-medium mb-3 text-slate-600 dark:text-slate-400">{{ __('landing.quote_card_intro') }}</p>
+@include('partials.landing-quote-form', ['variant' => 'card'])
 </div>
 </section>
 <section class="px-4 py-8">
 <div class="flex justify-between items-end mb-6">
 <h3 class="text-xl font-bold">Danh Mục Sản Phẩm</h3>
-<a class="text-primary text-sm font-semibold" href="#">Tất cả</a>
+<span class="text-xs font-medium text-slate-400">{{ __('landing.categories_hint') }}</span>
 </div>
 <div class="grid grid-cols-2 gap-3">
 <div class="group">
@@ -221,40 +238,42 @@
 </div>
 </div>
 </section>
-<section id="bao-gia" class="px-4 py-8 scroll-mt-20">
-    <h3 class="text-xl font-bold mb-1">Bảng Giá Tham Khảo</h3>
-    <p class="text-[10px] text-slate-500 mb-4 italic">Cập nhật: {{ date('H:i - d/m/Y') }}</p>
-<div class="overflow-x-auto hide-scrollbar -mx-4 px-4">
-<table class="w-full text-left border-collapse min-w-[320px]">
+<section id="bao-gia" class="scroll-mt-24 px-4 py-10">
+<div class="mb-5">
+<h2 class="text-2xl font-black leading-tight text-slate-900 dark:text-white">{{ __('landing.mobile_pricing_heading') }}</h2>
+<p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{{ __('landing.mobile_pricing_updated', ['time' => date('H:i'), 'date' => date('d/m/Y')]) }}</p>
+</div>
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
+<div class="overflow-x-auto hide-scrollbar">
+<table class="w-full min-w-[300px] border-collapse text-left">
 <thead>
-<tr class="border-b-2 border-slate-100 dark:border-slate-800">
-<th class="py-3 font-bold text-sm text-slate-400">Vật Liệu</th>
-<th class="py-3 font-bold text-sm text-slate-400 text-center">Đơn Vị</th>
-<th class="py-3 font-bold text-sm text-slate-400 text-right">Đơn Giá</th>
+<tr class="bg-primary text-white">
+<th class="px-4 py-3.5 text-xs font-bold uppercase tracking-wide">{{ __('landing.pricing_col_material') }}</th>
+<th class="px-3 py-3.5 text-center text-xs font-bold uppercase tracking-wide">{{ __('landing.pricing_col_unit') }}</th>
+<th class="px-4 py-3.5 text-right text-xs font-bold uppercase tracking-wide">{{ __('landing.pricing_col_price') }}</th>
 </tr>
 </thead>
-<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-@forelse($latestPrices->take(5) as $item)
-<tr>
-<td class="py-4 font-semibold text-sm">{{ $item->name }}</td>
-<td class="py-4 text-center text-sm">{{ $item->unit }}</td>
-<td class="py-4 text-right font-bold text-primary">{{ number_format($item->price) }}đ</td>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+@forelse($latestPrices->take(8) as $item)
+<tr class="bg-white odd:bg-slate-50/80 dark:bg-slate-800/50 dark:odd:bg-slate-800">
+<td class="max-w-[10rem] px-4 py-3.5 text-sm font-semibold leading-snug text-slate-900 dark:text-slate-100">{{ $item->name }}</td>
+<td class="whitespace-nowrap px-2 py-3.5 text-center text-sm text-slate-600 dark:text-slate-300">{{ $item->unit }}</td>
+<td class="whitespace-nowrap px-4 py-3.5 text-right text-sm font-bold text-primary">{{ number_format($item->price) }}đ</td>
 </tr>
 @empty
 <tr>
-<td colspan="3" class="py-8 text-center text-slate-400 italic text-xs">Đang cập nhật giá mới nhất...</td>
+<td colspan="3" class="px-4 py-10 text-center text-sm text-slate-500 italic">{{ __('landing.pricing_empty') }}</td>
 </tr>
 @endforelse
 </tbody>
 </table>
 </div>
-<p class="text-[10px] text-slate-400 mt-4 italic">* Lưu ý: Giá có thể thay đổi tùy theo vị trí công trình và khối lượng.</p>
-<div class="mt-6">
-    <a href="{{ route('quotation.download') }}" class="w-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold py-3 rounded-lg flex items-center justify-center gap-2 border border-slate-200 dark:border-slate-700">
-        <span class="material-symbols-outlined text-sm">download</span>
-        TẢI BÁO GIÁ CHI TIẾT
-    </a>
 </div>
+<p class="mt-4 text-xs leading-relaxed text-slate-500 dark:text-slate-400">{{ __('landing.pricing_footnote') }}</p>
+<a href="{{ route('quotation.download') }}" class="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 text-sm font-bold text-white shadow-lg shadow-primary/25 transition-transform active:scale-[0.99]">
+<span class="material-symbols-outlined text-[1.25rem]">download</span>
+{{ __('landing.pricing_download') }}
+</a>
 </section>
 <section class="px-4 py-8 bg-slate-900 text-white rounded-t-3xl mt-4">
 <h3 class="text-xl font-bold mb-8 text-center">Quy Trình Đặt Hàng</h3>
@@ -347,7 +366,7 @@
     </div>
 </div>
 </section>
-<footer id="lien-he" class="px-4 py-10 bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 scroll-mt-20">
+<footer id="lien-he" class="scroll-mt-24 border-t border-slate-200 bg-slate-100 px-4 py-10 dark:border-slate-800 dark:bg-slate-900">
 <div class="mb-8">
 <h4 class="font-bold mb-4 flex items-center gap-2">
 <span class="material-symbols-outlined text-primary">location_on</span>
