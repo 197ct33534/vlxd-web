@@ -65,8 +65,9 @@
     <!-- Header -->
     <header class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-background-dark px-4 py-3 sticky top-0 z-30 shadow-sm">
         <div class="flex items-center gap-3">
-            <a href="{{ route('customers.index') }}" @click="isLoading = true" class="p-2 -ml-2 text-gray-600 dark:text-gray-300">
-                <span class="material-symbols-outlined text-2xl">arrow_back</span>
+            <a href="{{ route('customers.index') }}" @click="isLoading = true" class="inline-flex max-w-[45%] items-center gap-1.5 -ml-2 rounded-lg p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">
+                <span class="material-symbols-outlined shrink-0 text-2xl">arrow_back</span>
+                <span class="truncate text-xs font-semibold">{{ __('nav.back_short') }}</span>
             </a>
             <h1 class="text-gray-900 dark:text-white text-lg font-bold">Dự án</h1>
         </div>

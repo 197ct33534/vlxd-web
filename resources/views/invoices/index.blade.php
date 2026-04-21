@@ -1,30 +1,31 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Invoices - ' . $project->name)
+@section('title', __('invoices.index.page_title', ['name' => $project->name]))
 
 @section('content')
     <div class="flex flex-col gap-6">
         <!-- Header -->
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-2">
-                <a href="{{ route('customers.projects.index', $project->customer_id) }}" class="text-gray-500 hover:text-primary transition-colors">
+                <a href="{{ route('customers.projects.index', $project->customer_id) }}" class="inline-flex items-center gap-1.5 text-gray-500 hover:text-primary transition-colors text-sm font-semibold">
                     <span class="material-symbols-outlined">arrow_back</span>
+                    <span>{{ __('nav.back_short') }}</span>
                 </a>
                 <div>
                     <h1 class="text-text-light dark:text-text-dark text-3xl font-black tracking-tight">
-                        Invoices
+                        {{ __('invoices.title_suffix') }}
                     </h1>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Project: <span class="font-semibold text-primary">{{ $project->name }}</span></p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('invoices.index.project_caption') }} <span class="font-semibold text-primary">{{ $project->name }}</span></p>
                 </div>
             </div>
             <div class="flex gap-2">
                 <a href="{{ route('projects.price_history', $project->id) }}" class="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-semibold shadow-lg shadow-purple-500/30">
                     <span class="material-symbols-outlined text-lg">trending_up</span>
-                    Price History
+                    {{ __('invoices.price_history') }}
                 </a>
                 <a href="{{ route('projects.invoices.create', $project->id) }}" class="flex items-center gap-2 bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-semibold shadow-lg shadow-blue-500/30">
                     <span class="material-symbols-outlined text-lg">add_circle</span>
-                    Create Invoice
+                    {{ __('invoices.create') }}
                 </a>
             </div>
         </div>
@@ -35,11 +36,11 @@
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-background-light dark:bg-background-dark">
                         <tr>
-                            <th class="px-6 py-4 font-bold">Date</th>
-                            <th class="px-6 py-4 font-bold">Code</th>
-                            <th class="px-6 py-4 font-bold text-center">Total Amount</th>
-                            <th class="px-6 py-4 font-bold">Note</th>
-                            <th class="px-6 py-4 font-bold text-right">Actions</th>
+                            <th class="px-6 py-4 font-bold">{{ __('invoices.table.date') }}</th>
+                            <th class="px-6 py-4 font-bold">{{ __('invoices.table.code') }}</th>
+                            <th class="px-6 py-4 font-bold text-center">{{ __('invoices.table.total_amount') }}</th>
+                            <th class="px-6 py-4 font-bold">{{ __('invoices.table.note') }}</th>
+                            <th class="px-6 py-4 font-bold text-right">{{ __('common.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,41 +53,39 @@
                                 </td>
                                 <td class="px-6 py-4 truncate max-w-xs">{{ $invoice->note ?? '-' }}</td>
                                 <td class="px-6 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <button @click="openInvoiceModal({{ $invoice->id }})" 
-                                           class="p-2 text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                                           title="View Details">
-                                            <span class="material-symbols-outlined text-lg">visibility</span>
+                                    <div class="flex flex-wrap items-center justify-end gap-1.5">
+                                        <button type="button" @click="openInvoiceModal({{ $invoice->id }})"
+                                           class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-blue-900/20">
+                                            <span class="material-symbols-outlined text-base leading-none">visibility</span>
+                                            <span>{{ __('invoices.btn_detail') }}</span>
                                         </button>
                                         <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank"
-                                           class="p-2 text-gray-500 hover:text-violet-600 rounded-lg hover:bg-violet-50 transition-colors"
-                                           title="PDF">
-                                            <span class="material-symbols-outlined text-lg">picture_as_pdf</span>
+                                           class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-violet-50 hover:text-violet-700 dark:text-gray-400 dark:hover:bg-violet-900/20">
+                                            <span class="material-symbols-outlined text-base leading-none">picture_as_pdf</span>
+                                            <span>{{ __('invoices.btn_pdf') }}</span>
                                         </a>
-                                        
-                                        <form action="{{ route('invoices.pay', $invoice->id) }}" method="POST" class="inline-block" 
-                                              onsubmit="return confirm('Mark this invoice as fully paid? This will create a payment record of {{ number_format($invoice->total_amount, 0, ',', '.') }} đ');">
+                                        <form action="{{ route('invoices.pay', $invoice->id) }}" method="POST" class="inline-flex"
+                                              onsubmit="return confirm(@js(__('invoices.confirm_mark_paid', ['amount' => number_format($invoice->total_amount, 0, ',', '.') . ' đ'])));">
                                             @csrf
-                                            <button type="submit" 
-                                                    class="p-2 text-gray-500 hover:text-green-600 rounded-lg hover:bg-green-50 transition-colors"
-                                                    title="Mark as Paid (100%)">
-                                                <span class="material-symbols-outlined text-lg">check_circle</span>
+                                            <button type="submit"
+                                                    class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-green-50 hover:text-green-700 dark:text-gray-400 dark:hover:bg-green-900/20">
+                                                <span class="material-symbols-outlined text-base leading-none">check_circle</span>
+                                                <span>{{ __('invoices.btn_mark_paid') }}</span>
                                             </button>
                                         </form>
-
-                                        <a href="{{ route('invoices.edit', $invoice->id) }}" 
-                                           class="p-2 text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                                           title="Edit Invoice">
-                                            <span class="material-symbols-outlined text-lg">edit</span>
+                                        <a href="{{ route('invoices.edit', $invoice->id) }}"
+                                           class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400">
+                                            <span class="material-symbols-outlined text-base leading-none">edit</span>
+                                            <span>{{ __('common.edit') }}</span>
                                         </a>
-                                        <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST" class="inline-block" 
-                                              onsubmit="return confirm('Delete this invoice?');">
+                                        <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST" class="inline-flex"
+                                              onsubmit="return confirm(@js(__('invoices.confirm_delete')));">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" 
-                                                    class="p-2 text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-                                                    title="Delete Invoice">
-                                                <span class="material-symbols-outlined text-lg">delete</span>
+                                            <button type="submit"
+                                                    class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 dark:text-gray-400">
+                                                <span class="material-symbols-outlined text-base leading-none">delete</span>
+                                                <span>{{ __('common.delete') }}</span>
                                             </button>
                                         </form>
                                     </div>
@@ -97,7 +96,7 @@
                                 <td colspan="5" class="px-6 py-12 text-center text-gray-500">
                                     <div class="flex flex-col items-center justify-center gap-2">
                                         <span class="material-symbols-outlined text-4xl text-gray-300">receipt_long</span>
-                                        <p>No invoices found for this project.</p>
+                                        <p>{{ __('invoices.empty_project') }}</p>
                                     </div>
                                 </td>
                             </tr>
@@ -151,45 +150,45 @@
             <!-- Payment History List -->
             <div class="lg:col-span-2 bg-container-light dark:bg-container-dark rounded-xl shadow-subtle overflow-hidden">
                 <div class="p-6 border-b border-border-light dark:border-border-dark flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-text-light dark:text-text-dark">Payment History</h2>
+                    <h2 class="text-xl font-bold text-text-light dark:text-text-dark">{{ __('invoices.payment_history') }}</h2>
                     <button @click="openAddModal()" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-semibold">
                         <span class="material-symbols-outlined text-lg">add_card</span>
-                        Add Payment
+                        {{ __('invoices.add_payment') }}
                     </button>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-background-light dark:bg-background-dark">
                             <tr>
-                                <th class="px-6 py-4 font-bold">Date</th>
-                                <th class="px-6 py-4 font-bold">Note</th>
-                                <th class="px-6 py-4 font-bold text-right">Amount</th>
-                                <th class="px-6 py-4 font-bold text-right">Actions</th>
+                                <th class="px-6 py-4 font-bold">{{ __('invoices.table.date') }}</th>
+                                <th class="px-6 py-4 font-bold">{{ __('invoices.table.note') }}</th>
+                                <th class="px-6 py-4 font-bold text-right">{{ __('common.amount') }}</th>
+                                <th class="px-6 py-4 font-bold text-right">{{ __('common.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($payments as $payment)
                                 <tr class="bg-container-light dark:bg-container-dark border-b dark:border-border-dark hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors">
                                     <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($payment->payment_date)->format('d/m/Y') }}</td>
-                                    <td class="px-6 py-4">{{ $payment->note ?? 'Manual Payment' }}</td>
+                                    <td class="px-6 py-4">{{ $payment->note ?? __('invoices.payment_note_default') }}</td>
                                     <td class="px-6 py-4 text-right font-bold text-green-600">
                                         {{ number_format($payment->amount, 0, ',', '.') }} đ
                                     </td>
                                     <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end gap-2">
-                                            <button @click="openEditModal({{ $payment }})" 
-                                                    class="p-2 text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                                                    title="Edit Payment">
-                                                <span class="material-symbols-outlined text-lg">edit</span>
+                                        <div class="flex flex-wrap items-center justify-end gap-1.5">
+                                            <button type="button" @click="openEditModal({{ $payment }})"
+                                                    class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400">
+                                                <span class="material-symbols-outlined text-base leading-none">edit</span>
+                                                <span>{{ __('common.edit') }}</span>
                                             </button>
-                                            <form action="{{ route('payments.destroy', $payment->id) }}" method="POST" class="inline-block"
-                                                  onsubmit="return confirm('Delete this payment? This will increase the debt.');">
+                                            <form action="{{ route('payments.destroy', $payment->id) }}" method="POST" class="inline-flex"
+                                                  onsubmit="return confirm(@js(__('invoices.confirm_delete_payment')));">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" 
-                                                        class="p-2 text-gray-500 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-                                                        title="Delete Payment">
-                                                    <span class="material-symbols-outlined text-lg">delete</span>
+                                                <button type="submit"
+                                                        class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 dark:text-gray-400">
+                                                    <span class="material-symbols-outlined text-base leading-none">delete</span>
+                                                    <span>{{ __('common.delete') }}</span>
                                                 </button>
                                             </form>
                                         </div>
@@ -198,7 +197,7 @@
                             @empty
                                 <tr>
                                     <td colspan="4" class="px-6 py-8 text-center text-gray-500">
-                                        No payments recorded yet.
+                                        {{ __('invoices.payments_empty') }}
                                     </td>
                                 </tr>
                             @endforelse
@@ -206,7 +205,7 @@
                         @if($payments->isNotEmpty())
                         <tfoot class="bg-gray-50 dark:bg-gray-800 font-bold text-gray-900 dark:text-white">
                             <tr>
-                                <td colspan="2" class="px-6 py-4 text-right">Total Paid:</td>
+                                <td colspan="2" class="px-6 py-4 text-right">{{ __('invoices.total_paid_footer') }}</td>
                                 <td class="px-6 py-4 text-right text-green-600">{{ number_format($project->total_paid, 0, ',', '.') }} đ</td>
                                 <td></td>
                             </tr>
@@ -218,18 +217,18 @@
 
             <!-- Project Summary (Optional sidebar or small card) -->
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-subtle p-6 h-fit">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Project Summary</h3>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">{{ __('invoices.summary.title') }}</h3>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-gray-500 dark:text-gray-400">Total Invoiced</span>
+                        <span class="text-gray-500 dark:text-gray-400">{{ __('invoices.summary.total_invoiced') }}</span>
                         <span class="font-bold text-blue-600 text-lg">{{ number_format($project->total_invoice, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between items-center border-t border-gray-100 dark:border-gray-700 pt-3">
-                        <span class="text-gray-500 dark:text-gray-400">Total Paid</span>
+                        <span class="text-gray-500 dark:text-gray-400">{{ __('invoices.summary.total_paid') }}</span>
                         <span class="font-bold text-green-600 text-lg">{{ number_format($project->total_paid, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between items-center border-t border-gray-100 dark:border-gray-700 pt-3">
-                        <span class="text-gray-500 dark:text-gray-400">Remaining Debt</span>
+                        <span class="text-gray-500 dark:text-gray-400">{{ __('invoices.summary.remaining_debt') }}</span>
                         <span class="font-bold text-red-600 text-xl">{{ number_format($project->total_debt, 0, ',', '.') }}</span>
                     </div>
                 </div>
@@ -245,7 +244,7 @@
                     <div x-show="paymentModalOpen" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
                         <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">
-                                <span x-text="editMode ? 'Edit Payment' : 'Add Payment'"></span>
+                                <span x-text="editMode ? @js(__('invoices.payment_modal.edit')) : @js(__('invoices.payment_modal.add'))"></span>
                             </h3>
                             <form :action="formAction" method="POST" class="mt-4 space-y-4">
                                 @csrf
@@ -254,28 +253,30 @@
                                 </template>
                                 
                                 <div>
-                                    <label for="payment_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Date</label>
+                                    <label for="payment_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('common.date') }}</label>
                                     <input type="date" name="payment_date" id="payment_date" required x-model="date"
                                            class="mt-1 flex-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm">
                                 </div>
                                 <div>
-                                    <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Amount (VNĐ)</label>
+                                    <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('common.amount') }} (VNĐ)</label>
                                     <input type="number" name="amount" id="amount" required min="0" step="1" x-model="amount"
                                            class="mt-1 flex-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
-                                           placeholder="Enter amount">
+                                           placeholder="{{ __('invoices.payment_modal.amount_placeholder') }}">
                                 </div>
                                 <div>
-                                    <label for="note" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Note</label>
+                                    <label for="note" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('common.note') }}</label>
                                     <textarea name="note" id="note" rows="2" x-model="note"
                                               class="mt-1 flex-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
-                                              placeholder="Optional note"></textarea>
+                                              placeholder="{{ __('invoices.payment_modal.note_placeholder') }}"></textarea>
                                 </div>
                                 <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-                                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:col-start-2 sm:text-sm">
-                                        <span x-text="editMode ? 'Update' : 'Save'"></span>
+                                    <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:col-start-2 sm:text-sm">
+                                        <span class="material-symbols-outlined text-xl">save</span>
+                                        <span x-text="editMode ? @js(__('invoices.payment_modal.update')) : @js(__('common.save'))"></span>
                                     </button>
-                                    <button type="button" @click="paymentModalOpen = false" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm">
-                                        Cancel
+                                    <button type="button" @click="paymentModalOpen = false" class="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm">
+                                        <span class="material-symbols-outlined text-xl">close</span>
+                                        <span>{{ __('common.cancel') }}</span>
                                     </button>
                                 </div>
                             </form>
@@ -296,7 +297,7 @@
             fetch('/invoices/' + $event.detail.id, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
                 .then(res => res.text())
                 .then(html => { content = html; loading = false; })
-                .catch(() => { content = 'Error loading invoice.'; loading = false; });
+                .catch(() => { content = @json(__('invoices.error_load_invoice')); loading = false; });
          "
          class="relative z-50" 
          aria-labelledby="modal-title" 
@@ -316,8 +317,9 @@
                     
                     <div class="bg-white dark:bg-gray-800 px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                         <div class="flex justify-end absolute top-4 right-4 z-10">
-                            <button @click="open = false" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+                            <button type="button" @click="open = false" class="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <span class="material-symbols-outlined">close</span>
+                                <span>{{ __('common.close') }}</span>
                             </button>
                         </div>
                         

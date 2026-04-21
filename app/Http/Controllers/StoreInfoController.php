@@ -30,6 +30,6 @@ class StoreInfoController extends Controller
 
         $storeInfo->update($validated);
 
-        return redirect()->route('store-settings.edit')->with('success', 'Đã cập nhật thông tin cửa hàng.');
+        return redirect()->route('store-settings.edit')->with('success', __('msg.store_updated'));
     }
 }

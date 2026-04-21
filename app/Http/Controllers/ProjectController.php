@@ -42,7 +42,7 @@ class ProjectController extends Controller
         $customer->projects()->create($validated);
 
         return redirect()->route('customers.projects.index', $customer->id)
-            ->with('success', 'Project created successfully!');
+            ->with('success', __('msg.project_created'));
     }
 
     public function update(Request $request, Customer $customer, Project $project)
@@ -56,7 +56,7 @@ class ProjectController extends Controller
         $project->update($validated);
 
         return redirect()->route('customers.projects.index', $customer->id)
-            ->with('success', 'Project updated successfully!');
+            ->with('success', __('msg.project_updated'));
     }
 
     public function destroy(Customer $customer, Project $project)
@@ -64,6 +64,6 @@ class ProjectController extends Controller
         $project->delete();
 
         return redirect()->route('customers.projects.index', $customer->id)
-            ->with('success', 'Project deleted successfully!');
+            ->with('success', __('msg.project_deleted'));
     }
 }

@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Quản lý báo giá vật tư')
+@section('title', __('material_prices.title'))
 
 @section('content')
 <div class="flex flex-col gap-6" x-data="{ loading: false }">
@@ -8,9 +8,9 @@
     <div class="flex flex-wrap items-center justify-between gap-4">
         <div>
             <h1 class="text-text-light dark:text-text-dark text-3xl font-black tracking-tight">
-                Bảng Báo Giá Vật Tư
+                {{ __('material_prices.title') }}
             </h1>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Quản lý danh mục và giá vật tư hiển thị trên Landing Page</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('material_prices.subtitle') }}</p>
         </div>
         <div class="flex gap-3">
             <form action="{{ route('material-prices.sync') }}" method="POST" @submit="loading = true">
@@ -34,13 +34,65 @@
     </div>
     @endif
 
+    <!-- Form xóa hàng loạt (checkbox dùng form=... để không lồng form) -->
+    {{-- Checkbox có form="..." nằm NGOÀI thẻ form → không dùng #form input mà phải query theo form= --}}
+    <form
+        id="material-prices-bulk-form"
+        action="{{ route('material-prices.bulk-destroy') }}"
+        method="POST"
+        class="hidden"
+        @submit="
+            const n = document.querySelectorAll('input[name=\'ids[]\'][form=\'material-prices-bulk-form\']:checked').length;
+            if (n === 0) { $event.preventDefault(); return; }
+            if (!confirm(@js(__('material_prices.confirm_bulk_delete')))) { $event.preventDefault(); }
+        "
+    >
+        @csrf
+        @method('DELETE')
+    </form>
+
     <!-- Prices Table -->
-    <div class="bg-container-light dark:bg-container-dark rounded-2xl shadow-subtle border border-gray-100 dark:border-gray-800 overflow-hidden">
+    <div
+        class="bg-container-light dark:bg-container-dark rounded-2xl shadow-subtle border border-gray-100 dark:border-gray-800 overflow-hidden"
+        x-data="{
+            selected: 0,
+            update() {
+                this.selected = document.querySelectorAll('input[name=\'ids[]\'][form=\'material-prices-bulk-form\']:checked').length;
+            },
+            toggleAll(ev) {
+                document.querySelectorAll('input.row-cb[form=\'material-prices-bulk-form\']').forEach(cb => { cb.checked = ev.target.checked; });
+                this.update();
+            }
+        }"
+        x-init="update()"
+        @change="update()"
+    >
+        <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/20">
+            <p class="text-xs text-gray-500 dark:text-gray-400 max-w-3xl">
+                <span class="font-semibold text-gray-700 dark:text-gray-300">{{ __('material_prices.stt') }}</span>:
+                số thứ tự trên toàn danh sách (theo trang). Cột <span class="font-semibold">{{ __('material_prices.priority') }}</span> là thứ tự sắp xếp trên trang chủ.
+            </p>
+            <button
+                type="submit"
+                form="material-prices-bulk-form"
+                class="inline-flex items-center gap-2 rounded-lg bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-sm font-bold shadow-sm disabled:opacity-40 disabled:pointer-events-none transition-colors"
+                :disabled="selected === 0"
+            >
+                <span class="material-symbols-outlined text-lg">delete_sweep</span>
+                {{ __('material_prices.delete_selected') }}
+                <span x-show="selected > 0" x-text="'(' + selected + ')'" class="text-xs font-black"></span>
+            </button>
+        </div>
+
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left border-collapse">
                 <thead class="text-xs text-gray-400 uppercase bg-gray-50/50 dark:bg-gray-800/30 border-b border-gray-100 dark:border-gray-800">
                     <tr>
-                        <th class="px-6 py-4 font-bold text-center w-16">Thứ tự</th>
+                        <th class="px-3 py-4 font-bold text-center w-12">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary" @change="toggleAll($event)" title="{{ __('material_prices.delete_selected') }}" aria-label="Select all">
+                        </th>
+                        <th class="px-3 py-4 font-bold text-center w-14">{{ __('material_prices.stt') }}</th>
+                        <th class="px-3 py-4 font-bold text-center w-20">{{ __('material_prices.priority') }}</th>
                         <th class="px-6 py-4 font-bold">Tên vật tư</th>
                         <th class="px-6 py-4 font-bold">Đơn vị</th>
                         <th class="px-6 py-4 font-bold text-right">Đơn giá (VNĐ)</th>
@@ -51,7 +103,13 @@
                 <tbody class="divide-y divide-gray-50 dark:divide-gray-800/50">
                     @forelse($prices as $price)
                         <tr class="hover:bg-primary/5 transition-all duration-200">
-                            <td class="px-6 py-4 text-center font-medium text-gray-400">{{ $price->display_order }}</td>
+                            <td class="px-3 py-4 text-center">
+                                <input type="checkbox" name="ids[]" value="{{ $price->id }}" form="material-prices-bulk-form" class="row-cb rounded border-gray-300 text-primary focus:ring-primary">
+                            </td>
+                            <td class="px-3 py-4 text-center font-semibold text-gray-700 dark:text-gray-200 tabular-nums">
+                                {{ $prices->firstItem() + $loop->index }}
+                            </td>
+                            <td class="px-3 py-4 text-center text-gray-500 tabular-nums">{{ $price->display_order }}</td>
                             <td class="px-6 py-4">
                                 <div class="font-bold text-gray-900 dark:text-white">{{ $price->name }}</div>
                             </td>
@@ -67,15 +125,17 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="flex items-center justify-end gap-2">
-                                    <a href="{{ route('material-prices.edit', $price->id) }}" class="p-2 text-gray-400 hover:text-primary hover:bg-primary/10 rounded-lg transition-all" title="Sửa">
-                                        <span class="material-symbols-outlined">edit</span>
+                                <div class="flex flex-wrap items-center justify-end gap-1.5">
+                                    <a href="{{ route('material-prices.edit', $price->id) }}" class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-primary/10 hover:text-primary dark:text-gray-400">
+                                        <span class="material-symbols-outlined text-base leading-none">edit</span>
+                                        <span>{{ __('common.edit') }}</span>
                                     </a>
-                                    <form action="{{ route('material-prices.destroy', $price->id) }}" method="POST" class="inline" onsubmit="return confirm('Xóa vật tư này khỏi báo giá?')">
+                                    <form action="{{ route('material-prices.destroy', $price->id) }}" method="POST" class="inline-flex" onsubmit="return confirm('Xóa vật tư này khỏi báo giá?')">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all" title="Xóa">
-                                            <span class="material-symbols-outlined">delete</span>
+                                        <button type="submit" class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-red-50 hover:text-red-600 dark:text-gray-400">
+                                            <span class="material-symbols-outlined text-base leading-none">delete</span>
+                                            <span>{{ __('common.delete') }}</span>
                                         </button>
                                     </form>
                                 </div>
@@ -83,7 +143,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-20 text-center">
+                            <td colspan="8" class="px-6 py-20 text-center">
                                 <div class="flex flex-col items-center gap-3">
                                     <span class="material-symbols-outlined text-5xl text-gray-200">inventory_2</span>
                                     <p class="text-gray-400 font-medium">Chưa có dữ liệu báo giá.</p>

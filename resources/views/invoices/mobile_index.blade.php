@@ -93,7 +93,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span class="text-slate-700 dark:text-slate-200 font-medium text-sm">Đang xử lý...</span>
+            <span class="text-slate-700 dark:text-slate-200 font-medium text-sm">{{ __('common.loading') }}</span>
         </div>
     </div>
 
@@ -103,21 +103,20 @@
         <!-- Header -->
         <header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <a href="{{ route('customers.projects.index', $project->customer_id) }}" @click="isLoading = true" class="p-2 -ml-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors font-bold text-slate-600 dark:text-slate-400">
-                    <span class="material-symbols-outlined">arrow_back</span>
+                <a href="{{ route('customers.projects.index', $project->customer_id) }}" @click="isLoading = true" class="inline-flex max-w-[42%] items-center gap-1.5 -ml-2 rounded-full p-2 font-bold text-slate-600 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 sm:max-w-none">
+                    <span class="material-symbols-outlined shrink-0">arrow_back</span>
+                    <span class="truncate text-xs font-semibold">{{ __('nav.back_short') }}</span>
                 </a>
-                <div>
-                    <h1 class="text-lg font-bold tracking-tight">Hóa đơn & Dự án</h1>
+                <div class="min-w-0 flex-1">
+                    <h1 class="truncate text-lg font-bold tracking-tight">{{ __('mobile.invoice_project_heading') }}</h1>
                     <p class="text-[10px] text-slate-500 font-medium truncate w-40">{{ $project->name }}</p>
                 </div>
             </div>
-            <div class="flex items-center gap-1">
-                <a href="{{ route('projects.price_history', $project->id) }}" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-purple-500">
-                    <span class="material-symbols-outlined">trending_up</span>
+            <div class="flex max-w-[48%] flex-shrink-0 items-center justify-end gap-1">
+                <a href="{{ route('projects.price_history', $project->id) }}" class="inline-flex max-w-full items-center gap-1 rounded-full px-2 py-1.5 text-purple-600 hover:bg-slate-100 dark:text-purple-400 dark:hover:bg-slate-800">
+                    <span class="material-symbols-outlined shrink-0 text-lg">trending_up</span>
+                    <span class="truncate text-[10px] font-bold leading-tight sm:text-xs">{{ __('invoices.price_history') }}</span>
                 </a>
-                <button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
-                    <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">more_vert</span>
-                </button>
             </div>
         </header>
 
@@ -326,14 +325,14 @@
         </main>
 
         <!-- Floating Action Button Container -->
-        <div class="fixed bottom-24 right-6 flex flex-col gap-3 z-40">
-            <!-- Add Payment FAB -->
-            <button @click="openAddPayment()" class="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg active:scale-90 transition-transform border-4 border-white dark:border-slate-900">
-                <span class="material-symbols-outlined text-2xl">add_card</span>
+        <div class="fixed bottom-24 right-4 z-40 flex max-w-[calc(100vw-2rem)] flex-col items-end gap-3 sm:right-6">
+            <button type="button" @click="openAddPayment()" class="flex min-h-[3.25rem] min-w-[3.25rem] flex-col items-center justify-center gap-0.5 rounded-2xl border-4 border-white bg-emerald-500 px-3 py-2 text-white shadow-lg transition-transform active:scale-90 dark:border-slate-900">
+                <span class="material-symbols-outlined text-2xl leading-none">add_card</span>
+                <span class="max-w-[5.5rem] text-center text-[10px] font-bold leading-tight">{{ __('invoices.add_payment') }}</span>
             </button>
-            <!-- Add Invoice FAB -->
-            <a href="{{ route('projects.invoices.create', $project->id) }}" @click="isLoading = true" class="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/40 active:scale-90 transition-transform">
-                <span class="material-symbols-outlined text-3xl">add_notes</span>
+            <a href="{{ route('projects.invoices.create', $project->id) }}" @click="isLoading = true" class="flex min-h-[3.75rem] min-w-[3.75rem] flex-col items-center justify-center gap-0.5 rounded-2xl bg-primary px-3 py-2.5 text-white shadow-lg shadow-primary/40 transition-transform active:scale-90">
+                <span class="material-symbols-outlined text-3xl leading-none">add_notes</span>
+                <span class="max-w-[6rem] text-center text-[10px] font-bold leading-tight">{{ __('invoices.create') }}</span>
             </a>
         </div>
 
@@ -348,8 +347,9 @@
             >
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="text-xl font-bold" x-text="editMode ? 'Chỉnh sửa thanh toán' : 'Thêm thanh toán mới'"></h3>
-                    <button @click="paymentModalOpen = false" class="text-slate-400">
-                        <span class="material-symbols-outlined">close</span>
+                    <button type="button" @click="paymentModalOpen = false" class="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800">
+                        <span class="material-symbols-outlined text-xl">close</span>
+                        <span>{{ __('common.close') }}</span>
                     </button>
                 </div>
 

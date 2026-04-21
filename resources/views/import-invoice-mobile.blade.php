@@ -45,8 +45,9 @@
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col" x-data="{ loading: false, fileName: '' }">
 <header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sticky top-0 z-30">
 <div class="flex items-center gap-3">
-<button class="p-2 -ml-2 text-slate-600 dark:text-slate-400">
-<span class="material-icons-outlined">menu</span>
+<button type="button" class="inline-flex max-w-[9rem] items-center gap-1 -ml-2 rounded-lg p-2 text-slate-600 dark:text-slate-400">
+<span class="material-icons-outlined shrink-0">menu</span>
+<span class="truncate text-xs font-semibold">{{ __('nav.open_menu') }}</span>
 </button>
 <div class="flex items-center gap-2">
 <div class="w-7 h-7 bg-primary rounded flex items-center justify-center">
@@ -56,8 +57,9 @@
 </div>
 </div>
 <div class="flex items-center gap-2">
-<button class="p-2 text-slate-500 dark:text-slate-400">
-<span class="material-icons-outlined">notifications</span>
+<button type="button" class="inline-flex max-w-[8rem] items-center gap-1 rounded-lg p-2 text-slate-500 dark:text-slate-400">
+<span class="material-icons-outlined shrink-0">notifications</span>
+<span class="truncate text-xs font-semibold">{{ __('nav.notifications') }}</span>
 </button>
 <div class="w-8 h-8 bg-slate-200 dark:bg-slate-700 rounded-full flex items-center justify-center overflow-hidden border border-slate-100 dark:border-slate-800">
 <span class="material-icons-outlined text-slate-500 text-xl">person</span>
@@ -178,8 +180,9 @@
 </div>
 
 <div class="fixed bottom-20 right-4 z-20">
-<button class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center shadow-lg text-slate-600 dark:text-slate-300" onclick="document.documentElement.classList.toggle('dark')">
-<span class="material-icons-outlined text-xl">dark_mode</span>
+<button type="button" class="inline-flex h-11 max-w-[10rem] items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-600 shadow-lg dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300" onclick="document.documentElement.classList.toggle('dark')" title="{{ __('common.theme_toggle') }}">
+<span class="material-icons-outlined shrink-0 text-xl">dark_mode</span>
+<span class="truncate text-[10px] font-bold leading-tight">{{ __('common.theme_toggle') }}</span>
 </button>
 </div>
 

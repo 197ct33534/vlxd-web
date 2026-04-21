@@ -35,7 +35,7 @@
             <form x-ref="form" action="{{ route('customers.index') }}" method="GET" class="flex flex-col w-full">
                 <div class="relative flex w-full flex-1 items-stretch h-12">
                     <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500">search</span>
-                    <input x-model="search" name="search" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light dark:text-text-dark focus:outline-0 focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-12 pr-12 text-base font-normal" placeholder="Search by name, phone, or company" />
+                    <input x-model="search" name="search" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-text-light dark:text-text-dark focus:outline-0 focus:ring-2 focus:ring-primary/50 border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 pl-12 pr-12 text-base font-normal" placeholder="{{ __('customer.filter.search_placeholder') }}" aria-label="{{ __('common.search') }}" />
                     
                     <!-- Clear Button -->
                     <button type="button" x-show="search.length > 0" @click="clearSearch()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
@@ -48,10 +48,10 @@
         </div>
         <div class="flex items-center gap-3">
             <div class="relative w-full">
-                <select x-model="status" class="appearance-none w-full h-12 pl-4 pr-10 rounded-lg bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark text-text-light dark:text-text-dark text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer">
-                    <option value="all">Status: All</option>
-                    <option value="active">Status: Active</option>
-                    <option value="inactive">Status: Inactive</option>
+                <select x-model="status" class="appearance-none w-full h-12 pl-4 pr-10 rounded-lg bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark text-text-light dark:text-text-dark text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer" aria-label="{{ __('customer.filter.status_heading') }}">
+                    <option value="all">{{ __('customer.filter.all') }}</option>
+                    <option value="active">{{ __('customer.filter.active') }}</option>
+                    <option value="inactive">{{ __('customer.filter.inactive') }}</option>
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
                      <span class="material-symbols-outlined max-w-[20px]">expand_more</span>

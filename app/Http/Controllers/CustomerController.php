@@ -49,7 +49,7 @@ class CustomerController extends Controller
         ]);
 
         Customer::create($validated);
-        return redirect()->route('customers.index')->with('success', 'Customer added successfully!');
+        return redirect()->route('customers.index')->with('success', __('msg.customer_added'));
     }
 
     public function update(Request $request, $id)
@@ -64,7 +64,7 @@ class CustomerController extends Controller
         $customer = Customer::findOrFail($id);
         $customer->update($validated);
 
-        return redirect()->route('customers.index')->with('success', 'Customer updated successfully!');
+        return redirect()->route('customers.index')->with('success', __('msg.customer_updated'));
     }
 
     public function destroy($id)
@@ -72,6 +72,6 @@ class CustomerController extends Controller
         $customer = Customer::findOrFail($id);
         $customer->delete();
 
-        return redirect()->route('customers.index')->with('success', 'Customer deleted successfully!');
+        return redirect()->route('customers.index')->with('success', __('msg.customer_deleted'));
     }
 }

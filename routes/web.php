@@ -36,7 +36,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/store-settings', [StoreInfoController::class, 'edit'])->name('store-settings.edit');
     Route::put('/store-settings', [StoreInfoController::class, 'update'])->name('store-settings.update');
 
-    // Quản lý báo giá vật tư
+    // Quản lý báo giá vật tư (bulk phải khai báo trước resource để không bị coi là id)
+    Route::delete('material-prices/bulk', [App\Http\Controllers\MaterialPriceController::class, 'destroyBulk'])->name('material-prices.bulk-destroy');
     Route::resource('material-prices', App\Http\Controllers\MaterialPriceController::class);
     Route::post('material-prices/sync', [App\Http\Controllers\MaterialPriceController::class, 'syncFromHistory'])->name('material-prices.sync');
 

@@ -54,8 +54,9 @@
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col" x-data="{ loading: false, selectedIndex: 0 }">
 <header class="h-16 bg-white dark:bg-sidebar-dark border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sticky top-0 z-50 transition-colors duration-200">
 <div class="flex items-center gap-3">
-<button class="p-2 -ml-2 text-slate-600 dark:text-slate-300">
-<span class="material-symbols-outlined">menu</span>
+<button type="button" class="inline-flex max-w-[9rem] items-center gap-1 -ml-2 rounded-lg p-2 text-slate-600 dark:text-slate-300">
+<span class="material-symbols-outlined shrink-0">menu</span>
+<span class="truncate text-xs font-semibold">{{ __('nav.open_menu') }}</span>
 </button>
 <div class="flex items-center gap-2">
 <div class="bg-primary p-1.5 rounded-lg">
@@ -65,8 +66,9 @@
 </div>
 </div>
 <div class="flex items-center gap-2">
-<button class="p-2 text-slate-500 dark:text-slate-400">
-<span class="material-symbols-outlined">search</span>
+<button type="button" class="inline-flex max-w-[8rem] items-center gap-1 rounded-lg p-2 text-slate-500 dark:text-slate-400">
+<span class="material-symbols-outlined shrink-0">search</span>
+<span class="truncate text-xs font-semibold">{{ __('common.search') }}</span>
 </button>
 <div class="h-8 w-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-500 overflow-hidden border border-slate-300 dark:border-slate-600">
 <span class="material-symbols-outlined text-xl">person</span>

@@ -6,10 +6,11 @@
 <div class="max-w-5xl mx-auto" x-data="invoiceForm()">
     <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-2">
-            <a href="{{ route('projects.invoices.index', $project->id) }}" class="text-gray-500 hover:text-primary transition-colors">
-                <span class="material-symbols-outlined">arrow_back</span>
+            <a href="{{ route('projects.invoices.index', $project->id) }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-primary transition-colors">
+                <span class="material-symbols-outlined shrink-0">arrow_back</span>
+                <span>{{ __('nav.back_short') }}</span>
             </a>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Create New Invoice</h1>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('invoices.create') }}</h1>
         </div>
     </div>
 

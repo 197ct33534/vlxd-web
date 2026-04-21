@@ -3,7 +3,7 @@
 <div
     x-cloak
     x-show="{{ $name }}"
-    x-on:keydown.escape.window="{{ $nameগান = false }}"
+    x-on:keydown.escape.window="{{ $name }} = false"
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
     x-transition:enter="transition ease-out duration-300"
     x-transition:enter-end="opacity-100"
@@ -31,8 +31,9 @@
                     {{ $title }}
                 @endif
             </h3>
-            <button @click="{{ $name }} = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-                <span class="material-symbols-outlined">close</span>
+            <button type="button" @click="{{ $name }} = false" class="inline-flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-700 dark:hover:text-gray-100 transition-colors">
+                <span class="material-symbols-outlined text-xl leading-none">close</span>
+                <span>{{ __('common.close') }}</span>
             </button>
         </div>
         

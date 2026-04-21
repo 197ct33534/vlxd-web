@@ -28,7 +28,7 @@ class QuotationController extends Controller
         $store = StoreInfo::first();
 
         if ($prices->isEmpty()) {
-            return back()->with('error', 'Hiện chưa có dữ liệu báo giá từ lịch sử mua hàng.');
+            return back()->with('error', __('msg.quotation_empty'));
         }
 
         return Excel::download(

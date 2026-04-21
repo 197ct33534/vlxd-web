@@ -65,7 +65,7 @@ class DailyReportController extends Controller
             }
         });
 
-        return redirect()->route('daily-reports.index')->with('success', 'Report submitted successfully.');
+        return redirect()->route('daily-reports.index')->with('success', __('msg.report_submitted'));
     }
 
     /**
@@ -86,7 +86,7 @@ class DailyReportController extends Controller
 
         $dailyReport->update(['status' => 'approved']);
 
-        return back()->with('success', 'Report approved.');
+        return back()->with('success', __('msg.report_approved'));
     }
 
     /**
@@ -101,7 +101,7 @@ class DailyReportController extends Controller
             'admin_note' => $request->admin_note,
         ]);
 
-        return back()->with('success', 'Report rejected.');
+        return back()->with('success', __('msg.report_rejected'));
     }
 
     private function ensureAdmin(): void

@@ -74,8 +74,9 @@
 </div>
 <h1 class="font-bold text-lg tracking-tight uppercase">{{ $brandName }}</h1>
 </div>
-<button @click="mobileMenu = !mobileMenu" class="w-10 h-10 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800">
-<span class="material-symbols-outlined">menu</span>
+<button type="button" @click="mobileMenu = !mobileMenu" class="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2 py-2 dark:bg-slate-800">
+<span class="material-symbols-outlined shrink-0">menu</span>
+<span class="max-w-[6rem] truncate text-xs font-semibold">{{ __('nav.open_menu') }}</span>
 </button>
 </header>
 
@@ -86,8 +87,9 @@
          x-transition:enter="translate-x-full" x-transition:enter-end="translate-x-0" x-transition:leave="translate-x-full">
         <div class="flex justify-between items-center mb-8">
             <h2 class="font-bold text-primary">MENU</h2>
-            <button @click="mobileMenu = false" class="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
-                <span class="material-symbols-outlined">close</span>
+            <button type="button" @click="mobileMenu = false" class="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-2 py-2 dark:bg-slate-800">
+                <span class="material-symbols-outlined shrink-0">close</span>
+                <span class="max-w-[5rem] truncate text-xs font-bold">{{ __('common.close') }}</span>
             </button>
         </div>
         <nav class="flex flex-col gap-4">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html class="light" lang="vi">
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -118,8 +118,9 @@
                 </div>
                 
                 <!-- Submit Button -->
-                <button type="submit" class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-primary/90 transition-colors text-white text-base font-bold leading-normal tracking-[0.015em] shadow-md mt-2">
-                    <span class="truncate">{{ __('auth.login') }}</span>
+                <button type="submit" class="flex w-full cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-primary/90 transition-colors text-white text-base font-bold leading-normal tracking-[0.015em] shadow-md mt-2">
+                    <span class="material-symbols-outlined text-xl">login</span>
+                    <span>{{ __('auth.login') }}</span>
                 </button>
             </form>
             

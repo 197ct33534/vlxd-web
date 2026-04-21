@@ -39,7 +39,7 @@ class EmployeeController extends Controller
 
         Employee::create($data);
 
-        return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
+        return redirect()->route('employees.index')->with('success', __('msg.employee_created'));
     }
 
     /**
@@ -67,7 +67,7 @@ class EmployeeController extends Controller
 
         $employee->update($data);
 
-        return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
+        return redirect()->route('employees.index')->with('success', __('msg.employee_updated'));
     }
 
     /**
@@ -80,7 +80,7 @@ class EmployeeController extends Controller
         }
         $employee->delete();
 
-        return redirect()->route('employees.index')->with('success', 'Employee deleted successfully.');
+        return redirect()->route('employees.index')->with('success', __('msg.employee_deleted'));
     }
 
     /**
@@ -96,7 +96,7 @@ class EmployeeController extends Controller
 
         $employee->salaryAdvances()->create($request->all());
 
-        return redirect()->route('employees.index')->with('success', 'Salary advance recorded.');
+        return redirect()->route('employees.index')->with('success', __('msg.advance_recorded'));
     }
 
     /**

@@ -53,7 +53,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span class="text-slate-700 dark:text-slate-200 font-medium text-sm">Đang xử lý...</span>
+            <span class="text-slate-700 dark:text-slate-200 font-medium text-sm">{{ __('common.loading') }}</span>
         </div>
     </div>
 
@@ -63,13 +63,15 @@
         <!-- Top Navigation -->
         <header class="sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <a href="{{ route('projects.invoices.index', $invoice->project_id) }}" @click="isLoading = true" class="p-2 -ml-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
-                    <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">arrow_back</span>
+                <a href="{{ route('projects.invoices.index', $invoice->project_id) }}" @click="isLoading = true" class="inline-flex max-w-[55%] items-center gap-1.5 -ml-2 rounded-lg p-2 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <span class="material-symbols-outlined shrink-0 text-slate-600 dark:text-slate-400">arrow_back</span>
+                    <span class="truncate text-xs font-semibold text-slate-600 dark:text-slate-300">{{ __('nav.back_short') }}</span>
                 </a>
-                <h1 class="text-lg font-bold tracking-tight">Chi tiết hóa đơn</h1>
+                <h1 class="min-w-0 flex-1 truncate text-lg font-bold tracking-tight">{{ __('invoices.show_title', ['code' => $invoice->code ?? '#' . $invoice->id]) }}</h1>
             </div>
-            <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full text-violet-600" title="Tải PDF">
-                <span class="material-symbols-outlined text-slate-600 dark:text-slate-400">picture_as_pdf</span>
+            <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank" class="inline-flex max-w-[42%] flex-shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-violet-600 hover:bg-slate-100 dark:hover:bg-slate-800">
+                <span class="material-symbols-outlined shrink-0">picture_as_pdf</span>
+                <span class="truncate text-xs font-bold">{{ __('invoices.pdf') }}</span>
             </a>
         </header>
 
@@ -183,14 +185,14 @@
         <!-- Sticky Bottom Bar Actions -->
         <footer class="absolute bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-4 pb-8 z-30">
             <div class="grid grid-cols-2 gap-3 max-w-md mx-auto">
-                <button onclick="window.print()" class="flex items-center justify-center gap-2 h-12 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-bold rounded-xl active:scale-[0.98] transition-all">
+                <button type="button" onclick="window.print()" class="flex h-12 items-center justify-center gap-2 rounded-xl bg-slate-100 font-bold text-slate-900 transition-all active:scale-[0.98] dark:bg-slate-800 dark:text-slate-100">
                     <span class="material-symbols-outlined text-[20px]">print</span>
-                    <span>In ấn</span>
+                    <span>{{ __('invoices.print') }}</span>
                 </button>
-                <button class="flex items-center justify-center gap-2 h-12 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/25 active:scale-[0.98] transition-all">
-                    <span class="material-symbols-outlined text-[20px]">download</span>
-                    <span>Tải PDF</span>
-                </button>
+                <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank" class="flex h-12 items-center justify-center gap-2 rounded-xl bg-primary font-bold text-white shadow-lg shadow-primary/25 transition-all active:scale-[0.98]">
+                    <span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+                    <span>{{ __('invoices.pdf') }}</span>
+                </a>
             </div>
         </footer>
     </div>

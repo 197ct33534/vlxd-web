@@ -45,7 +45,7 @@ class MaterialPriceController extends Controller
 
         MaterialPrice::create($request->all());
 
-        return redirect()->route('material-prices.index')->with('success', 'Thêm báo giá thành công.');
+        return redirect()->route('material-prices.index')->with('success', __('msg.material_price_created'));
     }
 
     /**
@@ -74,7 +74,7 @@ class MaterialPriceController extends Controller
 
         $materialPrice->update($data);
 
-        return redirect()->route('material-prices.index')->with('success', 'Cập nhật báo giá thành công.');
+        return redirect()->route('material-prices.index')->with('success', __('msg.material_price_updated'));
     }
 
     /**
@@ -83,7 +83,22 @@ class MaterialPriceController extends Controller
     public function destroy(MaterialPrice $materialPrice)
     {
         $materialPrice->delete();
-        return redirect()->route('material-prices.index')->with('success', 'Xóa báo giá thành công.');
+        return redirect()->route('material-prices.index')->with('success', __('msg.material_price_deleted'));
+    }
+
+    /**
+     * Remove multiple material prices (bulk delete from index checkboxes).
+     */
+    public function destroyBulk(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer|exists:material_prices,id',
+        ]);
+
+        $count = MaterialPrice::whereIn('id', $validated['ids'])->delete();
+
+        return redirect()->route('material-prices.index')->with('success', __('msg.material_prices_bulk_deleted', ['count' => $count]));
     }
 
     /**
@@ -111,6 +126,6 @@ class MaterialPriceController extends Controller
             );
         }
 
-        return redirect()->route('material-prices.index')->with('success', 'Đã đồng bộ dữ liệu từ lịch sử hóa đơn.');
+        return redirect()->route('material-prices.index')->with('success', __('msg.material_price_synced'));
     }
 }

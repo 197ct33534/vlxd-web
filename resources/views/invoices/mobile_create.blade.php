@@ -67,14 +67,15 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span class="text-slate-700 dark:text-slate-200 font-medium text-sm">Đang xử lý...</span>
+            <span class="text-slate-700 dark:text-slate-200 font-medium text-sm">{{ __('common.loading') }}</span>
         </div>
     </div>
 
     <header class="bg-white dark:bg-background-dark border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 h-16 sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <a href="{{ route('projects.invoices.index', $project->id) }}" @click="isLoading = true" class="p-2 -ml-2 text-gray-600 dark:text-gray-300">
-                <span class="material-symbols-outlined text-2xl">arrow_back</span>
+            <a href="{{ route('projects.invoices.index', $project->id) }}" @click="isLoading = true" class="inline-flex max-w-[40%] items-center gap-1.5 -ml-2 rounded-lg p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800">
+                <span class="material-symbols-outlined shrink-0 text-2xl">arrow_back</span>
+                <span class="truncate text-xs font-semibold">{{ __('nav.back_short') }}</span>
             </a>
             <div class="bg-primary rounded-lg p-1.5 text-white">
                 <span class="material-symbols-outlined text-xl">receipt_long</span>

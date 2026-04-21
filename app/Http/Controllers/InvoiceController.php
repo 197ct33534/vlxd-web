@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Invoice;
 use App\Models\Project;
 use App\Models\StoreInfo;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
@@ -55,12 +56,24 @@ class InvoiceController extends Controller
         $invoice->load(['items', 'project.customer']);
         $storeInfo = StoreInfo::first();
 
-        $pdf = Pdf::loadView('invoices.pdf', compact('invoice', 'storeInfo'))
-            ->setPaper('a4', 'portrait');
+        $html = view('invoices.pdf', compact('invoice', 'storeInfo'))->render();
+
+        $options = new Options;
+        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('isRemoteEnabled', true);
+        $options->set('isHtml5ParserEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html, 'UTF-8');
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
 
         $name = 'hoadon-'.($invoice->code ?: $invoice->id).'.pdf';
 
-        return $pdf->stream($name);
+        return response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$name.'"',
+        ]);
     }
 
     /**
@@ -92,7 +105,7 @@ class InvoiceController extends Controller
             $project->save();
         });
 
-        return redirect()->back()->with('success', 'Payment recorded successfully.');
+        return redirect()->back()->with('success', __('msg.payment_recorded'));
     }
 
     /**
@@ -159,7 +172,7 @@ class InvoiceController extends Controller
             $project->save();
         });
 
-        return redirect()->route('projects.invoices.index', $project->id)->with('success', 'Invoice created successfully.');
+        return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.invoice_created'));
     }
 
     /**
@@ -230,7 +243,7 @@ class InvoiceController extends Controller
             $project->save();
         });
 
-        return redirect()->route('projects.invoices.index', $project->id)->with('success', 'Invoice updated successfully.');
+        return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.invoice_updated'));
     }
 
     /**
@@ -253,7 +266,7 @@ class InvoiceController extends Controller
             $project->save();
         });
 
-        return redirect()->route('projects.invoices.index', $project->id)->with('success', 'Invoice deleted successfully.');
+        return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.invoice_deleted'));
     }
 
     /**
@@ -284,7 +297,7 @@ class InvoiceController extends Controller
             $project->save();
         });
 
-        return redirect()->route('projects.invoices.index', $project->id)->with('success', 'Payment updated successfully.');
+        return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.payment_updated'));
     }
 
     /**
@@ -305,7 +318,7 @@ class InvoiceController extends Controller
             $project->save();
         });
 
-        return redirect()->route('projects.invoices.index', $project->id)->with('success', 'Payment deleted successfully.');
+        return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.payment_deleted'));
     }
 
     /**
@@ -331,6 +344,6 @@ class InvoiceController extends Controller
             $project->save();
         });
 
-        return redirect()->route('projects.invoices.index', $project->id)->with('success', 'Invoice marked as paid.');
+        return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.invoice_marked_paid'));
     }
 }

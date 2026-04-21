@@ -5,8 +5,9 @@
 @section('content')
 <div class="max-w-2xl mx-auto">
     <div class="mb-6 flex items-center gap-3">
-        <a href="{{ route('material-prices.index') }}" class="p-2 -ml-2 text-gray-400 hover:text-primary transition-colors">
-            <span class="material-symbols-outlined">arrow_back</span>
+        <a href="{{ route('material-prices.index') }}" class="inline-flex items-center gap-2 -ml-2 rounded-lg p-2 text-gray-400 transition-colors hover:text-primary">
+            <span class="material-symbols-outlined shrink-0">arrow_back</span>
+            <span class="text-sm font-semibold">{{ __('nav.back_short') }}</span>
         </a>
         <h1 class="text-text-light dark:text-text-dark text-3xl font-black tracking-tight">Thêm Vật Tư Mới</h1>
     </div>

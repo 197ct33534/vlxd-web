@@ -34,7 +34,7 @@ class ImportInvoiceController extends Controller
         if ($request->has('stored_file_path')) {
             $filePath = storage_path('app/' . $request->input('stored_file_path'));
             if (!file_exists($filePath)) {
-                return redirect()->back()->with('error', 'Temporary file expired or not found. Please upload again.');
+                return redirect()->back()->with('error', __('msg.import_temp_missing'));
             }
             $spreadsheet = IOFactory::load($filePath);
             
@@ -408,17 +408,17 @@ class ImportInvoiceController extends Controller
             // Redirect back to project view if project_id exists
             if ($project) {
                 return redirect()->route('customers.projects.index', $project->customer_id)
-                    ->with('success', 'Import và lưu hóa đơn thành công.');
+                    ->with('success', __('msg.import_success'));
             }
 
-            return redirect()->route('invoice.index')->with('success', 'Import và lưu hóa đơn thành công.');
+            return redirect()->route('invoice.index')->with('success', __('msg.import_success'));
         } catch (\Throwable $e) {
             DB::rollBack();
             // log lỗi để debug
             \Log::error('Invoice import save error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
-            return redirect()->back()->with('error', 'Lưu dữ liệu thất bại: ' . $e->getMessage());
+            return redirect()->back()->with('error', __('msg.import_save_failed', ['error' => $e->getMessage()]));
         }
     }
 
@@ -469,6 +469,6 @@ class ImportInvoiceController extends Controller
             ]);
         }
 
-        return redirect()->route('invoice.index')->with('success', 'Import và lưu dữ liệu thành công!');
+        return redirect()->route('invoice.index')->with('success', __('msg.import_success_alt'));
     }
 }

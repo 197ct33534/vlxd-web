@@ -1,22 +1,23 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Edit Invoice - ' . $invoice->project->name)
+@section('title', __('invoices.edit_title', ['id' => $invoice->id, 'project' => $invoice->project->name]))
 
 @section('content')
 <div class="max-w-5xl mx-auto" x-data="invoiceForm()">
     <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-2">
-            <a href="{{ route('projects.invoices.index', $invoice->project_id) }}" class="text-gray-500 hover:text-primary transition-colors">
+            <a href="{{ route('projects.invoices.index', $invoice->project_id) }}" class="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 hover:text-primary transition-colors">
                 <span class="material-symbols-outlined">arrow_back</span>
+                <span>{{ __('nav.back_short') }}</span>
             </a>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Invoice #{{ $invoice->id }}</h1>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('invoices.edit_heading', ['id' => $invoice->id]) }}</h1>
         </div>
-        <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this invoice? This action cannot be undone.');">
+        <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST" onsubmit="return confirm(@js(__('invoices.confirm_delete_full')));">
             @csrf
             @method('DELETE')
-            <button type="submit" class="flex items-center gap-2 text-red-600 hover:text-red-700 font-semibold px-4 py-2 rounded-lg hover:bg-red-50 transition-colors">
+            <button type="submit" class="inline-flex items-center gap-2 text-red-600 hover:text-red-700 font-semibold px-4 py-2 rounded-lg hover:bg-red-50 transition-colors">
                 <span class="material-symbols-outlined">delete</span>
-                Delete Invoice
+                <span>{{ __('invoices.delete_invoice') }}</span>
             </button>
         </form>
     </div>
@@ -27,21 +28,21 @@
         
         <!-- General Info -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-subtle p-6 mb-6">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">General Information</h2>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">{{ __('invoices.edit.general_info') }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('common.date') }}</label>
                     <input type="date" name="invoice_date" required value="{{ $invoice->invoice_date }}"
                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary focus:border-primary">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Invoice Code (Optional)</label>
-                    <input type="text" name="code" placeholder="e.g. INV-001" value="{{ $invoice->code }}"
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('invoices.field.code_optional') }}</label>
+                    <input type="text" name="code" placeholder="{{ __('invoices.field.code_placeholder') }}" value="{{ $invoice->code }}"
                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary focus:border-primary">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Note</label>
-                    <input type="text" name="note" placeholder="Project notes..." value="{{ $invoice->note }}"
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('common.note') }}</label>
+                    <input type="text" name="note" placeholder="{{ __('invoices.field.note_placeholder') }}" value="{{ $invoice->note }}"
                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary focus:border-primary">
                 </div>
             </div>
@@ -50,10 +51,10 @@
         <!-- Items Table -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-subtle p-6 mb-6">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Invoice Items</h2>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('invoices.items_title') }}</h2>
                 <button type="button" @click="addItem()" class="flex items-center gap-1 text-sm font-semibold text-primary hover:text-blue-700">
                     <span class="material-symbols-outlined">add_circle</span>
-                    Add Item
+                    {{ __('invoices.add_item') }}
                 </button>
             </div>
 
@@ -61,11 +62,11 @@
                 <table class="w-full text-sm text-left">
                     <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700/50">
                         <tr>
-                            <th class="px-4 py-3 rounded-l-lg">Product Name</th>
-                            <th class="px-4 py-3 w-32">Unit</th>
-                            <th class="px-4 py-3 w-32 text-right">Quantity</th>
-                            <th class="px-4 py-3 w-40 text-right">Price</th>
-                            <th class="px-4 py-3 w-40 text-right">Amount</th>
+                            <th class="px-4 py-3 rounded-l-lg">{{ __('invoices.table.product_name') }}</th>
+                            <th class="px-4 py-3 w-32">{{ __('common.unit') }}</th>
+                            <th class="px-4 py-3 w-32 text-right">{{ __('common.quantity') }}</th>
+                            <th class="px-4 py-3 w-40 text-right">{{ __('common.price') }}</th>
+                            <th class="px-4 py-3 w-40 text-right">{{ __('invoices.table.line_total') }}</th>
                             <th class="px-4 py-3 w-16 rounded-r-lg text-center"></th>
                         </tr>
                     </thead>
@@ -101,7 +102,7 @@
                     </tbody>
                     <tfoot class="border-t border-gray-200 dark:border-gray-700">
                         <tr>
-                            <td colspan="4" class="px-4 py-4 text-right font-bold text-lg">Total Amount:</td>
+                            <td colspan="4" class="px-4 py-4 text-right font-bold text-lg">{{ __('invoices.edit_total_label') }}</td>
                             <td class="px-4 py-4 text-right font-black text-xl text-primary">
                                 <span x-text="formatNumber(totalAmount)"></span> đ
                             </td>
@@ -112,16 +113,18 @@
             </div>
             
             <div x-show="items.length === 0" class="text-center py-8 text-gray-500 italic">
-                No items added yet. Click "Add Item" to start.
+                {{ __('invoices.items_empty') }}
             </div>
         </div>
 
         <div class="flex justify-end gap-3">
-            <a href="{{ route('projects.invoices.index', $invoice->project_id) }}" class="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors">
-                Cancel
+            <a href="{{ route('projects.invoices.index', $invoice->project_id) }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+                {{ __('common.cancel') }}
             </a>
-            <button type="submit" class="px-6 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/30">
-                Update Invoice
+            <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/30">
+                <span class="material-symbols-outlined text-xl">save</span>
+                {{ __('invoices.update_button') }}
             </button>
         </div>
     </form>

@@ -38,17 +38,19 @@
                                 <td class="px-6 py-4 text-center">{{ number_format($project->total_invoice ?? 0) }}</td>
                                 <td class="px-6 py-4 text-center text-green-600">{{ number_format($project->total_paid ?? 0) }}</td>
                                 <td class="px-6 py-4 text-center text-red-600 font-semibold">{{ number_format($project->total_debt ?? 0) }}</td>
-                                <td class="px-6 py-4 text-right whitespace-nowrap">
-                                    <a href="{{ route('projects.invoices.index', $project->id) }}"
-                                       class="inline-flex p-1.5 text-gray-500 dark:text-gray-400 hover:text-blue-600 rounded-full transition-colors"
-                                       title="Hóa đơn">
-                                        <span class="material-symbols-outlined text-xl">receipt_long</span>
-                                    </a>
-                                    <a href="{{ route('invoice.index', ['project_id' => $project->id]) }}"
-                                       class="inline-flex p-1.5 text-gray-500 dark:text-gray-400 hover:text-green-600 rounded-full transition-colors"
-                                       title="Nhập hóa đơn Excel">
-                                        <span class="material-symbols-outlined text-xl">upload_file</span>
-                                    </a>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex flex-wrap items-center justify-end gap-1.5">
+                                        <a href="{{ route('projects.invoices.index', $project->id) }}"
+                                           class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-blue-900/20">
+                                            <span class="material-symbols-outlined text-base leading-none">receipt_long</span>
+                                            <span>{{ __('projects.customer.btn.invoices') }}</span>
+                                        </a>
+                                        <a href="{{ route('invoice.index', ['project_id' => $project->id]) }}"
+                                           class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-green-50 hover:text-green-700 dark:text-gray-400 dark:hover:bg-green-900/20">
+                                            <span class="material-symbols-outlined text-base leading-none">upload_file</span>
+                                            <span>{{ __('projects.customer.btn.import') }}</span>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         @empty

@@ -2,6 +2,8 @@
 
 @section('title', 'Tổng quan')
 
+@section('page_heading', 'Tổng quan')
+
 @section('content')
     <div class="flex flex-col gap-8">
         <div>

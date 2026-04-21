@@ -43,8 +43,9 @@
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen" x-data="{ loading: false }">
 <nav class="sticky top-0 z-30 bg-white dark:bg-sidebar-dark border-b border-slate-200 dark:border-slate-800 px-4 h-16 flex items-center justify-between">
 <div class="flex items-center gap-3">
-<a href="{{ route('invoice.index') }}" class="p-2 -ml-2 text-slate-600 dark:text-slate-400">
-<span class="material-symbols-outlined">arrow_back</span>
+<a href="{{ route('invoice.index') }}" class="inline-flex max-w-[55%] items-center gap-1.5 -ml-2 rounded-lg p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800">
+<span class="material-symbols-outlined shrink-0">arrow_back</span>
+<span class="truncate text-xs font-semibold">{{ __('nav.back_short') }}</span>
 </a>
 <div class="flex items-center gap-2">
 <div class="w-7 h-7 bg-primary rounded flex items-center justify-center text-white">
