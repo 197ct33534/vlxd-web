@@ -52,13 +52,17 @@
                                 </td>
                                 <td class="px-6 py-4 truncate max-w-xs">{{ $invoice->note ?? '-' }}</td>
                                 <td class="px-6 py-4 text-right">
-                                <td class="px-6 py-4 text-right">
                                     <div class="flex items-center justify-end gap-2">
                                         <button @click="openInvoiceModal({{ $invoice->id }})" 
                                            class="p-2 text-gray-500 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                                            title="View Details">
                                             <span class="material-symbols-outlined text-lg">visibility</span>
                                         </button>
+                                        <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank"
+                                           class="p-2 text-gray-500 hover:text-violet-600 rounded-lg hover:bg-violet-50 transition-colors"
+                                           title="PDF">
+                                            <span class="material-symbols-outlined text-lg">picture_as_pdf</span>
+                                        </a>
                                         
                                         <form action="{{ route('invoices.pay', $invoice->id) }}" method="POST" class="inline-block" 
                                               onsubmit="return confirm('Mark this invoice as fully paid? This will create a payment record of {{ number_format($invoice->total_amount, 0, ',', '.') }} đ');">
@@ -100,6 +104,10 @@
                         @endforelse
                     </tbody>
                 </table>
+        </div>
+
+        <div class="px-4 py-3 border-t border-border-light dark:border-border-dark">
+            {{ $invoices->links() }}
         </div>
 
         <!-- Payment History & Actions -->

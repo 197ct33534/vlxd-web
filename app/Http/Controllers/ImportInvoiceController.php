@@ -19,6 +19,10 @@ class ImportInvoiceController extends Controller
     public function index(Request $request)
     {
         $projectId = $request->get('project_id');
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('import-invoice-mobile', compact('projectId'));
+        }
         return view('import-invoice', compact('projectId'));
     }
 
@@ -58,6 +62,15 @@ class ImportInvoiceController extends Controller
             } else {
                 // If somehow came here without file (shouldn't happen in Step 1 w/o stored), reuse stored
                 $path = $request->input('stored_file_path');
+            }
+
+            $agent = new \Jenssegers\Agent\Agent();
+            if ($agent->isMobile()) {
+                return view('import-sheet-selection-mobile', [
+                    'sheetNames' => $sheetNames,
+                    'storedFilePath' => $path,
+                    'projectId' => $projectId,
+                ]);
             }
 
             return view('import-sheet-selection', [
@@ -176,6 +189,22 @@ class ImportInvoiceController extends Controller
 
         // Tổng tiền đọc thành chữ
         $tongTienChu = $this->numberToVietnamese($tongTien);
+
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('import-result-mobile', [
+                'khachHang'   => str_replace('_', '', str_replace('Khách hàng: ','',$khachHang)),
+                'diaChi'      => str_replace('_', '',  str_replace('Địa chỉ: ','',$diaChi)),
+                'dienThoai'   => str_replace('_', '', str_replace('Điện thoại:','',$dienThoai)),
+                'items'       => $data,
+                'advancePayments' => $advancePayments,
+                'tongTien'    => $tongTien,
+                'tongTienUng' => $tongTienUng,
+                'tongTienChu' => $tongTienChu,
+                'ngayCuoi'    => $ngayCuoi,
+                'projectId'   => $projectId,
+            ]);
+        }
 
         return view('import-result', [
             'khachHang'   => str_replace('_', '', str_replace('Khách hàng: ','',$khachHang)),

@@ -17,6 +17,7 @@
         },
         
         submitForm() {
+            isLoading = true;
             $refs.form.submit();
         },
         

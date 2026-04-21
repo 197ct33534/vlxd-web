@@ -135,6 +135,37 @@
           </li>
           <!-- Menu Item Dashboard -->
 
+          <!-- Menu Item Material Prices -->
+          <li>
+            <a
+              href="{{ route('material-prices.index') }}"
+              class="menu-item group {{ request()->routeIs('material-prices.*') ? 'menu-item-active' : 'menu-item-inactive' }}"
+            >
+              <svg
+                class="{{ request()->routeIs('material-prices.*') ? 'menu-item-icon-active' : 'menu-item-icon-inactive' }}"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M4.0 6.0C4.0 4.89543 4.89543 4.0 6.0 4.0H18.0C19.1046 4.0 20.0 4.89543 20.0 6.0V18.0C20.0 19.1046 19.1046 20.0 18.0 20.0H6.0C4.89543 20.0 4.0 19.1046 4.0 18.0V6.0ZM6.0 6.0V18.0H18.0V6.0H6.0ZM8.0 9.0H16.0V11.0H8.0V9.0ZM8.0 13.0H13.0V15.0H8.0V13.0Z"
+                  fill="currentColor"
+                />
+              </svg>
+
+              <span
+                class="menu-item-text"
+                :class="sidebarToggle ? 'lg:hidden' : ''"
+              >
+                Báo giá vật tư
+              </span>
+            </a>
+          </li>
+
           <!-- Menu Item Calendar -->
           <li>
             <a

@@ -1,7 +1,11 @@
 @props(['customer'])
 
 <tr class="bg-container-light dark:bg-container-dark border-b dark:border-border-dark hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors">
-    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">{{ $customer->name }}</td>
+    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+        <a href="{{ route('customers.projects.index', $customer->id) }}" class="hover:text-primary hover:underline">
+            {{ $customer->name }}
+        </a>
+    </td>
     <td class="px-6 py-4">{{ $customer->phone }}</td>
     <td class="px-6 py-4">{{ $customer->email ?? '-' }}</td>
     <td class="px-6 py-4">{{ $customer->address ?? '-' }}</td>

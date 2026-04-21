@@ -83,6 +83,10 @@
         @endforelse
     </div>
 
+    <div class="mt-6">
+        {{ $employees->links() }}
+    </div>
+
     <!-- Employee Form Modal (Create/Edit) -->
     <div x-show="isFormOpen" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen p-4 text-center">

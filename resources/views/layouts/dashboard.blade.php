@@ -59,7 +59,13 @@
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
     <!-- Main App Container with Global State (Toast & Loading) -->
-    <div class="flex h-screen w-full" x-data="{ toastVisible: false, toastMessage: '', isLoading: false }">
+    <div class="flex h-screen w-full" x-data="{ toastVisible: false, toastMessage: '', isLoading: false }" 
+        @click="
+            const link = $event.target.closest('a');
+            if (link && link.href && !link.href.includes('#') && !link.getAttribute('href').startsWith('javascript:') && !link.hasAttribute('download') && link.target !== '_blank') {
+                isLoading = true;
+            }
+        ">
         
         <!-- Sidebar -->
         <x-sidebar />

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Vật Liệu Xây Dựng - Uy Tín &amp; Giá Tốt</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f97415",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#23170f",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "2xl": "2rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Work Sans', sans-serif;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 selection:bg-primary/30">
+    <!-- Sticky Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-nav border-b border-primary/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-3">
+                    <div class="bg-primary text-white p-2 rounded-lg">
+                        <span class="material-symbols-outlined text-3xl">home_work</span>
+                    </div>
+                    <span class="text-2xl font-black tracking-tight text-slate-900 uppercase">Vật Liệu <span
+                            class="text-primary">Sáu Phụng</span></span>
+                </div>
+                <nav class="hidden md:flex items-center gap-8">
+                    <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Sản phẩm</a>
+                    <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Báo giá</a>
+                    <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Dự án</a>
+                    <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Về chúng tôi</a>
+                </nav>
+                <div class="flex items-center gap-4">
+                    <button
+                        class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg font-bold text-sm transition-all shadow-lg shadow-primary/20">
+                        Nhận báo giá
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute inset-0 bg-black/50 z-10"></div>
+            <img alt="Hero background" class="w-full h-full object-cover"
+                data-alt="Modern construction site with cranes and sunset"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTnI9cELUACw5L2Jv8g9joUUEBe7y5RLr9vjiY3lljeSKepR3E77XzQlv_zpnjrQl9crLdA62nn26GiGksdHoDOeUyIrlmzctBNdQy1qFDOfSp0VW3qsVyLS7eghNZ4oPGRFqvwx1HW-AbeeSHjAWpdfzc2CM9SCg8uOT93vFmto8QCSJto1g9-4RI4EPDHFlsHgFMuLUJ3RZZQa3-zcAGKu-FVbNhLWUNLOWx3gFm3PK-IC6llyTZJuEBjOSUbAKzwHlmKGbu3w8" />
+        </div>
+        <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="max-w-3xl">
+                <h1 class="text-4xl md:text-6xl font-black text-white leading-tight mb-6">
+                    Cung cấp vật liệu xây dựng <span class="text-primary">uy tín – giá tốt</span> mỗi ngày
+                </h1>
+                <p class="text-lg text-slate-200 mb-10 max-w-xl">
+                    Đơn vị cung ứng vật liệu hàng đầu cho các công trình trọng điểm. Giao hàng tận nơi trong 2 giờ, đầy
+                    đủ chứng chỉ chất lượng CO/CQ.
+                </p>
+                <div class="bg-white/10 backdrop-blur-md p-2 rounded-2xl border border-white/20 max-w-lg shadow-2xl">
+                    <div class="bg-white rounded-xl p-2 flex flex-col sm:flex-row gap-2">
+                        <div class="flex-1 flex items-center px-4">
+                            <span class="material-symbols-outlined text-slate-400 mr-2">phone_iphone</span>
+                            <input
+                                class="w-full border-0 focus:ring-0 text-slate-900 font-medium placeholder:text-slate-400"
+                                placeholder="Nhập số điện thoại" type="tel" />
+                        </div>
+                        <button
+                            class="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-lg font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                            Nhận báo giá ngay
+                            <span class="material-symbols-outlined">trending_flat</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-6 flex items-center gap-6 text-white/80">
+                    <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                        <span class="text-xs font-medium uppercase tracking-wider">Hơn 5000+ Khách hàng</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+                        <span class="text-xs font-medium uppercase tracking-wider">Giao nhanh 2h</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Product Categories -->
+    <section class="py-24 bg-background-light dark:bg-background-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4">Danh mục sản phẩm</h2>
+                <div class="h-1.5 w-24 bg-primary mx-auto rounded-full"></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Category Cards -->
+                <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer shadow-lg">
+                    <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        data-alt="Stacks of construction cement bags"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwBHFZ4LiHKI34t1LA7RTjT5Of4hDZHFoxyIkYwKPcM7QeRWtoHZIMeIOq2KuY0jAtkOE9_3-41cUQp9mwwd92ax61UUiR3HOxOnF6rV1RDlmvfH8og8Ej6vJubR-Jia8p7SisnqT18tOgmtWuLR7hjKyl4nbLUTsPwh_oVcYSQ6V-hmtDtU5OREQKjmv8bYOQVifAODWjpQQ4FwtKSG3yQhNArPw8jT4YIMb-eDcZgjeo1Xj4V4xHSTod9QofLh-9IpwSIYqIxJA" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <h3 class="text-2xl font-bold text-white mb-1">Xi măng</h3>
+                        <p class="text-slate-300 text-sm">Hà Tiên, Holcim, Nghi Sơn...</p>
+                    </div>
+                    <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="bg-primary text-white p-2 rounded-full material-symbols-outlined">north_east</span>
+                    </div>
+                </div>
+                <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer shadow-lg">
+                    <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        data-alt="Industrial steel rebar for construction"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL2Xmktg48vOeBlDicnVAQejbuptHGp7mdz8oZvNV4SrxLW1ijTLaF-NHlVfRCXj-8UYU4SkUME39GS3xNSaAX6WzSCUEgVFsJe3PrnqAwWfml-gJHuoIE7Nd9YMhwNJcCXpgCh5-_4JYh5_6BfRhG3FcmDibv4FeNwU-vbu1rTyVUB70YvmFSX1z4gZd79ZaDOOSdNPna9WOPs8mfWQQhEqZzZYUPt95mkveyKvDJos0QGkTfcdpQgA1kdB8pKn0JqziK_I0u-2E" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <h3 class="text-2xl font-bold text-white mb-1">Sắt thép</h3>
+                        <p class="text-slate-300 text-sm">Hòa Phát, Pomina, Miền Nam...</p>
+                    </div>
+                    <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="bg-primary text-white p-2 rounded-full material-symbols-outlined">north_east</span>
+                    </div>
+                </div>
+                <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer shadow-lg">
+                    <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        data-alt="Pile of high quality construction sand"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqb6O3Uiovu0Zh7BcvqP2YWXnykvEIsWNT0CLmXXyRhkbkJYWB74kQ-JezBGhYyGQU4YFpH7tDKurLJcvrdh3W60l19r86OBzFuofw4NyA_FKb6DkUNMivIt_i4X2pi6r4uggMku2Y6JFS7olo_NteR0oi7TRFhN96Q8_XoCOfwD6quVNdmTN9sedABFDDIkyZj1JTQvsgbvNXskJEFsIwWM1wo_L70Nzm0vsl-SNdkQNiZjEdP4pRG3SFe8c3XY7kdhvwXxMElCQ" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <h3 class="text-2xl font-bold text-white mb-1">Cát xây dựng</h3>
+                        <p class="text-slate-300 text-sm">Cát xây tô, cát bê tông, cát san lấp</p>
+                    </div>
+                    <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="bg-primary text-white p-2 rounded-full material-symbols-outlined">north_east</span>
+                    </div>
+                </div>
+                <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer shadow-lg">
+                    <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        data-alt="Red clay bricks stacked neatly"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWy9wSfi53WILjvFmD0YusT7k7RRmTBrrtxoUi8R_KnevLpgKWd7CQGXi_rpa1YUbb5sr0DQOmZMBgyOAevYd_XU4MjIWvP3HzSjTypO0yhsoqYRWF9zfM-iv4R5KPm7cKgrlw9iVndbnLggfN3ZKfpYJbg81hh1cnCk1scuWP53bNtcY12CtHSR440oKeO6ZK1cRBGeCKaSQMETFv5GuswMf2GsXhzHoafRNefH16bnSqwLWlEk0dIzDTuCRzvTlUyyh9Kby-43o" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <h3 class="text-2xl font-bold text-white mb-1">Gạch ống</h3>
+                        <p class="text-slate-300 text-sm">Gạch Tuynel, gạch đờ mi, gạch thẻ</p>
+                    </div>
+                    <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="bg-primary text-white p-2 rounded-full material-symbols-outlined">north_east</span>
+                    </div>
+                </div>
+                <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer shadow-lg">
+                    <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        data-alt="Crushed stone and gravel pile"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXzkwrTbZSL_ow5SX1i70H6Su30b-GTPYZNl1u14eWvnnnkAn2BSI4ukmisRD-8T6hbqO59adwE6-WCQqwiEzWz29WN_8s6MZDj4yrMgvK5YyKzxmj5EEXOSD70jKgvQYEga6y72487IZYd7P_9pp3Fb8qorwIvKrRD1fD3hcTsB9RiNUy8QTkPzfziBOXlS1dy4Ud4YGLIL9mRabr5HXMx-HPTXyHNDUgHtEU4FKKWdSx7QjaETJnBolJrbJZ6vlXKWGYrQ3zkdQ" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <h3 class="text-2xl font-bold text-white mb-1">Đá xây dựng</h3>
+                        <p class="text-slate-300 text-sm">Đá 1x2, đá 4x6, đá xanh</p>
+                    </div>
+                    <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="bg-primary text-white p-2 rounded-full material-symbols-outlined">north_east</span>
+                    </div>
+                </div>
+                <div class="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer shadow-lg">
+                    <img class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        data-alt="Construction worker mixing cement additives"
+                        src="https://images.unsplash.com/photo-1580901368855-059c4792ff22?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGV4Y2F2YXRvcnxlbnwwfHwwfHx8MA%3D%3D" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-6 left-6">
+                        <h3 class="text-2xl font-bold text-white mb-1">Xe Cuốc</h3>
+                        <!-- <p class="text-slate-300 text-sm">Sika, chống thấm, đông kết nhanh</p> -->
+                    </div>
+                    <div class="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span class="bg-primary text-white p-2 rounded-full material-symbols-outlined">north_east</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Why Choose Us -->
+    <section class="py-24 bg-white dark:bg-slate-900/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-6">Tại sao nhà thầu tin
+                        chọn chúng tôi?</h2>
+                    <p class="text-slate-600 dark:text-slate-400 mb-10 text-lg">Hơn 10 năm kinh nghiệm trong lĩnh vực
+                        cung ứng vật liệu, chúng tôi hiểu rõ yếu tố then chốt cho sự thành công của công trình.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                        <div class="flex gap-4">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-xl">
+                                <span class="material-symbols-outlined">local_shipping</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 dark:text-white mb-1">Giao hàng 2h</h4>
+                                <p class="text-sm text-slate-500">Đội ngũ vận tải hùng hậu, cam kết giao hàng nhanh nhất
+                                    nội thành.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-xl">
+                                <span class="material-symbols-outlined">payments</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 dark:text-white mb-1">Giá sỉ cạnh tranh</h4>
+                                <p class="text-sm text-slate-500">Chiết khấu cực tốt cho nhà thầu và các đại lý cấp 2.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-xl">
+                                <span class="material-symbols-outlined">verified</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 dark:text-white mb-1">Chất lượng kiểm định</h4>
+                                <p class="text-sm text-slate-500">100% hàng chính hãng, đầy đủ CO/CQ từ nhà máy.</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-xl">
+                                <span class="material-symbols-outlined">support_agent</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 dark:text-white mb-1">Hỗ trợ 24/7</h4>
+                                <p class="text-sm text-slate-500">Tư vấn kỹ thuật và xử lý đơn hàng mọi lúc bạn cần.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="bg-primary/5 rounded-2xl p-4 aspect-square relative overflow-hidden">
+                        <img class="rounded-xl w-full h-full object-cover shadow-2xl relative z-10"
+                            data-alt="Construction site manager reviewing blueprints"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEvQpqInLRtRhoCAN-Qn6a4lEi5rHuLZ1z9oIUjo_dh0RVlJrl0_r2lg6f24RxTmj8krfJHhiqL3iY5xN5B7Mp4-YQsr_37L3jStKRQ5dIR657wlB1XREBIhI5ECQcf5cyPWdrEd4wpa2_cUTH_tbZGovK-W6xLVTt3ruAVBarlnsqdsZ7lPHeqcaOheFEaWa1R8Q_FoqEkwJrrn5I8aCGtCaDJ5YHHVENwhEmM1Mf-BkHdO7KDszIS4UPWp9WZe2zJfUAToH__fs" />
+                        <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-primary rounded-2xl z-0"></div>
+                        <div class="absolute -top-6 -left-6 w-32 h-32 border-4 border-primary/20 rounded-2xl z-0"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Price Table Preview -->
+    <section class="py-24 bg-background-light dark:bg-background-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4">Báo giá tham khảo hôm
+                    nay</h2>
+                <p class="text-slate-500">Cập nhật lúc: 08:30 - 24/05/2024</p>
+            </div>
+            <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden border border-primary/10">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-primary text-white">
+                                <th class="px-8 py-5 text-sm font-bold uppercase tracking-wider">Tên vật liệu</th>
+                                <th class="px-8 py-5 text-sm font-bold uppercase tracking-wider">Thương hiệu</th>
+                                <th class="px-8 py-5 text-sm font-bold uppercase tracking-wider">Đơn vị</th>
+                                <th class="px-8 py-5 text-sm font-bold uppercase tracking-wider text-right">Đơn giá
+                                    (VNĐ)</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                            <tr class="hover:bg-primary/5 transition-colors">
+                                <td class="px-8 py-5 font-semibold">Xi măng Hà Tiên Đa Dụng</td>
+                                <td class="px-8 py-5 text-slate-500">Hà Tiên</td>
+                                <td class="px-8 py-5">Bao (50kg)</td>
+                                <td class="px-8 py-5 text-right font-bold text-primary">89,000</td>
+                            </tr>
+                            <tr class="hover:bg-primary/5 transition-colors">
+                                <td class="px-8 py-5 font-semibold">Sắt Hòa Phát Phi 10</td>
+                                <td class="px-8 py-5 text-slate-500">Hòa Phát</td>
+                                <td class="px-8 py-5">Cây (11.7m)</td>
+                                <td class="px-8 py-5 text-right font-bold text-primary">152,000</td>
+                            </tr>
+                            <tr class="hover:bg-primary/5 transition-colors">
+                                <td class="px-8 py-5 font-semibold">Cát Bê Tông (loại 1)</td>
+                                <td class="px-8 py-5 text-slate-500">Sông Ba</td>
+                                <td class="px-8 py-5">m3</td>
+                                <td class="px-8 py-5 text-right font-bold text-primary">420,000</td>
+                            </tr>
+                            <tr class="hover:bg-primary/5 transition-colors">
+                                <td class="px-8 py-5 font-semibold">Gạch Ống 8x8x18</td>
+                                <td class="px-8 py-5 text-slate-500">Thành Tâm</td>
+                                <td class="px-8 py-5">Viên</td>
+                                <td class="px-8 py-5 text-right font-bold text-primary">1,150</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div
+                    class="p-8 bg-slate-50 dark:bg-slate-800/50 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p class="text-sm text-slate-500 italic">* Lưu ý: Giá có thể thay đổi tùy số lượng và vị trí công
+                        trình.</p>
+                    <button
+                        class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-bold transition-all">Tải
+                        Báo Giá Đầy Đủ (PDF)</button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Ordering Process -->
+    <section class="py-24 bg-white dark:bg-slate-900/50 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4">Quy trình đặt hàng 4
+                    bước</h2>
+                <div class="h-1.5 w-24 bg-primary mx-auto rounded-full"></div>
+            </div>
+            <div class="relative">
+                <div class="hidden lg:block absolute top-1/2 left-0 w-full h-0.5 bg-primary/20 -translate-y-1/2"></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 relative z-10">
+                    <!-- Step 1 -->
+                    <div class="flex flex-col items-center text-center">
+                        <div
+                            class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center font-black text-2xl mb-6 shadow-xl shadow-primary/30 ring-8 ring-white dark:ring-slate-900">
+                            1
+                        </div>
+                        <h4 class="font-bold text-lg mb-2">Liên hệ &amp; Tư vấn</h4>
+                        <p class="text-slate-500 text-sm">Gửi yêu cầu qua hotline hoặc form báo giá trực tuyến.</p>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="flex flex-col items-center text-center">
+                        <div
+                            class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center font-black text-2xl mb-6 shadow-xl shadow-primary/30 ring-8 ring-white dark:ring-slate-900">
+                            2
+                        </div>
+                        <h4 class="font-bold text-lg mb-2">Chốt đơn &amp; Hợp đồng</h4>
+                        <p class="text-slate-500 text-sm">Thống nhất số lượng, đơn giá và thời gian giao nhận.</p>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="flex flex-col items-center text-center">
+                        <div
+                            class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center font-black text-2xl mb-6 shadow-xl shadow-primary/30 ring-8 ring-white dark:ring-slate-900">
+                            3
+                        </div>
+                        <h4 class="font-bold text-lg mb-2">Vận chuyển 2h</h4>
+                        <p class="text-slate-500 text-sm">Hàng được bốc xếp và vận chuyển ngay đến công trình.</p>
+                    </div>
+                    <!-- Step 4 -->
+                    <div class="flex flex-col items-center text-center">
+                        <div
+                            class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center font-black text-2xl mb-6 shadow-xl shadow-primary/30 ring-8 ring-white dark:ring-slate-900">
+                            4
+                        </div>
+                        <h4 class="font-bold text-lg mb-2">Nghiệm thu &amp; Thanh toán</h4>
+                        <p class="text-slate-500 text-sm">Kiểm tra chất lượng, khối lượng và hoàn tất thanh toán.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Urgent CTA Banner -->
+    <section class="py-12 bg-primary">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8 text-white">
+                <div class="flex items-center gap-6">
+                    <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-4xl animate-pulse">call</span>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-black">Cần vật liệu gấp?</h3>
+                        <p class="text-lg opacity-90">Gọi ngay Hotline – Giao hàng trong 2h</p>
+                    </div>
+                </div>
+                <div class="text-center md:text-right">
+                    <a class="text-4xl md:text-5xl font-black hover:underline transition-all underline-offset-8"
+                        href="tel:19001234">
+                        0909486474
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Testimonials -->
+    <section class="py-24 bg-background-light dark:bg-background-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4">Khách hàng nói gì?</h2>
+                <div class="h-1.5 w-24 bg-primary mx-auto rounded-full"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div
+                    class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700">
+                    <div class="flex text-primary mb-4">
+                        <span class="material-symbols-outlined fill-1">star</span>
+                        <span class="material-symbols-outlined fill-1">star</span>
+                        <span class="material-symbols-outlined fill-1">star</span>
+                        <span class="material-symbols-outlined fill-1">star</span>
+                        <span class="material-symbols-outlined fill-1">star</span>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-6 italic">"Làm việc với đội ngũ rất chuyên nghiệp.
+                        Hàng giao đúng hẹn, chất lượng sắt thép rất ổn định cho các công trình cao tầng của tôi."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-slate-200 overflow-hidden">
+                            <img alt="User" data-alt="Client avatar"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4KlDDR20wlkYAsu0pKeCjVF4lD1JZoYF_mynPDTPZ2OrF8Y0AqzRZxRq_fhAS2-SqCzcQ-wvgNVh8HZ5jb_AYidhtsKChDUYFBet-aG6e1hYww716r6rfxlu8r0xIV8xuVu8HfLBKZiP891QqGt0bAp87TAZwGOYSl2xuNpHuf0eC8y5aTCyp7ORaM1YQMNkEZBnPoV7guPoI_BGf4Fwwspp6_VSAr1lfUEjvtzYYo7EeDhtpG9qG5PsYdYP_MAKBg9b7WlIzNsg" />
+                        </div>
+                        <div>
+                            <h5 class="font-bold">Nguyễn Văn Nam</h5>
+                            <p class="text-xs text-slate-500 uppercase">GĐ Dự Án Coteccons</p>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700">
+                    <div class="flex text-primary mb-4">
+                        <span class="material-symbols-outlined fill-1">star</span>
+                        <span class="material-symbols-outlined fill-1">star</span>
+                        <span class="material-symbols-outlined fill-1">star</span>
+                        <span class="material-symbols-outlined fill-1">star</span>
+                        <span class="material-symbols-outlined fill-1">star</span>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-6 italic">"Giá cả cực kỳ cạnh tranh so với mặt bằng
+                        chung. Tôi đã hợp tác hơn 3 năm và chưa bao giờ thất vọng về tiến độ giao hàng."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-slate-200 overflow-hidden">
+                            <img alt="User" data-alt="Client avatar"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPtnLCjQ9zQbwaj2H3XczFrOLKC-57GUJAUq9Lk7J6EyGwtuY5uCvRE0EWrDHcnQCMsCy1-R1-8GW6Jkmnmk1pTML75OhMd77iiVlHOaSbLsY_UhgNBKOfzalp0l1LkJvMWVmiWH60ADaD0wcHlMwTeWMmgTf6GUwePPTBTMGjilxY_hoTBlTQx01hD2P78iaG9HkmEO0oMrR4Kv8e_w5-NfAEi_lDcjlR09c8eUTNIHhnLB1hBnCku4BAOLcV-BG-zqGNO6g81xo" />
+                        </div>
+                        <div>
+                            <h5 class="font-bold">Lê Minh Tuấn</h5>
+                            <p class="text-xs text-slate-500 uppercase">Chủ thầu tự do</p>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700">
+                    <div class="flex text-primary mb-4">
+                        <span class="material-symbols-outlined fill-1">star</span>
+                        <span class="material-symbols-outlined fill-1">star</span>
+                        <span class="material-symbols-outlined fill-1">star</span>
+                        <span class="material-symbols-outlined fill-1">star</span>
+                        <span class="material-symbols-outlined fill-1">star</span>
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-400 mb-6 italic">"Thủ tục thanh toán linh hoạt, hóa đơn
+                        chứng từ đầy đủ. Rất phù hợp cho các công ty xây dựng cần sự minh bạch."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-slate-200 overflow-hidden">
+                            <img alt="User" data-alt="Client avatar"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBibCxB0dcr3WewQRxYRzy3Zn50xwAW11lMj_GaZ2sFCP9RvijiGJxkzlnAZjY6R-a8rFq1M4ZDPyTSvqgRmTQsEaDngYgSSJZG_ivTw86W9q7k_gnvtEKAW3TQmVtkOli7v6Yzy9Q76qIwUnEJ3EAzdPrqmnnWIIsWNpMVtc98x3sZ_Ycfn2cuvWoCKGiH6OSWI8tSyrkq2CV7IWGNWUmJ4RaJ7U-eboFWGjPAVelXxTNwzLbu1kv0r4L-j6vv4GmqR32Bq5V2V5s" />
+                        </div>
+                        <div>
+                            <h5 class="font-bold">Trần Thị Hoa</h5>
+                            <p class="text-xs text-slate-500 uppercase">Kế toán trưởng An Gia</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 lg:col-span-1">
+                    <div class="flex items-center gap-3 text-white mb-6">
+                        <div class="bg-primary p-2 rounded-lg">
+                            <span class="material-symbols-outlined text-2xl">home_work</span>
+                        </div>
+                        <span class="text-xl font-black uppercase">Vật Liệu <span class="text-primary">Sáu
+                                Phụng</span></span>
+                    </div>
+                    <p class="text-sm leading-relaxed mb-6">
+                        Tổng kho phân phối vật liệu xây dựng hàng đầu khu vực phía Nam. Cam kết uy tín, chất lượng và
+                        dịch vụ tận tâm.
+                    </p>
+                    <div class="flex gap-4">
+                        <a class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all"
+                            href="#">
+                            <span class="material-symbols-outlined text-lg">social_leaderboard</span>
+                        </a>
+                        <a class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary hover:text-white transition-all"
+                            href="#">
+                            <span class="material-symbols-outlined text-lg">mail</span>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6">Sản phẩm chính</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li><a class="hover:text-primary transition-colors" href="#">Sắt thép xây dựng</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Xi măng các loại</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Gạch, cát, đá</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Phụ gia xây dựng</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6">Hỗ trợ khách hàng</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li><a class="hover:text-primary transition-colors" href="#">Chính sách giao hàng</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Hình thức thanh toán</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Yêu cầu báo giá</a></li>
+                        <li><a class="hover:text-primary transition-colors" href="#">Kiểm tra đơn hàng</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6">Thông tin liên hệ</h4>
+                    <ul class="space-y-4 text-sm">
+                        <li class="flex gap-3">
+                            <span class="material-symbols-outlined text-primary">location_on</span>
+                            <span>số 222 Đường Số 6, Bình Trưng Đông, Thủ Đức, Thành phố Hồ Chí Minh, Việt Nam</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="material-symbols-outlined text-primary">phone</span>
+                            <span>0909.486.474 - 0967.847.582</span>
+                        </li>
+                        <li class="flex gap-3">
+                            <span class="material-symbols-outlined text-primary">mail</span>
+                            <span>contact@vatlieuSáu Phụng.vn</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div
+                class="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
+                <p>© 2024 Vật Liệu Xây Dựng Sáu Phụng. All rights reserved.</p>
+                <div class="flex gap-6">
+                    <a class="hover:text-white" href="#">Điều khoản sử dụng</a>
+                    <a class="hover:text-white" href="#">Chính sách bảo mật</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

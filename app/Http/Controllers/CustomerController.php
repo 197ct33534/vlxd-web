@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use Jenssegers\Agent\Agent;
 
 class CustomerController extends Controller
 {
@@ -27,8 +28,14 @@ class CustomerController extends Controller
 
         $customers = $query->withCount('projects')
             ->withSum('projects as total_debt', 'total_debt')
-            ->get();
+            ->paginate(15)
+            ->withQueryString();
             
+        $agent = new Agent();
+        if ($agent->isMobile()) {
+            return view('customer.mobile', compact('customers'));
+        }
+
         return view('customer.index', compact('customers'));
     }
 

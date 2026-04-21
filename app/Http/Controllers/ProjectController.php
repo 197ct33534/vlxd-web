@@ -8,10 +8,26 @@ use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
+    /**
+     * All projects (quick access from sidebar; invoices still per project).
+     */
+    public function indexAll()
+    {
+        $projects = Project::with('customer')->latest()->paginate(20);
+
+        return view('projects.all', compact('projects'));
+    }
+
     public function index(Customer $customer)
     {
         // Eager load invoices if needed, or just paginate projects
         $projects = $customer->projects()->latest()->get();
+
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('projects.mobile_index', compact('customer', 'projects'));
+        }
+
         return view('projects.index', compact('customer', 'projects'));
     }
 

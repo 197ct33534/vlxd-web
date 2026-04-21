@@ -24,7 +24,7 @@ class DailyReportController extends Controller
             $query->where('user_id', Auth::id());
         }
 
-        $reports = $query->get();
+        $reports = $query->paginate(20);
 
         return view('daily_reports.index', compact('reports'));
     }
@@ -82,7 +82,10 @@ class DailyReportController extends Controller
      */
     public function approve(DailyReport $dailyReport)
     {
+        $this->ensureAdmin();
+
         $dailyReport->update(['status' => 'approved']);
+
         return back()->with('success', 'Report approved.');
     }
 
@@ -91,11 +94,19 @@ class DailyReportController extends Controller
      */
     public function reject(Request $request, DailyReport $dailyReport)
     {
+        $this->ensureAdmin();
+
         $dailyReport->update([
-            'status' => 'rejected', 
-            'admin_note' => $request->admin_note
+            'status' => 'rejected',
+            'admin_note' => $request->admin_note,
         ]);
+
         return back()->with('success', 'Report rejected.');
+    }
+
+    private function ensureAdmin(): void
+    {
+        abort_unless(Auth::user() && Auth::user()->role === 'admin', 403);
     }
 
     /**

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Invoice;
 use App\Models\Project;
+use App\Models\StoreInfo;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
@@ -13,9 +15,15 @@ class InvoiceController extends Controller
      */
     public function index(Project $project)
     {
-        $invoices = $project->invoices()->latest('invoice_date')->get();
+        $invoices = $project->invoices()->latest('invoice_date')->paginate(15);
         // Fetch payments ordered by date descending
         $payments = $project->payments()->latest('payment_date')->get();
+
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('invoices.mobile_index', compact('project', 'invoices', 'payments'));
+        }
+
         return view('invoices.index', compact('project', 'invoices', 'payments'));
     }
 
@@ -30,8 +38,29 @@ class InvoiceController extends Controller
         if ($request->ajax()) {
             return view('invoices.partials.details', compact('invoice'));
         }
+
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('invoices.mobile_show', compact('invoice'));
+        }
         
         return view('invoices.show', compact('invoice'));
+    }
+
+    /**
+     * Download invoice as PDF (DomPDF).
+     */
+    public function pdf(Invoice $invoice)
+    {
+        $invoice->load(['items', 'project.customer']);
+        $storeInfo = StoreInfo::first();
+
+        $pdf = Pdf::loadView('invoices.pdf', compact('invoice', 'storeInfo'))
+            ->setPaper('a4', 'portrait');
+
+        $name = 'hoadon-'.($invoice->code ?: $invoice->id).'.pdf';
+
+        return $pdf->stream($name);
     }
 
     /**
@@ -71,6 +100,11 @@ class InvoiceController extends Controller
      */
     public function create(Project $project)
     {
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('invoices.mobile_create', compact('project'));
+        }
+
         return view('invoices.create', compact('project'));
     }
 
@@ -134,6 +168,12 @@ class InvoiceController extends Controller
     public function edit(Invoice $invoice)
     {
         $invoice->load(['items', 'project']);
+        
+        $agent = new \Jenssegers\Agent\Agent();
+        if ($agent->isMobile()) {
+            return view('invoices.mobile_edit', compact('invoice'));
+        }
+
         return view('invoices.edit', compact('invoice'));
     }
 

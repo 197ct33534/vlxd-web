@@ -14,7 +14,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        $employees = Employee::withSum('salaryAdvances', 'amount')->get();
+        $employees = Employee::withSum('salaryAdvances', 'amount')->paginate(18);
         return view('employees.index', compact('employees'));
     }
 

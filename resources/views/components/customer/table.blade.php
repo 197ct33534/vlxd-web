@@ -20,28 +20,20 @@
                     <x-customer.row :customer="$customer" />
                 @empty
                     <tr>
-                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">No customers found.</td>
+                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">No customers found.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
     
-    <!-- Pagination (Static for now as per index.blade.php, but can be dynamic if $customers is paginated) -->
-    <div class="flex items-center justify-between p-4 border-t border-border-light dark:border-border-dark">
-        <span class="text-sm text-gray-700 dark:text-gray-400">
-            Showing <span class="font-semibold text-gray-900 dark:text-white">{{ $customers->count() }}</span> Entries
-        </span>
-        <div class="inline-flex -space-x-px rounded-md shadow-sm text-sm">
-            <button class="flex items-center justify-center px-3 h-8 text-gray-500 bg-white border border-gray-300 rounded-l-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-container-dark dark:border-border-dark dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                Previous
-            </button>
-            <button class="flex items-center justify-center px-3 h-8 text-primary border-y border-primary bg-primary/20 dark:bg-primary/30 dark:text-white dark:border-primary">
-                1
-            </button>
-            <button class="flex items-center justify-center px-3 h-8 text-gray-500 bg-white border border-gray-300 rounded-r-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-container-dark dark:border-border-dark dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                Next
-            </button>
+    <div class="p-4 border-t border-border-light dark:border-border-dark">
+        <div class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            Hiển thị <span class="font-semibold text-gray-900 dark:text-white">{{ $customers->firstItem() ?? 0 }}</span>
+            –
+            <span class="font-semibold text-gray-900 dark:text-white">{{ $customers->lastItem() ?? 0 }}</span>
+            trong tổng <span class="font-semibold">{{ $customers->total() }}</span> khách hàng
         </div>
+        {{ $customers->withQueryString()->links() }}
     </div>
 </div>

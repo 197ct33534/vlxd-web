@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Admin Login - VLXD Manager</title>
+    <title>{{ __('auth.login_title') }}</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com" rel="preconnect"/>
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -57,9 +57,9 @@
                 <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-6 text-primary">
                     <span class="material-symbols-outlined !text-4xl">admin_panel_settings</span>
                 </div>
-                <h1 class="text-[#111418] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em] mb-2">Welcome Back</h1>
+                <h1 class="text-[#111418] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em] mb-2">{{ __('auth.login') }}</h1>
                 <p class="text-[#60758a] dark:text-[#9aaab9] text-base font-normal leading-normal">
-                    Enter your details to access the admin panel.
+                    {{ __('auth.login_subtitle') }}
                 </p>
             </div>
             
@@ -70,12 +70,12 @@
                 <!-- Email/Username Field -->
                 <div class="flex flex-col gap-2">
                     <label class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal">
-                        Email Address
+                        {{ __('auth.email_address') }}
                     </label>
                     <div class="group flex w-full items-stretch rounded-lg border border-[#dbe0e6] dark:border-[#2a3541] bg-white dark:bg-[#111922] transition-colors focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
                         <input type="email" name="email" value="{{ old('email') }}" required autofocus
                                class="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg rounded-r-none border-none bg-transparent h-12 px-4 text-[#111418] dark:text-white placeholder:text-[#60758a] dark:placeholder:text-[#5a6b7c] focus:outline-0 focus:ring-0 text-base font-normal leading-normal" 
-                               placeholder="name@company.com" />
+                               placeholder="{{ __('auth.email_placeholder') }}" />
                         <div class="flex items-center justify-center px-4 text-[#60758a] dark:text-[#9aaab9]">
                             <span class="material-symbols-outlined">mail</span>
                         </div>
@@ -88,14 +88,14 @@
                 <!-- Password Field -->
                 <div class="flex flex-col gap-2">
                     <label class="text-[#111418] dark:text-gray-200 text-sm font-medium leading-normal">
-                        Password
+                        {{ __('auth.password') }}
                     </label>
                     <div class="group flex w-full items-stretch rounded-lg border border-[#dbe0e6] dark:border-[#2a3541] bg-white dark:bg-[#111922] transition-colors focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
-                        <input type="password" name="password" required
+                        <input type="password" name="password" id="password" required
                                class="flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg rounded-r-none border-none bg-transparent h-12 px-4 text-[#111418] dark:text-white placeholder:text-[#60758a] dark:placeholder:text-[#5a6b7c] focus:outline-0 focus:ring-0 text-base font-normal leading-normal" 
-                               placeholder="••••••••" />
-                        <div class="flex items-center justify-center px-4 text-[#60758a] dark:text-[#9aaab9] cursor-pointer hover:text-[#111418] dark:hover:text-white transition-colors">
-                            <span class="material-symbols-outlined">visibility</span>
+                               placeholder="{{ __('auth.password_placeholder') }}" />
+                        <div id="togglePassword" class="flex items-center justify-center px-4 text-[#60758a] dark:text-[#9aaab9] cursor-pointer hover:text-[#111418] dark:hover:text-white transition-colors">
+                            <span id="toggleIcon" class="material-symbols-outlined">visibility</span>
                         </div>
                     </div>
                 </div>
@@ -112,31 +112,49 @@
                                 </svg>
                             </span>
                         </div>
-                        <label class="text-[#111418] dark:text-gray-300 text-sm font-normal cursor-pointer select-none">Remember me</label>
+                        <label class="text-[#111418] dark:text-gray-300 text-sm font-normal cursor-pointer select-none">{{ __('auth.remember_me') }}</label>
                     </div>
-                    <a class="text-sm font-medium text-primary hover:text-primary/80 transition-colors" href="#">Forgot Password?</a>
+                    {{-- <a class="text-sm font-medium text-primary hover:text-primary/80 transition-colors" href="#">Forgot Password?</a> --}}
                 </div>
                 
                 <!-- Submit Button -->
                 <button type="submit" class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary hover:bg-primary/90 transition-colors text-white text-base font-bold leading-normal tracking-[0.015em] shadow-md mt-2">
-                    <span class="truncate">Sign In</span>
+                    <span class="truncate">{{ __('auth.login') }}</span>
                 </button>
             </form>
             
             <!-- Footer Section of Card -->
-            <div class="px-8 py-6 bg-gray-50 dark:bg-[#131d27] border-t border-[#dbe0e6] dark:border-[#2a3541] text-center">
+            {{-- <div class="px-8 py-6 bg-gray-50 dark:bg-[#131d27] border-t border-[#dbe0e6] dark:border-[#2a3541] text-center">
                 <p class="text-[#60758a] dark:text-[#9aaab9] text-sm">
                     Don't have an account? <span class="text-primary font-medium">Contact Admin</span>
                 </p>
-            </div>
+            </div> --}}
         </div>
         
         <!-- Page Footer -->
-        <div class="mt-8 text-center">
-            <p class="text-[#9aaab9] dark:text-[#5a6b7c] text-xs">
-                © 2023 Customer Management System. All rights reserved.
-            </p>
-        </div>
+                    {{-- <div class="mt-8 text-center">
+                        <p class="text-[#9aaab9] dark:text-[#5a6b7c] text-xs">
+                            © 2023 Customer Management System. All rights reserved.
+                        </p>
+                    </div> --}}
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.querySelector('#togglePassword');
+            const password = document.querySelector('#password');
+            const toggleIcon = document.querySelector('#toggleIcon');
+
+            if (togglePassword && password && toggleIcon) {
+                togglePassword.addEventListener('click', function() {
+                    // toggle the type attribute
+                    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                    password.setAttribute('type', type);
+                    
+                    // toggle the icon
+                    toggleIcon.textContent = type === 'password' ? 'visibility' : 'visibility_off';
+                });
+            }
+        });
+    </script>
 </body>
 </html>
