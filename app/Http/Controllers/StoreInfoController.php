@@ -26,6 +26,8 @@ class StoreInfoController extends Controller
             'bank_name' => 'nullable|string|max:255',
             'bank_owner' => 'nullable|string|max:255',
             'note' => 'nullable|string',
+            'zalo_oa_id' => 'nullable|string|max:100',
+            'zalo_oa_url' => 'nullable|url|max:500',
         ]);
 
         $storeInfo->update($validated);

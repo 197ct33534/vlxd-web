@@ -43,7 +43,7 @@
 
         <!-- Projects Table -->
         <div class="bg-container-light dark:bg-container-dark rounded-xl shadow-subtle overflow-hidden">
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto mf-table-wrap">
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-background-light dark:bg-background-dark">
                         <tr>

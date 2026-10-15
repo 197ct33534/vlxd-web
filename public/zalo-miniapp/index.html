@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>VLXD Đặt hàng</title>
+  <style>
+    :root { --primary: #007BFF; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: #F5F6F8;
+      color: #212529;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      width: 100%;
+      max-width: 360px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid #e9ecef;
+    }
+    h1 { font-size: 1.25rem; margin: 0 0 8px; }
+    p { margin: 0 0 16px; color: #6c757d; font-size: 0.9rem; line-height: 1.45; }
+    .btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 12px;
+      padding: 14px 16px;
+      min-height: 48px;
+      border: 0;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .btn.secondary {
+      background: #e8f1ff;
+      color: #0b5ed7;
+      margin-top: 10px;
+    }
+    .meta { margin-top: 16px; font-size: 0.75rem; color: #adb5bd; word-break: break-all; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>VLXD Đặt hàng</h1>
+    <p>Skeleton Zalo Mini App (Phase 3). Mở portal PWA để tra giá, đặt hàng và theo dõi xe.</p>
+    <a id="open-portal" class="btn" href="/m">Mở đặt hàng</a>
+    <button id="open-native" class="btn secondary" type="button">Mở trong Zalo (nếu có bridge)</button>
+    <div class="meta" id="debug"></div>
+  </div>
+  <script src="./index.js"></script>
+</body>
+</html>

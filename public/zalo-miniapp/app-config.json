@@ -1,0 +1,14 @@
+{
+  "app": {
+    "title": "VLXD Đặt hàng",
+    "headerColor": "#007BFF",
+    "textColor": "white",
+    "statusBar": "normal",
+    "actionBarHidden": false,
+    "hideAndroidBottomNavigationBar": true,
+    "hideIOSSafeAreaBottom": false
+  },
+  "listCSS": [],
+  "listSyncJS": [],
+  "listAsyncJS": ["./index.js"]
+}

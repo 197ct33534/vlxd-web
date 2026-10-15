@@ -1,0 +1,32 @@
+{
+  "name": "VLXD Đặt hàng",
+  "short_name": "VLXD",
+  "description": "Tra giá, đặt vật tư và theo dõi giao hàng tại công trường",
+  "start_url": "/m",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F5F6F8",
+  "theme_color": "#007BFF",
+  "orientation": "portrait-primary",
+  "lang": "vi",
+  "icons": [
+    {
+      "src": "/images/logo/logo-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

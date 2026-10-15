@@ -48,4 +48,14 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    public function isDriver(): bool
+    {
+        return $this->role === 'driver';
+    }
+
+    public function deliveries()
+    {
+        return $this->hasMany(Order::class, 'driver_id');
+    }
 }

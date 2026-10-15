@@ -16,6 +16,8 @@ class StoreInfo extends Model
         'bank_name',
         'bank_owner',
         'note',
+        'zalo_oa_id',
+        'zalo_oa_url',
     ];
 
     /**
@@ -36,6 +38,43 @@ class StoreInfo extends Model
             'bank_name' => null,
             'bank_owner' => null,
             'note' => null,
+            'zalo_oa_id' => null,
+            'zalo_oa_url' => null,
         ]);
+    }
+
+    public static function current(): self
+    {
+        return static::query()->first() ?? new static([
+            'name' => 'Cửa hàng vật liệu xây dựng',
+            'phone' => null,
+            'zalo_oa_url' => null,
+        ]);
+    }
+
+    public function telHref(): ?string
+    {
+        if (!$this->phone) {
+            return null;
+        }
+
+        $digits = preg_replace('/\D+/', '', $this->phone);
+
+        return $digits ? 'tel:' . $digits : null;
+    }
+
+    public function zaloHref(): ?string
+    {
+        if ($this->zalo_oa_url) {
+            return $this->zalo_oa_url;
+        }
+
+        if (!$this->phone) {
+            return null;
+        }
+
+        $digits = preg_replace('/\D+/', '', $this->phone);
+
+        return $digits ? 'https://zalo.me/' . $digits : null;
     }
 }

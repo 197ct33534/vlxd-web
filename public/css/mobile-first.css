@@ -1,0 +1,135 @@
+/* Mobile-first utilities for VLXD portal + admin rescue */
+
+:root {
+  --mf-touch: 44px;
+  --mf-price: 1.125rem;
+  --mf-cta-h: 52px;
+  --mf-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overscroll-behavior-y: contain;
+}
+
+.mf-touch {
+  min-height: var(--mf-touch);
+  min-width: var(--mf-touch);
+}
+
+.mf-price {
+  font-size: var(--mf-price);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.mf-sticky-cta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 35;
+  padding: 0.75rem 1rem calc(0.75rem + var(--mf-safe-bottom));
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid #e9ecef;
+  backdrop-filter: blur(8px);
+}
+
+body.has-portal-nav .mf-sticky-cta {
+  bottom: calc(56px + var(--mf-safe-bottom));
+}
+
+.mf-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: var(--mf-cta-h);
+  padding: 0 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  width: 100%;
+}
+
+.mf-cta-btn--primary {
+  background: #007bff;
+  color: #fff;
+}
+
+.mf-cta-btn--secondary {
+  background: #e8f1ff;
+  color: #0b5ed7;
+}
+
+.mf-cta-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* Admin tables: stack on small screens */
+@media (max-width: 767px) {
+  .mf-table-wrap {
+    overflow-x: visible !important;
+  }
+
+  .mf-table-wrap table thead {
+    display: none;
+  }
+
+  .mf-table-wrap table,
+  .mf-table-wrap tbody,
+  .mf-table-wrap tr,
+  .mf-table-wrap td {
+    display: block;
+    width: 100%;
+  }
+
+  .mf-table-wrap tr {
+    margin-bottom: 0.75rem;
+    border: 1px solid #e9ecef;
+    border-radius: 0.75rem;
+    background: #fff;
+    padding: 0.75rem;
+  }
+
+  .mf-table-wrap td {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.35rem 0;
+    border: 0 !important;
+    text-align: right;
+  }
+
+  .mf-table-wrap td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #6c757d;
+    text-align: left;
+  }
+
+  .mf-hide-mobile {
+    display: none !important;
+  }
+
+  .mf-admin-main {
+    padding: 1rem !important;
+  }
+
+  .mf-admin-title {
+    font-size: 1.5rem !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .mf-show-mobile-only {
+    display: none !important;
+  }
+}

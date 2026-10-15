@@ -9,8 +9,6 @@ class Kernel extends HttpKernel
     /**
      * The application's global HTTP middleware stack.
      *
-     * These middleware are run during every request to your application.
-     *
      * @var array<int, class-string|string>
      */
     protected $middleware = [
@@ -20,7 +18,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
-        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \Illuminate\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
 
     /**
@@ -48,8 +46,6 @@ class Kernel extends HttpKernel
     /**
      * The application's middleware aliases.
      *
-     * Aliases may be used instead of class names to conveniently assign middleware to routes and groups.
-     *
      * @var array<string, class-string|string>
      */
     protected $middlewareAliases = [
@@ -66,5 +62,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         'allow.diagnostics' => \App\Http\Middleware\AllowDiagnostics::class,
+        'portal' => \App\Http\Middleware\PortalAuth::class,
+        'role' => \App\Http\Middleware\EnsureRole::class,
     ];
 }
