@@ -44,6 +44,20 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="zalo_oa_id">Zalo OA ID</label>
+                    <input type="text" name="zalo_oa_id" id="zalo_oa_id" value="{{ old('zalo_oa_id', $storeInfo->zalo_oa_id) }}"
+                           class="mt-1 block w-full rounded-lg border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark focus:ring-primary focus:border-primary text-text-light dark:text-text-dark"/>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="zalo_oa_url">Link Zalo OA / zalo.me</label>
+                    <input type="url" name="zalo_oa_url" id="zalo_oa_url" value="{{ old('zalo_oa_url', $storeInfo->zalo_oa_url) }}" placeholder="https://zalo.me/..."
+                           class="mt-1 block w-full rounded-lg border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark focus:ring-primary focus:border-primary text-text-light dark:text-text-dark"/>
+                    @error('zalo_oa_url') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300" for="bank_name">Ngân hàng</label>
                     <input type="text" name="bank_name" id="bank_name" value="{{ old('bank_name', $storeInfo->bank_name) }}"
                            class="mt-1 block w-full rounded-lg border-border-light dark:border-border-dark bg-background-light dark:bg-background-dark focus:ring-primary focus:border-primary text-text-light dark:text-text-dark"/>
