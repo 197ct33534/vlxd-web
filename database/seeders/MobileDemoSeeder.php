@@ -58,23 +58,15 @@ class MobileDemoSeeder extends Seeder
             ]
         );
 
-        // Hóa đơn mẫu để portal lấy giá realtime (forceFill vì $fillable Invoice đang lệch schema)
-        $invoice = Invoice::query()
-            ->where('project_id', $project->id)
-            ->where('code', 'HD-DEMO-001')
-            ->first();
-
-        if (!$invoice) {
-            $invoice = new Invoice();
-            $invoice->forceFill([
-                'project_id' => $project->id,
-                'code' => 'HD-DEMO-001',
+        $invoice = Invoice::query()->firstOrCreate(
+            ['project_id' => $project->id, 'code' => 'HD-DEMO-001'],
+            [
                 'invoice_date' => now()->subDays(7)->toDateString(),
                 'total_amount' => 0,
                 'total_text' => null,
                 'note' => 'Seed demo giá realtime',
-            ])->save();
-        }
+            ]
+        );
 
         if ($invoice->items()->count() === 0) {
             $lines = [
@@ -101,11 +93,8 @@ class MobileDemoSeeder extends Seeder
                 ])->save();
             }
 
-            $invoice->forceFill(['total_amount' => $total])->save();
-            $project->forceFill([
-                'total_invoice' => $total,
-                'total_debt' => $total,
-            ])->save();
+            $invoice->update(['total_amount' => $total]);
+            app(\App\Services\ProjectDebtService::class)->recalculate($project->id);
         }
     }
 }

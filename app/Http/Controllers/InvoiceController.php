@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
+use App\Models\Payment;
 use App\Models\Project;
 use App\Models\StoreInfo;
+use App\Services\PaymentAllocationService;
+use App\Services\ProjectDebtService;
 use App\Support\VietnameseCurrency;
 use Dompdf\Dompdf;
 use Dompdf\Options;
@@ -12,6 +15,10 @@ use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
+    public function __construct(private ProjectDebtService $projectDebt)
+    {
+    }
+
     /**
      * Display a listing of the invoices for a specific project.
      */
@@ -82,30 +89,36 @@ class InvoiceController extends Controller
     /**
      * Store a manual payment for the project.
      */
-    public function storePayment(Request $request, Project $project)
+    public function storePayment(Request $request, Project $project, PaymentAllocationService $allocations)
     {
         $request->validate([
             'payment_date' => 'required|date',
             'amount' => 'required|numeric|min:0',
             'note' => 'nullable|string|max:255',
+            'payment_method' => 'nullable|in:cash,bank_transfer',
+            'reference_code' => 'nullable|string|max:100',
+            'proof_image' => 'nullable|image|max:5120',
+            'invoice_id' => 'nullable|exists:invoices,id',
         ]);
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($request, $project) {
-            // Create Payment
-            \App\Models\Payment::create([
+        \Illuminate\Support\Facades\DB::transaction(function () use ($request, $project, $allocations) {
+            $proof = $request->hasFile('proof_image')
+                ? $request->file('proof_image')->store('payments', 'public')
+                : null;
+
+            $payment = Payment::create([
                 'project_id' => $project->id,
                 'payment_date' => $request->payment_date,
                 'amount' => $request->amount,
                 'note' => $request->note,
-                'payment_type' => 'manual', // or 'tien_mat', 'chuyen_khoan'
+                'payment_type' => Payment::normalizeType('tung_dot'),
                 'for_project' => 'project',
+                'payment_method' => $request->input('payment_method', 'cash'),
+                'reference_code' => $request->input('reference_code'),
+                'proof_image' => $proof,
             ]);
 
-            // Update Project totals
-            $totalPaid = \App\Models\Payment::where('project_id', $project->id)->sum('amount');
-            $project->total_paid = $totalPaid;
-            $project->total_debt = max(0, $project->total_invoice - $project->total_paid);
-            $project->save();
+            $allocations->allocate($payment, $request->filled('invoice_id') ? (int) $request->invoice_id : null);
         });
 
         return redirect()->back()->with('success', __('msg.payment_recorded'));
@@ -168,11 +181,7 @@ class InvoiceController extends Controller
                 $invoice->items()->create($data);
             }
 
-            // Update Project Totals
-            $totalInvoices = \App\Models\Invoice::where('project_id', $project->id)->sum('total_amount');
-            $project->total_invoice = $totalInvoices;
-            $project->total_debt = max(0, $project->total_invoice - $project->total_paid);
-            $project->save();
+            $this->projectDebt->recalculate($project->id);
         });
 
         return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.invoice_created'));
@@ -239,11 +248,7 @@ class InvoiceController extends Controller
                 $invoice->items()->create($data);
             }
 
-            // Update Project Totals
-            $totalInvoices = \App\Models\Invoice::where('project_id', $project->id)->sum('total_amount');
-            $project->total_invoice = $totalInvoices;
-            $project->total_debt = max(0, $project->total_invoice - $project->total_paid);
-            $project->save();
+            $this->projectDebt->recalculate($project->id);
         });
 
         return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.invoice_updated'));
@@ -262,11 +267,7 @@ class InvoiceController extends Controller
             $invoice->items()->delete(); // Safe manual delete
             $invoice->delete();
 
-            // Update Project Totals
-            $totalInvoices = \App\Models\Invoice::where('project_id', $project->id)->sum('total_amount');
-            $project->total_invoice = $totalInvoices;
-            $project->total_debt = max(0, $project->total_invoice - $project->total_paid);
-            $project->save();
+            $this->projectDebt->recalculate($project->id);
         });
 
         return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.invoice_deleted'));
@@ -275,29 +276,33 @@ class InvoiceController extends Controller
     /**
      * Update the specified payment.
      */
-    public function updatePayment(Request $request, \App\Models\Payment $payment)
+    public function updatePayment(Request $request, \App\Models\Payment $payment, PaymentAllocationService $allocations)
     {
         $request->validate([
             'payment_date' => 'required|date',
             'amount' => 'required|numeric|min:0',
             'note' => 'nullable|string|max:255',
+            'payment_method' => 'nullable|in:cash,bank_transfer',
+            'reference_code' => 'nullable|string|max:100',
+            'proof_image' => 'nullable|image|max:5120',
+            'invoice_id' => 'nullable|exists:invoices,id',
         ]);
 
         $project = $payment->project;
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($request, $payment, $project) {
-            // Update Payment
-            $payment->update([
+        \Illuminate\Support\Facades\DB::transaction(function () use ($request, $payment, $allocations) {
+            $payload = [
                 'payment_date' => $request->payment_date,
                 'amount' => $request->amount,
                 'note' => $request->note,
-            ]);
-
-            // Update Project Totals
-            $totalPaid = $project->payments()->sum('amount');
-            $project->total_paid = $totalPaid;
-            $project->total_debt = max(0, $project->total_invoice - $project->total_paid);
-            $project->save();
+                'payment_method' => $request->input('payment_method', $payment->payment_method ?: 'cash'),
+                'reference_code' => $request->input('reference_code'),
+            ];
+            if ($request->hasFile('proof_image')) {
+                $payload['proof_image'] = $request->file('proof_image')->store('payments', 'public');
+            }
+            $payment->update($payload);
+            $allocations->allocate($payment, $request->filled('invoice_id') ? (int) $request->invoice_id : null);
         });
 
         return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.payment_updated'));
@@ -314,11 +319,7 @@ class InvoiceController extends Controller
             // Delete Payment
             $payment->delete();
 
-            // Update Project Totals
-            $totalPaid = $project->payments()->sum('amount');
-            $project->total_paid = $totalPaid;
-            $project->total_debt = max(0, $project->total_invoice - $project->total_paid);
-            $project->save();
+            $this->projectDebt->recalculate($project->id);
         });
 
         return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.payment_deleted'));
@@ -332,19 +333,15 @@ class InvoiceController extends Controller
         $project = $invoice->project;
 
         \Illuminate\Support\Facades\DB::transaction(function () use ($invoice, $project) {
-            // Create Payment
-            $project->payments()->create([
+            $payment = $project->payments()->create([
                 'payment_date' => now(),
                 'amount' => $invoice->total_amount,
                 'note' => 'Payment for invoice #' . ($invoice->code ?? $invoice->id),
-                'payment_type' => 'manual',
+                'payment_type' => Payment::normalizeType('tung_dot'),
+                'payment_method' => 'cash',
             ]);
 
-            // Update Project Totals
-            $totalPaid = $project->payments()->sum('amount');
-            $project->total_paid = $totalPaid;
-            $project->total_debt = max(0, $project->total_invoice - $project->total_paid);
-            $project->save();
+            app(PaymentAllocationService::class)->allocate($payment, $invoice->id);
         });
 
         return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.invoice_marked_paid'));

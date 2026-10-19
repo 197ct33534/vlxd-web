@@ -1,0 +1,12 @@
+---
+description: Controller mỏng, Blade Alpine, giữ portal và tài xế
+alwaysApply: true
+---
+
+# Kiến trúc vlxd-web
+
+- Laravel 10, Blade, Tailwind CDN, Alpine.js. State ở DB và session hoặc Sanctum. Không thêm lớp state frontend, SPA, hay Redis.
+- Tính kho, công nợ, phân bổ tiền nằm trong `app/Services/`. Controller validate request rồi gọi service.
+- CRUD thường không tách service mới.
+- Alpine dùng `x-data` và `x-on`. Không nhét script tính tiền dài trong Blade.
+- Giữ portal `/m` và màn tài xế `/driver`. Sửa API hoặc schema thì cập nhật cả hai luồng. Không xóa code cũ khi chưa được yêu cầu.

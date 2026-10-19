@@ -247,7 +247,7 @@
                             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">
                                 <span x-text="editMode ? @js(__('invoices.payment_modal.edit')) : @js(__('invoices.payment_modal.add'))"></span>
                             </h3>
-                            <form :action="formAction" method="POST" class="mt-4 space-y-4">
+                            <form :action="formAction" method="POST" enctype="multipart/form-data" class="mt-4 space-y-4">
                                 @csrf
                                 <template x-if="editMode">
                                     <input type="hidden" name="_method" value="PUT">
@@ -263,6 +263,30 @@
                                     <input type="number" name="amount" id="amount" required min="0" step="1" x-model="amount"
                                            class="mt-1 flex-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
                                            placeholder="{{ __('invoices.payment_modal.amount_placeholder') }}">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Hình thức</label>
+                                    <select name="payment_method" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm">
+                                        <option value="cash">Tiền mặt</option>
+                                        <option value="bank_transfer">Chuyển khoản</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mã giao dịch</label>
+                                    <input type="text" name="reference_code" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Ảnh bill chuyển khoản</label>
+                                    <input type="file" name="proof_image" accept="image/*" class="mt-1 block w-full text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phân bổ</label>
+                                    <select name="invoice_id" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm">
+                                        <option value="">Tự động trừ hóa đơn cũ nhất (FIFO)</option>
+                                        @foreach($project->invoices()->orderBy('invoice_date')->get() as $inv)
+                                            <option value="{{ $inv->id }}">{{ $inv->code ?: ('#'.$inv->id) }} — {{ number_format($inv->total_amount, 0, ',', '.') }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div>
                                     <label for="note" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('common.note') }}</label>

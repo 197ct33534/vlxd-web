@@ -3,66 +3,57 @@
 namespace App\Http\Controllers\Driver;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
+use App\Models\DeliveryNote;
+use App\Services\DeliveryService;
 use App\Services\ShopNotifier;
 use App\Services\ZaloNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class DeliveryController extends Controller
 {
     public function index()
     {
-        $orders = Order::with(['customer', 'project', 'items'])
-            ->where(function ($q) {
-                $user = Auth::user();
-                if ($user?->isAdmin() && !request()->boolean('mine')) {
-                    // Admin xem toàn bộ đơn đang giao / chờ giao
-                    $q->whereIn('status', ['confirmed', 'delivering']);
-                } else {
-                    $q->where('driver_id', Auth::id())
-                        ->whereIn('status', ['confirmed', 'delivering']);
-                }
+        $notes = DeliveryNote::with(['order.customer', 'project', 'items'])
+            ->whereIn('status', ['pending', 'delivering'])
+            ->when(!(Auth::user()?->isAdmin() && !request()->boolean('mine')), function ($q) {
+                $q->where('driver_id', Auth::id());
             })
-            ->orderByRaw("CASE status WHEN 'delivering' THEN 0 WHEN 'confirmed' THEN 1 ELSE 2 END")
+            ->orderByRaw("CASE status WHEN 'delivering' THEN 0 WHEN 'pending' THEN 1 ELSE 2 END")
             ->latest()
             ->get();
 
-        return view('driver.index', compact('orders'));
+        return view('driver.index', compact('notes'));
     }
 
-    public function show(Order $order)
+    public function show(DeliveryNote $deliveryNote)
     {
-        $this->authorizeDriver($order);
-        $order->load(['customer', 'project', 'items']);
+        $this->authorizeDriver($deliveryNote);
+        $deliveryNote->load(['order.customer', 'project', 'items']);
 
-        return view('driver.show', compact('order'));
+        return view('driver.show', compact('deliveryNote'));
     }
 
-    public function start(Order $order, ZaloNotifier $zalo, ShopNotifier $shop)
+    public function start(DeliveryNote $deliveryNote, ZaloNotifier $zalo, ShopNotifier $shop)
     {
-        $this->authorizeDriver($order);
+        $this->authorizeDriver($deliveryNote);
 
-        if (!in_array($order->status, ['confirmed', 'delivering'], true)) {
-            return back()->with('error', 'Không thể bắt đầu giao đơn này.');
+        if (!in_array($deliveryNote->status, ['pending', 'delivering'], true)) {
+            return back()->with('error', 'Không thể bắt đầu chuyến này.');
         }
 
-        $order->update([
-            'status' => 'delivering',
-            'delivering_at' => now(),
-        ]);
+        $deliveryNote->update(['status' => 'delivering']);
 
-        $fresh = $order->fresh('customer');
-        $zalo->notifyOrderStatus($fresh, 'delivering');
-        $shop->notifyStatus($fresh, 'delivering');
+        $order = $deliveryNote->order->fresh('customer');
+        $zalo->notifyOrderStatus($order, 'delivering');
+        $shop->notifyStatus($order, 'delivering');
 
         return back()->with('success', 'Đã bắt đầu giao hàng.');
     }
 
-    public function complete(Request $request, Order $order, ZaloNotifier $zalo, ShopNotifier $shop)
+    public function complete(Request $request, DeliveryNote $deliveryNote, DeliveryService $deliveries, ZaloNotifier $zalo, ShopNotifier $shop)
     {
-        $this->authorizeDriver($order);
+        $this->authorizeDriver($deliveryNote);
 
         $data = $request->validate([
             'delivery_photo' => 'nullable|image|max:5120',
@@ -70,33 +61,38 @@ class DeliveryController extends Controller
             'delivery_lng' => 'nullable|numeric',
         ]);
 
-        $photoPath = $order->delivery_photo;
+        $photoPath = $deliveryNote->photo_url;
         if ($request->hasFile('delivery_photo')) {
             $photoPath = $request->file('delivery_photo')->store('deliveries', 'public');
         }
 
-        $order->update([
-            'status' => 'delivered',
-            'delivered_at' => now(),
-            'delivery_photo' => $photoPath,
-            'delivery_lat' => $data['delivery_lat'] ?? null,
-            'delivery_lng' => $data['delivery_lng'] ?? null,
-        ]);
+        $note = $deliveries->completeDelivery(
+            $deliveryNote,
+            $photoPath,
+            $data['delivery_lat'] ?? null,
+            $data['delivery_lng'] ?? null
+        );
 
-        $fresh = $order->fresh('customer');
-        $zalo->notifyOrderStatus($fresh, 'delivered');
-        $shop->notifyStatus($fresh, 'delivered');
+        $order = $note->order->fresh('customer');
+        $zalo->notifyOrderStatus($order, $order->status);
+        $shop->notifyStatus($order, $order->status);
 
-        return redirect()->route('driver.index')->with('success', 'Đã giao xong ' . $order->code);
+        $message = 'Đã giao xong ' . $note->code;
+        $warnings = $note->stock_warnings ?? [];
+        if ($warnings) {
+            $message .= '. Cảnh báo tồn âm: ' . implode('; ', $warnings);
+        }
+
+        return redirect()->route('driver.index')->with('success', $message);
     }
 
-    private function authorizeDriver(Order $order): void
+    private function authorizeDriver(DeliveryNote $note): void
     {
         $user = Auth::user();
         if ($user?->isAdmin()) {
             return;
         }
-        if ($order->driver_id !== Auth::id()) {
+        if ($note->driver_id !== Auth::id()) {
             abort(403);
         }
     }

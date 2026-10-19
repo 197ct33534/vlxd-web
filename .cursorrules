@@ -1,0 +1,50 @@
+# vlxd-web — quy tắc cho agent
+
+Dự án Laravel 10, Blade, Alpine.js, Tailwind CDN, MySQL. Nghiệp vụ: cửa hàng VLXD bán lẻ và bán cho thầu theo công trình. Đọc `AGENTS.md` trước khi sửa.
+
+## Phạm vi
+
+- Chỉ sửa file thuộc yêu cầu hiện tại. Không xóa, không đổi tên, không tách lớp code cũ ngoài phạm vi đó.
+- Không thêm `app/Services` cho CRUD thường. Kho, công nợ và phân bổ tiền nằm trong service. Controller chỉ validate rồi gọi service.
+- Giữ portal `/m` và màn tài xế `/driver`. Sửa core thì cập nhật đồng bộ hai luồng. Không xóa code cũ khi chưa được yêu cầu.
+- Alpine dùng `x-data` và `x-on`. Không viết script tính tiền dài ngay trong Blade.
+- Giữ Blade, layout `layouts/` và `components/sidebar`. Portal khách nằm dưới `routes` `portal.*` và `resources/views/portal/`.
+- Không commit `.env`, mật khẩu, hay file sqlite.
+
+## Schema
+
+- Trước khi thêm bảng, đổi cột, hoặc đổi enum đang có dữ liệu: nêu migration dự kiến và chờ xác nhận.
+- Cột tiền: `decimal(15,2)`, đơn vị VND. Không dùng float.
+- Số lượng và hệ số quy đổi: `decimal(12,3)` (m³, tấn, kg, bareme).
+- Trạng thái và danh mục mới dùng `string`, không thêm DB enum. Hằng số nằm trên model (`Order::STATUSES`). Enum cũ của công trình, phiếu thu và báo cáo ngày giữ đến khi có migration được xác nhận.
+- Khóa ngoại và index khai báo trong migration. Không sửa schema bằng tay trên VPS.
+
+## Tiền, công nợ, kho, quy đổi
+
+Mọi ghi hóa đơn, thanh toán, phiếu giao, phiếu nhập, phiếu kiểm kê phải nằm trong `DB::transaction`.
+
+Cập nhật `projects.total_invoice`, `total_paid`, `total_debt` chỉ qua một chỗ tính lại từ chứng từ (hóa đơn trừ thanh toán đã phân bổ), gọi ở cuối transaction. Không cộng dồn tay ở nhiều controller.
+
+Quy đổi đơn vị đọc hệ số từ bareme sản phẩm, rồi cho phép số đã quy đổi trên dòng bị sửa đè. Hao hụt không trừ vào hóa đơn khách.
+
+Xuất kho bãi chỉ khi chuyến giao không đánh dấu giao thẳng từ nhà máy (`is_direct_delivery`). Tồn âm được phép: badge hoặc log, không ném exception để chặn xuất. Giá vốn là bình quân gia quyền di động, tính lại ngay khi nhập kho.
+
+Vượt hạn mức tiền hoặc số ngày nợ chỉ cảnh báo. Đơn trên `/m` và thao tác của nhân viên vẫn lưu. Admin xác nhận bằng checkbox, không chặn cứng.
+
+Validate số lượng, đơn giá, đơn vị và quyền ở backend. Alpine chỉ hỗ trợ nhập liệu.
+
+## Giá và trạng thái đơn
+
+Giá trên portal `/m` là tạm tính. Giá chính thức là giá lúc shop xác nhận đơn hoặc lúc xuất hóa đơn. Giữ cách lấy giá lần trước theo công trình trước khi rơi về bảng giá niêm yết.
+
+Đơn chỉ sang đã giao khi tổng số lượng các phiếu giao đạt số lượng đặt. Một đơn có nhiều phiếu giao.
+
+## Auth
+
+Nhân viên: session, middleware `auth`. Admin: `admin` hoặc `role:admin` đúng route hiện có. Portal khách: session `portal_customer_id`, middleware `portal`. Không trộn hai session.
+
+## Việc không làm trừ khi được yêu cầu
+
+- Không đổi stack sang SPA, không thêm Redis, không viết lại admin thành API.
+- Không bật Zalo ZNS hay Telegram thật khi thiếu token. Thiếu cấu hình thì ghi log như hiện tại.
+- Không bịa dữ liệu kho hoặc hạn mức. Thiếu trường thì dừng và hỏi.

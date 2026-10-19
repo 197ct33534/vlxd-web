@@ -16,6 +16,6 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function () {
 
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{order}', [OrderController::class, 'show']);
-    Route::post('/orders/{order}/start', [OrderController::class, 'start']);
-    Route::post('/orders/{order}/complete', [OrderController::class, 'complete']);
+    Route::post('/delivery-notes/{deliveryNote}/start', [OrderController::class, 'start']);
+    Route::post('/delivery-notes/{deliveryNote}/complete', [OrderController::class, 'complete']);
 });

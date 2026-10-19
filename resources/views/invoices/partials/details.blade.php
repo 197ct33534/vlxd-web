@@ -65,6 +65,12 @@
                     @endforeach
                 </tbody>
                 <tfoot>
+                    @if($invoice->vat_rate > 0)
+                        <tr>
+                            <td colspan="4" class="px-4 py-2 text-right text-sm text-gray-600 dark:text-gray-300">VAT {{ $invoice->vat_rate }}%</td>
+                            <td class="px-4 py-2 text-right tabular-nums">{{ number_format($invoice->vat_amount, 0, ',', '.') }} đ</td>
+                        </tr>
+                    @endif
                     <tr class="border-t-2 border-primary/30 bg-primary/5 dark:border-primary/40 dark:bg-primary/10">
                         <td colspan="4" class="px-4 py-4 text-right text-base font-bold text-gray-800 dark:text-gray-100">
                             {{ __('invoices.detail.total_payment') }}

@@ -1,0 +1,13 @@
+---
+description: Kho bãi, giá vốn MAC, công nợ và transaction
+alwaysApply: true
+---
+
+# Kho, giao hàng, công nợ
+
+- Từ hai lần ghi DB trở lên thì bọc `DB::transaction`.
+- Xuất âm kho được phép. Tồn `< 0` chỉ cảnh báo trên UI hoặc log. Không ném exception để chặn xuất.
+- `is_direct_delivery = true` thì không trừ tồn bãi.
+- Giá vốn là bình quân gia quyền di động, tính lại ngay khi nhập kho. Tồn cũ `<= 0` thì giá vốn mới bằng giá nhập.
+- Cuối mọi thay đổi hóa đơn hoặc phiếu thu gọi `app(ProjectDebtService::class)->recalculate($projectId)`. Không cộng dồn `projects.total_*` ở controller.
+- Vượt hạn mức tiền hoặc số ngày nợ chỉ là cảnh báo. Đơn portal `/m` và thao tác nhân viên vẫn lưu được. Admin xác nhận bằng checkbox, không chặn cứng.

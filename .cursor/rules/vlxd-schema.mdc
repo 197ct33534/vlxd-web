@@ -1,0 +1,13 @@
+---
+description: Kiểu cột tiền, số lượng và trạng thái cho VLXD
+alwaysApply: true
+---
+
+# Schema VLXD
+
+- Tiền (VND): `decimal(15,2)`. Không dùng `float`.
+- Số lượng và hệ số quy đổi (m³, tấn, kg, bareme): `decimal(12,3)`.
+- Trạng thái và danh mục mới: cột `string`. Không thêm DB enum.
+- Hằng trạng thái nằm trên model, ví dụ `Order::STATUSES`. Không đổi tên hay xóa giá trị đang có.
+- Enum cũ (`projects.status`, `payments.payment_type`, `daily_reports.status`) giữ nguyên cho đến khi có migration được xác nhận.
+- Khóa ngoại và index khai báo trong migration. Không sửa schema bằng tay trên VPS.

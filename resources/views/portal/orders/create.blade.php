@@ -38,6 +38,12 @@
         ])->values()->all(),
     ]))"
 >
+    @if(!empty($creditWarning))
+        <div class="rounded-2xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900">
+            Cảnh báo hạn mức: {{ $creditWarning }}. Đơn vẫn được gửi, cửa hàng sẽ duyệt khi xác nhận.
+        </div>
+    @endif
+
     <div class="flex gap-2 text-xs font-bold">
         <template x-for="s in 3" :key="s">
             <button type="button" @click="step = s" class="flex-1 rounded-full py-2 mf-touch"

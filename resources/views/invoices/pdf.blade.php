@@ -271,6 +271,12 @@
 
     <div class="totals-wrap">
         <table class="totals">
+            @if($invoice->vat_rate > 0)
+                <tr>
+                    <td class="label-total">VAT {{ $invoice->vat_rate }}%</td>
+                    <td class="amount-total">{{ number_format($invoice->vat_amount, 0, ',', '.') }} đ</td>
+                </tr>
+            @endif
             <tr>
                 <td class="label-total">Tổng thanh toán</td>
                 <td class="amount-total">{{ number_format($invoice->total_amount, 0, ',', '.') }} đ</td>

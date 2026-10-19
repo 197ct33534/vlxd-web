@@ -13,6 +13,7 @@ class Order extends Model
         'pending_confirm',
         'confirmed',
         'delivering',
+        'partially_delivered',
         'delivered',
         'cancelled',
     ];
@@ -65,11 +66,16 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function deliveryNotes(): HasMany
+    {
+        return $this->hasMany(DeliveryNote::class);
+    }
+
     public function canExportInvoice(): bool
     {
         return $this->invoice_id === null
             && $this->project_id !== null
-            && in_array($this->status, ['confirmed', 'delivering', 'delivered'], true);
+            && in_array($this->status, ['confirmed', 'delivering', 'partially_delivered', 'delivered'], true);
     }
 
     public function driver(): BelongsTo
@@ -89,7 +95,8 @@ class Order extends Model
             'pending_confirm' => 'Chờ xác nhận',
             'confirmed' => 'Đã xác nhận',
             'delivering' => 'Đang giao',
-            'delivered' => 'Đã giao',
+            'partially_delivered' => 'Giao một phần',
+            'delivered' => 'Đã giao đủ',
             'cancelled' => 'Đã hủy',
             default => $this->status,
         };

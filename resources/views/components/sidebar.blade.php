@@ -43,6 +43,9 @@
                         </span>
                     @endif
                 </a>
+                <x-nav-link href="{{ route('admin.inventory.index') }}" icon="warehouse" :active="request()->routeIs('admin.inventory.*')">Tồn kho bãi</x-nav-link>
+                <x-nav-link href="{{ route('admin.stock-receipts.index') }}" icon="inventory" :active="request()->routeIs('admin.stock-receipts.*')">Nhập kho</x-nav-link>
+                <x-nav-link href="{{ route('admin.customers.debt') }}" icon="account_balance" :active="request()->routeIs('admin.customers.debt')">Sổ nợ khách</x-nav-link>
                 <x-nav-link href="{{ route('admin.reports.index') }}" icon="analytics" :active="request()->routeIs('admin.reports.*')">{{ __('nav.reports') }}</x-nav-link>
                 <x-nav-link href="{{ route('employees.index') }}" icon="badge" :active="request()->routeIs('employees.*')">Nhân viên</x-nav-link>
                 <x-nav-link href="{{ route('store-settings.edit') }}" icon="storefront" :active="request()->routeIs('store-settings.*')">Thông tin cửa hàng</x-nav-link>

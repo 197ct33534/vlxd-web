@@ -160,14 +160,26 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{order}/assign-driver', [AdminOrderController::class, 'assignDriver'])->name('assign-driver');
         Route::post('/{order}/cancel', [AdminOrderController::class, 'cancel'])->name('cancel');
         Route::post('/{order}/export-invoice', [AdminOrderController::class, 'exportInvoice'])->name('export-invoice');
+        Route::post('/{order}/delivery-notes', [AdminOrderController::class, 'storeDeliveryNote'])->name('delivery-notes.store');
         Route::put('/{order}/project', [AdminOrderController::class, 'updateProject'])->name('project.update');
+    });
+
+    Route::middleware('role:admin')->prefix('admin')->name('admin.')->group(function () {
+        Route::get('/inventory', [\App\Http\Controllers\Admin\InventoryController::class, 'index'])->name('inventory.index');
+        Route::get('/stock-receipts', [\App\Http\Controllers\Admin\StockReceiptController::class, 'index'])->name('stock-receipts.index');
+        Route::get('/stock-receipts/create', [\App\Http\Controllers\Admin\StockReceiptController::class, 'create'])->name('stock-receipts.create');
+        Route::post('/stock-receipts', [\App\Http\Controllers\Admin\StockReceiptController::class, 'store'])->name('stock-receipts.store');
+        Route::get('/customers/debt', [\App\Http\Controllers\Admin\CustomerDebtController::class, 'index'])->name('customers.debt');
+        Route::post('/customers/{customer}/credit', [\App\Http\Controllers\Admin\CustomerDebtController::class, 'updateCustomerCredit'])->name('customers.credit');
+        Route::post('/projects/{project}/credit', [\App\Http\Controllers\Admin\CustomerDebtController::class, 'updateProjectCredit'])->name('projects.credit');
+        Route::get('/projects/{project}/reconciliation-pdf', [\App\Http\Controllers\Admin\CustomerDebtController::class, 'reconciliationPdf'])->name('projects.reconciliation-pdf');
     });
 
     // Driver delivery screens
     Route::middleware('role:driver,admin')->prefix('driver')->name('driver.')->group(function () {
         Route::get('/', [DeliveryController::class, 'index'])->name('index');
-        Route::get('/orders/{order}', [DeliveryController::class, 'show'])->name('show');
-        Route::post('/orders/{order}/start', [DeliveryController::class, 'start'])->name('start');
-        Route::post('/orders/{order}/complete', [DeliveryController::class, 'complete'])->name('complete');
+        Route::get('/notes/{deliveryNote}', [DeliveryController::class, 'show'])->name('show');
+        Route::post('/notes/{deliveryNote}/start', [DeliveryController::class, 'start'])->name('start');
+        Route::post('/notes/{deliveryNote}/complete', [DeliveryController::class, 'complete'])->name('complete');
     });
 });

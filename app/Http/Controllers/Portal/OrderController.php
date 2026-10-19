@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\InvoiceItem;
 use App\Models\Order;
 use App\Models\Project;
+use App\Services\CreditCheckService;
 use App\Services\ShopNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -55,12 +56,20 @@ class OrderController extends Controller
                 ->find($request->integer('reorder'));
         }
 
+        $creditWarning = null;
+        $selected = $projects->firstWhere('id', $selectedProjectId);
+        if ($selected) {
+            $credit = app(CreditCheckService::class)->checkCreditStatus($selected);
+            $creditWarning = $credit['is_exceeded'] ? $credit['reason'] : null;
+        }
+
         return view('portal.orders.create', compact(
             'customer',
             'projects',
             'selectedProjectId',
             'suggestions',
-            'reorder'
+            'reorder',
+            'creditWarning'
         ));
     }
 
@@ -127,9 +136,17 @@ class OrderController extends Controller
 
         app(ShopNotifier::class)->notifyNewOrder($order);
 
+        $message = 'Đã gửi yêu cầu đặt hàng. Cửa hàng sẽ xác nhận sớm.';
+        if ($order->project_id) {
+            $credit = app(CreditCheckService::class)->checkCreditStatus($order->project);
+            if ($credit['is_exceeded']) {
+                $message .= ' Cảnh báo hạn mức: ' . $credit['reason'] . '.';
+            }
+        }
+
         return redirect()
             ->route('portal.orders.show', $order)
-            ->with('success', 'Đã gửi yêu cầu đặt hàng. Cửa hàng sẽ xác nhận sớm.');
+            ->with('success', $message);
     }
 
     public function show(Request $request, Order $order)
@@ -141,7 +158,12 @@ class OrderController extends Controller
             abort(404);
         }
 
-        $order->load(['items', 'project', 'invoice']);
+        $order->load([
+            'items', 'project', 'invoice',
+            'deliveryNotes' => function ($q) {
+                $q->where('status', 'delivered')->with('items')->latest();
+            },
+        ]);
 
         return view('portal.orders.show', compact('order', 'customer'));
     }

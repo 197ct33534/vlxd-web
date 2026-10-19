@@ -1,7 +1,7 @@
 @extends('layouts.mobile-customer')
 
-@section('title', $order->code)
-@section('heading', $order->code)
+@section('title', $deliveryNote->code)
+@section('heading', $deliveryNote->code)
 
 @section('bottom_nav')
 @endsection
@@ -9,31 +9,34 @@
 @section('content')
 <div class="space-y-4 pb-8">
     <div class="rounded-2xl bg-white border p-4 text-sm space-y-1">
-        <p class="font-bold text-lg">{{ $order->customer?->name }}</p>
-        <p>{{ $order->delivery_address }}</p>
-        @if($order->customer?->phone)
-            <a href="tel:{{ preg_replace('/\D+/', '', $order->customer->phone) }}" class="inline-flex text-primary font-bold mf-touch mt-2">Gọi khách</a>
+        <p class="font-bold text-lg">{{ $deliveryNote->order?->customer?->name }}</p>
+        <p>{{ $deliveryNote->order?->delivery_address }}</p>
+        <p class="text-gray-500">Biển số: {{ $deliveryNote->license_plate ?? '—' }}</p>
+        @if($deliveryNote->order?->customer?->phone)
+            <a href="tel:{{ preg_replace('/\D+/', '', $deliveryNote->order->customer->phone) }}" class="inline-flex text-primary font-bold mf-touch mt-2">Gọi khách</a>
         @endif
     </div>
 
     <ul class="rounded-2xl bg-white border divide-y">
-        @foreach($order->items as $item)
-            <li class="px-4 py-3 text-sm flex justify-between">
+        @foreach($deliveryNote->items as $item)
+            <li class="px-4 py-3 text-sm flex justify-between gap-3">
                 <span>{{ $item->product_name }}</span>
-                <span class="font-bold">{{ number_format($item->quantity, 2, ',', '.') }} {{ $item->unit }}</span>
+                <span class="font-bold text-right">{{ number_format($item->quantity, 3, ',', '.') }} {{ $item->trade_unit }}
+                    <span class="block text-xs text-gray-500">~ {{ number_format($item->converted_quantity, 3, ',', '.') }}</span>
+                </span>
             </li>
         @endforeach
     </ul>
 
-    @if($order->status === 'confirmed')
-        <form method="POST" action="{{ route('driver.start', $order) }}">
+    @if($deliveryNote->status === 'pending')
+        <form method="POST" action="{{ route('driver.start', $deliveryNote) }}">
             @csrf
             <button class="mf-cta-btn mf-cta-btn--primary">Bắt đầu giao</button>
         </form>
     @endif
 
-    @if($order->status === 'delivering')
-        <form method="POST" action="{{ route('driver.complete', $order) }}" enctype="multipart/form-data" class="space-y-3" id="complete-form">
+    @if($deliveryNote->status === 'delivering')
+        <form method="POST" action="{{ route('driver.complete', $deliveryNote) }}" enctype="multipart/form-data" class="space-y-3" id="complete-form">
             @csrf
             <label class="block rounded-2xl bg-white border p-4">
                 <span class="text-sm font-semibold block mb-2">Ảnh biên nhận (tuỳ chọn)</span>

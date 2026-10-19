@@ -21,6 +21,7 @@
                             'bg-amber-100 text-amber-800' => in_array($order->status, ['draft', 'pending_confirm']),
                             'bg-blue-100 text-blue-800' => $order->status === 'confirmed',
                             'bg-indigo-100 text-indigo-800' => $order->status === 'delivering',
+                            'bg-orange-100 text-orange-800' => $order->status === 'partially_delivered',
                             'bg-green-100 text-green-800' => $order->status === 'delivered',
                             'bg-gray-100 text-gray-600' => $order->status === 'cancelled',
                         ])

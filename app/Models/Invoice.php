@@ -8,16 +8,34 @@ use Illuminate\Database\Eloquent\Model;
 class Invoice extends Model
 {
     use HasFactory;
-    protected $fillable = ['project_id', 'date', 'total_amount', 'total_amount_text'];
+    protected $fillable = [
+        'project_id',
+        'code',
+        'invoice_date',
+        'total_amount',
+        'total_text',
+        'note',
+        'vat_rate',
+        'vat_amount',
+    ];
+
+    protected $casts = [
+        'invoice_date' => 'date',
+        'vat_rate' => 'decimal:2',
+        'vat_amount' => 'decimal:2',
+        'total_amount' => 'decimal:2',
+    ];
+
+    public function paymentAllocations()
+    {
+        return $this->hasMany(PaymentAllocation::class);
+    }
+
     public function items()
     {
         return $this->hasMany(InvoiceItem::class);
     }
-    public function payments()
-    {
-        return $this->hasMany(Payment::class);
-    }
-    
+
     public function project()
     {
         return $this->belongsTo(Project::class);

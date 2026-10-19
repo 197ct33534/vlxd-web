@@ -13,6 +13,8 @@ use App\Models\Project;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Payment;
+use App\Services\PaymentAllocationService;
+use App\Services\ProjectDebtService;
 
 class ImportInvoiceController extends Controller
 {
@@ -302,38 +304,26 @@ class ImportInvoiceController extends Controller
                 ]);
             }
             
-            // Xử lý Advance Payments (Ứng tiền từ file Excel)
+            $touchedProjectIds = [$project->id];
+            $paymentType = Payment::normalizeType($paymentType);
+
+            // Ứng tiền từ file Excel. Enum chưa có ung_truoc nên lưu tung_dot.
             foreach ($advancePayments as $ap) {
                 $pDate = $ap['ngay_thang'] ? \Carbon\Carbon::createFromFormat('d/m/Y', $ap['ngay_thang'])->format('Y-m-d') : $invoiceDate;
-                Payment::create([
+                $advance = Payment::create([
                     'project_id' => $project->id,
                     'payment_date' => $pDate,
                     'amount' => (float)$ap['so_tien'],
-                    'payment_type' => 'ung_truoc',
+                    'payment_type' => Payment::normalizeType('ung_truoc'),
                     'for_project' => 'project',
                     'note' => $ap['noi_dung'] . ' (Import từ file)',
                 ]);
+                app(PaymentAllocationService::class)->allocate($advance);
             }
 
-            // 5) Cập nhật tổng cho project (tăng total_invoice, tính total_debt)
-            // Tính lại tổng hóa đơn của project từ DB (an toàn nếu có nhiều hóa đơn)
-            $totalInvoiceSum = (float) Invoice::where('project_id', $project->id)->sum('total_amount');
-            
-            // Tổng thanh toán hiện có trên project (bao gồm cả advance payments vừa tạo)
-            $totalPaidSum = (float) Payment::where('project_id', $project->id)->sum('amount');
-
-            // Nếu sẽ có payment trong cùng request, thêm tạm trước khi lưu project
-            $futurePaid = $paymentAmount;
-            $project->total_invoice = $totalInvoiceSum;
-            $project->total_paid = $totalPaidSum + $futurePaid;
-            $project->total_debt = max(0, $project->total_invoice - $project->total_paid);
-            $project->save();
-
-            // 6) Xử lý payment (nếu có)
             if ($paymentAmount > 0) {
                 if ($paymentFor === 'project') {
-                    // Tạo 1 payment gắn vào project
-                    $p = Payment::create([
+                    $imported = Payment::create([
                         'project_id' => $project->id,
                         'payment_date' => $paymentDate,
                         'amount' => $paymentAmount,
@@ -341,32 +331,29 @@ class ImportInvoiceController extends Controller
                         'for_project' => 'project',
                         'note' => $request->input('payment_note', 'Thanh toán khi import'),
                     ]);
-
-                    // cập nhật project (đã tạm cộng phía trên, nhưng chắc chắn cập nhật lại từ DB)
-                    $project->total_paid = (float) Payment::where('project_id', $project->id)->sum('amount');
-                    $project->total_debt = max(0, $project->total_invoice - $project->total_paid);
-                    $project->save();
+                    app(PaymentAllocationService::class)->allocate($imported);
                 } else {
-                    // payment_for == 'all' => phân bổ thanh toán cho tất cả công trình của cùng khách hàng
-                    // Strategy: lấy danh sách công trình của customer theo thứ tự "cũ nhất (invoice_date nhỏ nhất) first"
                     $remaining = $paymentAmount;
                     $projects = Project::where('customer_id', $customer->id)
                         ->orderBy('created_at', 'asc')
                         ->get();
 
                     foreach ($projects as $pr) {
-                        if ($remaining <= 0) break;
+                        if ($remaining <= 0) {
+                            break;
+                        }
 
-                        // Tính nợ hiện tại của công trình (từ DB)
                         $prInvoiceSum = (float) Invoice::where('project_id', $pr->id)->sum('total_amount');
                         $prPaidSum = (float) Payment::where('project_id', $pr->id)->sum('amount');
                         $prDebt = max(0, $prInvoiceSum - $prPaidSum);
 
-                        if ($prDebt <= 0) continue; // không nợ
+                        if ($prDebt <= 0) {
+                            continue;
+                        }
 
                         $apply = min($prDebt, $remaining);
 
-                        Payment::create([
+                        $split = Payment::create([
                             'project_id' => $pr->id,
                             'payment_date' => $paymentDate,
                             'amount' => $apply,
@@ -374,33 +361,29 @@ class ImportInvoiceController extends Controller
                             'for_project' => 'all',
                             'note' => 'Phân bổ thanh toán tổng cho nhiều công trình (import)',
                         ]);
+                        app(PaymentAllocationService::class)->allocate($split);
 
-                        // cập nhật project tức thì
-                        $pr->total_invoice = $prInvoiceSum;
-                        $pr->total_paid = (float) Payment::where('project_id', $pr->id)->sum('amount');
-                        $pr->total_debt = max(0, $pr->total_invoice - $pr->total_paid);
-                        $pr->save();
-
+                        $touchedProjectIds[] = $pr->id;
                         $remaining -= $apply;
                     }
 
-                    // Nếu vẫn còn remaining > 0 (không còn công trình nợ), tạo payment tổng gắn project_id = null
                     if ($remaining > 0) {
-                        Payment::create([
-                            'project_id' => $project->id, // lưu vào project hiện tại làm "kho chứa" tạm — hoặc set null nếu migration cho phép
+                        $leftover = Payment::create([
+                            'project_id' => $project->id,
                             'payment_date' => $paymentDate,
                             'amount' => $remaining,
                             'payment_type' => $paymentType,
                             'for_project' => 'all',
                             'note' => 'Số dư chưa phân bổ (import)',
                         ]);
-
-                        // cập nhật project hiện tại lại
-                        $project->total_paid = (float) Payment::where('project_id', $project->id)->sum('amount');
-                        $project->total_debt = max(0, $project->total_invoice - $project->total_paid);
-                        $project->save();
+                        app(PaymentAllocationService::class)->allocate($leftover);
                     }
                 }
+            }
+
+            $debts = app(ProjectDebtService::class);
+            foreach (array_unique($touchedProjectIds) as $projectId) {
+                $debts->recalculate($projectId);
             }
 
             DB::commit();
@@ -440,9 +423,6 @@ class ImportInvoiceController extends Controller
             'customer_id' => $customer->id,
             'name' => 'Công trình ' . $data['khachHang'],
             'address' => $data['diaChi'],
-            'total_invoice' => $data['tongTien'],
-            'total_paid' => 0,
-            'total_debt' => $data['tongTien'],
             'end_date' => $data['ngayCuoi'],
         ]);
 
@@ -468,6 +448,8 @@ class ImportInvoiceController extends Controller
                 'amount' => $item['thanh_tien'],
             ]);
         }
+
+        app(ProjectDebtService::class)->recalculate($project->id);
 
         return redirect()->route('invoice.index')->with('success', __('msg.import_success_alt'));
     }

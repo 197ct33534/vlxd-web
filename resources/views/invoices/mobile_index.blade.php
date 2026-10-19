@@ -353,7 +353,7 @@
                     </button>
                 </div>
 
-                <form :action="editMode ? '/payments/' + paymentId : '{{ route('projects.payments.store', $project->id) }}'" method="POST" class="space-y-4" @submit="isLoading = true">
+                <form :action="editMode ? '/payments/' + paymentId : '{{ route('projects.payments.store', $project->id) }}'" method="POST" enctype="multipart/form-data" class="space-y-4" @submit="isLoading = true">
                     @csrf
                     <template x-if="editMode">
                         <input type="hidden" name="_method" value="PUT">
@@ -366,6 +366,30 @@
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Số tiền (VNĐ)</label>
                         <input type="number" name="amount" x-model="paymentData.amount" required placeholder="Nhập số tiền" class="w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 p-3 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Hình thức</label>
+                        <select name="payment_method" class="w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 p-3 text-sm">
+                            <option value="cash">Tiền mặt</option>
+                            <option value="bank_transfer">Chuyển khoản</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Mã giao dịch</label>
+                        <input type="text" name="reference_code" class="w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 p-3 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Ảnh bill</label>
+                        <input type="file" name="proof_image" accept="image/*" class="w-full text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Phân bổ</label>
+                        <select name="invoice_id" class="w-full rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 p-3 text-sm">
+                            <option value="">Tự động trừ hóa đơn cũ nhất (FIFO)</option>
+                            @foreach($project->invoices()->orderBy('invoice_date')->get() as $inv)
+                                <option value="{{ $inv->id }}">{{ $inv->code ?: ('#'.$inv->id) }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Ghi chú</label>

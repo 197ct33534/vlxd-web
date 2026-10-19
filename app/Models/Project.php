@@ -15,7 +15,17 @@ class Project extends Model
         'total_invoice',
         'total_paid',
         'total_debt',
-        'end_date'
+        'end_date',
+        'credit_limit',
+        'credit_days',
+    ];
+
+    protected $casts = [
+        'credit_limit' => 'decimal:2',
+        'credit_days' => 'integer',
+        'total_invoice' => 'decimal:2',
+        'total_paid' => 'decimal:2',
+        'total_debt' => 'decimal:2',
     ];
     public function customer()
     {

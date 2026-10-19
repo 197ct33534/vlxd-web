@@ -62,6 +62,26 @@
         </div>
     </div>
 
+    @if($order->deliveryNotes->isNotEmpty())
+        <div class="rounded-2xl bg-white border border-gray-200 overflow-hidden">
+            <div class="px-4 py-3 border-b font-bold">Xe đã hạ hàng</div>
+            <ul class="divide-y">
+                @foreach($order->deliveryNotes as $note)
+                    <li class="px-4 py-3 text-sm space-y-2">
+                        <p class="font-bold">{{ $note->code }} · {{ $note->license_plate ?? 'Không biển số' }}</p>
+                        <p class="text-gray-500">{{ $note->delivery_date?->format('d/m/Y') }}</p>
+                        @foreach($note->items as $item)
+                            <p>{{ $item->product_name }}: {{ number_format($item->quantity, 3, ',', '.') }} {{ $item->trade_unit }}</p>
+                        @endforeach
+                        @if($note->photo_url)
+                            <img src="{{ asset('storage/' . $note->photo_url) }}" alt="Ảnh hạ hàng" class="rounded-xl max-h-48">
+                        @endif
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <a href="{{ route('portal.orders.create', ['reorder' => $order->id, 'project_id' => $order->project_id]) }}"
        class="mf-cta-btn mf-cta-btn--secondary">Đặt lại đơn này</a>
 </div>
@@ -87,8 +107,9 @@ function orderStatusWatcher(initial) {
         isActive(key) {
             if (this.status === 'draft' && key === 'pending_confirm') return true;
             if (this.status === 'cancelled') return false;
+            const current = this.status === 'partially_delivered' ? 'delivering' : this.status;
             const order = ['pending_confirm', 'confirmed', 'delivering', 'delivered'];
-            return order.indexOf(this.status) >= order.indexOf(key);
+            return order.indexOf(current) >= order.indexOf(key);
         },
         init() {
             if (this.terminal) return;
