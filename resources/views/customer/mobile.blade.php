@@ -79,9 +79,11 @@
         </div>
     </div>
 
+    <x-mobile-sidebar />
+
     <header class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 shadow-sm">
         <div class="flex items-center gap-3">
-            <button type="button" class="inline-flex h-10 max-w-[9rem] items-center gap-1.5 rounded-lg bg-slate-100 px-2 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+            <button type="button" @click="$store.layout.toggleSidebar()" aria-label="Mở menu" class="inline-flex h-10 max-w-[9rem] items-center gap-1.5 rounded-lg bg-slate-100 px-2 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                 <span class="material-symbols-outlined shrink-0">menu</span>
                 <span class="truncate text-xs font-semibold"></span>
             </button>

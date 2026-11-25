@@ -36,9 +36,10 @@
     </style>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col" x-data="{ loading: false, selectedIndex: 0 }">
+<x-mobile-sidebar />
 <header class="h-16 bg-white dark:bg-sidebar-dark border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sticky top-0 z-50 transition-colors duration-200">
 <div class="flex items-center gap-3">
-<button type="button" class="inline-flex max-w-[9rem] items-center gap-1 -ml-2 rounded-lg p-2 text-slate-600 dark:text-slate-300">
+<button type="button" @click="$store.layout.toggleSidebar()" aria-label="Mở menu" class="inline-flex max-w-[9rem] items-center gap-1 -ml-2 rounded-lg p-2 text-slate-600 dark:text-slate-300">
 <span class="material-symbols-outlined shrink-0">menu</span>
 <span class="truncate text-xs font-semibold"></span>
 </button>
