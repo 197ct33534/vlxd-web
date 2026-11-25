@@ -100,7 +100,7 @@
         </div>
 
         <div class="px-4 py-3 border-t border-border-light dark:border-border-dark">
-            {{ $invoices->links() }}
+            {{ $invoices->onEachSide(1)->links('invoices.partials.pagination') }}
         </div>
 
         <!-- Payment History & Actions -->

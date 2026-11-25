@@ -117,7 +117,7 @@
                 <p class="mt-1 text-sm font-medium">Không có hóa đơn nào.</p>
             </div>
         @endforelse
-        <div>{{ $invoices->links() }}</div>
+        {{ $invoices->onEachSide(1)->links('invoices.partials.pagination') }}
     </div>
 
     {{-- Danh sách thanh toán --}}
