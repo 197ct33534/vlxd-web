@@ -256,8 +256,8 @@
                                 </template>
                                 
                                 <div>
-                                    <label for="payment_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('common.date') }}</label>
-                                    <input type="date" name="payment_date" id="payment_date" required x-model="date"
+                                    <label for="payment_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Ngày thanh toán</label>
+                                    <input type="date" name="payment_date" id="payment_date" required x-model="date" x-vietnamese-date="date"
                                            class="mt-1 flex-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm">
                                 </div>
                                 <div>

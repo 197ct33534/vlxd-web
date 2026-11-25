@@ -1,8 +1,8 @@
 # SYSTEM_CAPABILITIES.md
 
-Machine-readable capability map for **vlxd-web** (Laravel 10, MySQL). Complements [AGENTS.md](./AGENTS.md).
+Bản đồ tính năng cho **vlxd-web**. Xem [AGENTS.md](./AGENTS.md) để biết quy tắc dữ liệu và điểm vào khi sửa code.
 
-**Snapshot:** 2026-10-15 — local `main` may still be **behind `origin/main`**; working tree includes **wired Mobile-First** (portal `/m`, admin/driver orders, PWA, Sanctum orders API) and **does not include** several modules still on `origin/main` (see [§ Remote-only on origin/main](#remote-only-on-originmain-not-in-current-working-tree)).
+Đối chiếu với route và migration đã commit ngày 25/11/2026. Xem [routes/web.php](routes/web.php) và [routes/api.php](routes/api.php) để xác nhận phạm vi truy cập hiện tại.
 
 ---
 
@@ -13,12 +13,12 @@ Machine-readable capability map for **vlxd-web** (Laravel 10, MySQL). Complement
 | **Staff auth** | Session cookie; `users.email` + password. Middleware: `auth`. Roles on `users.role`: `admin`, `employee` (default), **`driver`** (`User::isDriver()`). |
 | **Portal auth** | Session key `portal_customer_id` → `customers.id`; middleware alias **`portal`** (`PortalAuth`). Login: phone match (normalized digits) against `customers.phone`. Routes under prefix **`/m`**, name prefix **`portal.*`**. |
 | **Roles middleware** | Alias **`role`** (`EnsureRole`) — **`driver.*`** (`role:driver,admin`); **`admin.orders.*`** (`role:admin`). |
-| **Project totals** | `projects.total_invoice`, `total_paid`, `total_debt` updated from invoice/payment flows in `InvoiceController` (verify after changes). |
-| **Schema drift** | Models/controllers may use column names that differ from migrations (e.g. invoice date fields, `payment_type` enum vs app strings). See AGENTS.md §6. |
+| **Project totals** | `projects.total_invoice`, `total_paid`, `total_debt` recalculated by `ProjectDebtService` after invoice/payment mutations. |
+| **Schema drift** | Models/controllers may use column names that differ from migrations (e.g. invoice date fields, `payment_type` enum vs app strings). Xem mục **Quy tắc dữ liệu cần giữ** trong [AGENTS.md](AGENTS.md). |
 
 ---
 
-## Staff back-office (Desktop Web)
+## Quản trị cửa hàng
 
 ### Authentication & dashboard
 
@@ -26,11 +26,11 @@ Machine-readable capability map for **vlxd-web** (Laravel 10, MySQL). Complement
 |-------|--------|
 | **Actors** | Admin, Employee |
 | **Platform** | Desktop Web (Blade + Vite layout) |
-| **Status** | Hoàn thành (core); dashboard is static view |
+| **Status** | Hoàn thành; dashboard thống kê qua `DashboardController` |
 
-**Flow:** `GET /login` → POST authenticate → redirect `customers.index`; POST logout.
+**Flow:** `GET /login` → POST authenticate → redirect trang yêu cầu trước đó hoặc `dashboard`; POST logout.
 
-**Endpoints:** `login`, `authenticate`, `logout`, `GET /` → `dashboard`.
+**Endpoints:** `login`, `authenticate`, `logout`, `GET /dashboard` → `dashboard`. `GET /` là landing công khai.
 
 **Models:** `User` (`users`).
 
@@ -80,11 +80,11 @@ Machine-readable capability map for **vlxd-web** (Laravel 10, MySQL). Complement
 
 **Flow:** Per project: list/create/edit/delete invoices and line items; totals roll up to project.
 
-**Endpoints:** `projects.invoices.*`, `invoices.show|edit|update|destroy`, `invoices.pay` (mark paid).
+**Endpoints:** `projects.invoices.*`, `invoices.show|edit|update|destroy|pdf`, `invoices.pay` và `invoices.move-project`.
 
 **Models:** `Invoice` (`invoices`), `InvoiceItem` (`invoice_items`).
 
-**Note:** `origin/main` adds `invoices.pdf` — **not in local `web.php`**.
+**Hiển thị:** Ngày xuất nằm trên hóa đơn. Ngày giao nằm trên từng dòng vật liệu. Chi tiết desktop và hộp Xem nhanh dùng cùng partial. Hóa đơn có thể chuyển sang công trình cùng khách hàng khi chưa có khoản thu hoặc đơn hàng liên kết.
 
 ---
 
@@ -96,13 +96,13 @@ Machine-readable capability map for **vlxd-web** (Laravel 10, MySQL). Complement
 | **Platform** | Desktop Web |
 | **Status** | Hoàn thành |
 
-**Flow:** Payments attach to **project** (not invoice FK). Create/update/delete adjusts `total_paid` / `total_debt`.
+**Luồng:** Phiếu thu thuộc công trình. Bảng `payment_allocations` phân bổ phiếu thu vào từng hóa đơn. Khi thêm, sửa hoặc xóa phiếu thu, tính lại công nợ công trình.
 
 **Endpoints:** `projects.payments.store`, `payments.update`, `payments.destroy`.
 
 **Models:** `Payment` (`payments`; DB enum `mot_lan`/`tung_dot`).
 
-**Business rule:** Payment is project-scoped; invoice `markAsPaid` is separate shortcut on invoice resource.
+**Nghiệp vụ:** `markAsPaid` chỉ ghi số tiền còn thiếu vào hóa đơn đích. Form thêm và sửa phiếu thu dùng lịch tiếng Việt, hiển thị `dd/mm/yyyy` và gửi `Y-m-d`.
 
 ---
 
@@ -130,11 +130,11 @@ Machine-readable capability map for **vlxd-web** (Laravel 10, MySQL). Complement
 | **Platform** | Desktop Web |
 | **Status** | Hoàn thành |
 
-**Flow:** Upload Excel → preview/select sheet → save creates invoice + items (PhpSpreadsheet in controller). `saveSimple` exists in controller but **no route**.
+**Luồng:** Tải workbook → chọn công trình → xem trước các sheet → xác nhận ngày xuất và lưu các sheet đã chọn. Mỗi sheet lưu riêng. Hệ thống nhận ra nội dung đã nhập trong cùng công trình và cảnh báo khi hóa đơn cũ có dòng vật liệu và tổng tiền khớp.
 
-**Endpoints:** `invoice.index`, `invoice.import`, `invoice.save`.
+**Endpoints:** `invoice.index`, `invoice.import`, `invoice.workbook`, `invoice.workbook.save`. Route `invoice.save` giữ luồng cũ.
 
-**Controller:** `ImportInvoiceController`.
+**Điểm vào:** `ImportInvoiceController`, `InvoiceImportMatcher` và `resources/views/import-workbook.blade.php`.
 
 ---
 
@@ -154,7 +154,7 @@ Machine-readable capability map for **vlxd-web** (Laravel 10, MySQL). Complement
 
 **API (staff session):** `GET /api/latest-price?project_id=&product_name=` → JSON `{ price }` from latest matching `invoice_items` for project (`api.latest-price`).
 
-**Gap:** Approve/reject not wrapped in `admin` middleware (role check mainly in list UI).
+**Phân quyền:** Route duyệt và từ chối nằm trong nhóm middleware `admin`.
 
 ---
 
@@ -376,30 +376,20 @@ Machine-readable capability map for **vlxd-web** (Laravel 10, MySQL). Complement
 
 ---
 
-## Remote-only on origin/main (not in current working tree)
+## Bảng giá, kho và báo cáo quản trị
 
-Local branch + uncommitted work **removed or never had** the following capabilities that still exist on **`origin/main`** (~4 commits ahead). Agents merging/pulling should expect them to return unless intentionally dropped.
-
-| Module | Actors | Platform | Endpoints / notes | Status on remote |
-|--------|--------|----------|-------------------|------------------|
-| **Landing & báo giá công khai** | Khách mua lẻ | Mobile/Desktop Web | `/` landing, `quotation.download`, `landing.quote-request` | Hoàn thành on remote |
-| **Bảng giá vật liệu** | Admin | Desktop | `material-prices.*`, sync from history | Hoàn thành on remote |
-| **Cài đặt cửa hàng** | Admin | Desktop | `store-settings.edit/update` | Hoàn thành on remote |
-| **Báo cáo admin** | Admin | Desktop | `admin.reports.*`, Excel/PDF exports | Hoàn thành on remote |
-| **Dashboard thống kê** | Staff | Desktop | `/dashboard` → `DashboardController` | Hoàn thành on remote |
-| **Tất cả công trình** | Staff | Desktop | `projects.index` (global list) | Hoàn thành on remote |
-| **Hóa đơn PDF** | Staff | Desktop | `invoices.pdf` | Hoàn thành on remote |
-| **Admin middleware** | Admin | — | `EnsureUserIsAdmin`, `admin` route group for employees/reports/settings | Hoàn thành on remote |
-| **i18n** | — | — | `lang/vi.json` | Present on remote |
-
----
+- Landing công khai ở `/`. Tải báo giá qua `quotation.download`.
+- Danh sách bảng giá `material-prices.index` dành cho nhân viên đã đăng nhập. Thêm, sửa, xóa và đồng bộ từ lịch sử nằm trong nhóm admin.
+- Cấu hình tên, địa chỉ, số điện thoại và tài khoản cửa hàng qua `store-settings.edit/update` và `StoreInfo`.
+- Tồn kho và phiếu nhập ở `admin.inventory.*`, `admin.stock-receipts.*` và `StockService`.
+- Sổ nợ và đối chiếu ở `admin.customers.debt`, `admin.projects.reconciliation-pdf`. Báo cáo quản trị và xuất dữ liệu ở `admin.reports.*`.
 
 ## Entity quick reference
 
 ```
 Customer ──1:*──► Project ──1:*──► Invoice ──1:*──► InvoiceItem
                       │
-                      ├──1:*──► Payment
+                      ├──1:*──► Payment ──1:*──► PaymentAllocation ──*──1──► Invoice
                       └──1:*──► Order ──1:*──► OrderItem
 
 User ──1:*──► DailyReport ──1:*──► DailyReportItem ──*──1──► Project
@@ -417,3 +407,4 @@ StoreInfo (singleton row; Zalo OA fields + tel for portal CTA)
 |------|--------|
 | 2026-03-26 | Initial document from local `main` + uncommitted Mobile-First (portal, orders, PWA, StoreInfo/Zalo). |
 | 2026-10-15 | **[UPDATED]** Mobile-First wired: portal `/m`, admin/driver orders, PWA, ZaloNotifier stub, Sanctum `/api/v1/orders`. |
+| 2026-11-25 | Cập nhật nhập nhiều sheet, ngày hóa đơn, phân bổ thanh toán, chuyển công trình và các route quản trị. |

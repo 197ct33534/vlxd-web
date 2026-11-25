@@ -5,7 +5,8 @@ alwaysApply: true
 
 # Kiến trúc vlxd-web
 
-- Laravel 10, Blade, Tailwind CDN, Alpine.js. State ở DB và session hoặc Sanctum. Không thêm lớp state frontend, SPA, hay Redis.
+- Đọc [AGENTS.md](../../AGENTS.md) để tìm điểm vào và các quy tắc dữ liệu.
+- Laravel 10, Blade, Tailwind qua Vite và Alpine.js. Dữ liệu lưu ở DB, đăng nhập dùng session hoặc Sanctum.
 - Tính kho, công nợ, phân bổ tiền nằm trong `app/Services/`. Controller validate request rồi gọi service.
 - CRUD thường không tách service mới.
 - Alpine dùng `x-data` và `x-on`. Không nhét script tính tiền dài trong Blade.

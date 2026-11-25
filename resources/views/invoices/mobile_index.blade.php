@@ -173,7 +173,7 @@
     {{-- Modal thanh toán --}}
     <div x-cloak x-show="paymentModalOpen" class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50 backdrop-blur-sm">
         <div
-            @click.away="paymentModalOpen = false"
+            @click.away="if (!$event.target.closest('.flatpickr-calendar')) paymentModalOpen = false"
             class="max-h-[92dvh] w-full max-w-lg overflow-y-auto rounded-t-2xl bg-container-light p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))] shadow-2xl sm:rounded-xl dark:bg-container-dark"
             x-transition:enter="transition ease-out duration-300"
             x-transition:enter-start="translate-y-full"
@@ -193,8 +193,8 @@
                 </template>
 
                 <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Ngày thanh toán</label>
-                    <input type="date" name="payment_date" x-model="paymentData.date" required class="w-full rounded-lg border-border-light bg-background-light p-3 text-sm focus:border-primary focus:ring-primary dark:border-border-dark dark:bg-background-dark">
+                    <label for="payment_date" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Ngày thanh toán</label>
+                    <input id="payment_date" type="date" name="payment_date" x-model="paymentData.date" x-vietnamese-date="paymentData.date" required class="w-full rounded-lg border-border-light bg-background-light p-3 text-sm focus:border-primary focus:ring-primary dark:border-border-dark dark:bg-background-dark">
                 </div>
                 <div>
                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Số tiền (VNĐ)</label>
