@@ -4,34 +4,11 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 @include('partials.landing-meta', ['storeInfo' => $storeInfo ?? null])
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+{{-- Theme Tailwind: tailwind.landing.config.js --}}
+@vite(['resources/css/landing.css'])
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#f97415",
-                        "background-light": "#f8f7f5",
-                        "background-dark": "#23170f",
-                    },
-                    fontFamily: {
-                        "display": ["Work Sans", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.5rem",
-                        "lg": "1rem",
-                        "xl": "1.5rem",
-                        "2xl": "2rem",
-                        "full": "9999px"
-                    },
-                },
-            },
-        }
-    </script>
 <style>
         body { font-family: 'Work Sans', sans-serif; }
         .glass-nav {

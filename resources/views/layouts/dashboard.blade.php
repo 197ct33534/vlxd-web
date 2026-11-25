@@ -8,7 +8,7 @@
     <link rel="manifest" href="/manifest.webmanifest"/>
     <link rel="stylesheet" href="/css/mobile-first.css"/>
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    @vite(['resources/css/admin.css', 'resources/js/alpine.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
 
@@ -25,40 +25,7 @@
             });
         });
     </script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#007BFF",
-                        "background-light": "#F5F6F8",
-                        "background-dark": "#101922",
-                        "text-light": "#212529",
-                        "text-dark": "#f5f7f8",
-                        "container-light": "#ffffff",
-                        "container-dark": "#1a242d",
-                        "border-light": "#e9ecef",
-                        "border-dark": "#2c3a47",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.5rem",
-                        "lg": "0.75rem",
-                        "xl": "1rem",
-                        "full": "9999px"
-                    },
-                    boxShadow: {
-                        'subtle': '0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)',
-                    }
-                },
-            },
-        }
-    </script>
+    {{-- Theme Tailwind: tailwind.admin.config.js --}}
     <style>
         body { font-family: 'Inter', sans-serif; }
         [x-cloak] { display: none !important; }

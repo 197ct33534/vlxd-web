@@ -3,42 +3,21 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>@yield('title', 'Import Invoice - Data Preview Mobile | CMS Inc.')</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+{{-- Theme Tailwind: tailwind.import.config.js --}}
+@vite(['resources/css/import.css', 'resources/js/alpine.js'])
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#2563eb",
-                        "background-light": "#f8fafc",
-                        "background-dark": "#0f172a",
-                        "sidebar-light": "#ffffff",
-                        "sidebar-dark": "#1e293b",
-                    },
-                    fontFamily: {
-                        sans: ["Inter", "sans-serif"],
-                    },
-                },
-            },
-        };
-    </script>
-<style type="text/tailwindcss">
-        @layer base {
-            body {
-                @apply font-sans;
-            }
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
         }
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
         [x-cloak] { display: none !important; }
     </style>
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen" x-data="{ loading: false }">
 <nav class="sticky top-0 z-30 bg-white dark:bg-sidebar-dark border-b border-slate-200 dark:border-slate-800 px-4 h-16 flex items-center justify-between">

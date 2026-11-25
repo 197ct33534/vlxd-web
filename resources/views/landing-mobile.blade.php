@@ -3,63 +3,17 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 @include('partials.landing-meta', ['storeInfo' => $storeInfo ?? null])
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+{{-- Theme Tailwind: tailwind.landing.config.js --}}
+@vite(['resources/css/landing.css', 'resources/js/alpine.js'])
 <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#f97415",
-                        "construction-orange": "#f97316",
-                        "background-light": "#f8f7f5",
-                        "background-dark": "#23170f",
-                    },
-                    fontFamily: {
-                        "display": ["Work Sans", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.5rem",
-                        "lg": "1rem",
-                        "xl": "1.5rem",
-                        "full": "9999px"
-                    },
-                    keyframes: {
-                        'pulse-custom': {
-                            '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(249, 115, 22, 0.7)' },
-                            '50%': { transform: 'scale(1.05)', boxShadow: '0 0 0 10px rgba(249, 115, 22, 0)' },
-                        },
-                        'shake-custom': {
-                            '0%, 100%': { transform: 'rotate(0deg)' },
-                            '10%, 30%, 50%, 70%, 90%': { transform: 'rotate(-3deg)' },
-                            '20%, 40%, 60%, 80%': { transform: 'rotate(3deg)' },
-                        }
-                    },
-                    animation: {
-                        'pulse-call': 'pulse-custom 2s infinite',
-                        'shake-call': 'shake-custom 0.5s ease-in-out infinite alternate',
-                    }
-                },
-            },
-        }
-    </script>
-<style type="text/tailwindcss">
-        @layer utilities {
-            .animate-call-attention {
-                animation: pulse-custom 2s infinite;
-            }
-            .shake-icon {
-                animation: shake-custom 0.8s infinite;
-            }
-        }
+<style>
+        /* .animate-call-attention / .shake-icon: resources/css/landing.css */
         body { font-family: 'Work Sans', sans-serif; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         [x-cloak] { display: none !important; }
     </style>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden" x-data="{ mobileMenu: false }" x-init="$watch('mobileMenu', v => { document.body.style.overflow = v ? 'hidden' : '' })">
 @php
@@ -243,7 +197,7 @@
 <h2 class="text-2xl font-black leading-tight text-slate-900 dark:text-white">{{ __('landing.mobile_pricing_heading') }}</h2>
 <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{{ __('landing.mobile_pricing_updated', ['time' => date('H:i'), 'date' => date('d/m/Y')]) }}</p>
 </div>
-<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
+<div class="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800/80">
 <div class="overflow-x-auto hide-scrollbar">
 <table class="w-full min-w-[300px] border-collapse text-left">
 <thead>
@@ -305,7 +259,7 @@
 <h3 class="text-xl font-bold mb-6">Đối Tác Nói Gì?</h3>
 <div class="flex gap-4 overflow-x-auto hide-scrollbar pb-4 -mx-4 px-4 snap-x">
     <!-- Testimonial 1 -->
-    <div class="min-w-[280px] bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl snap-center border border-slate-100 dark:border-slate-700 shadow-sm">
+    <div class="min-w-[280px] bg-slate-50 dark:bg-slate-800 p-6 rounded-lg snap-center border border-slate-100 dark:border-slate-700 shadow-sm">
         <div class="flex gap-1 mb-3 text-primary">
             <span class="material-symbols-outlined text-sm fill-1">star</span>
             <span class="material-symbols-outlined text-sm fill-1">star</span>
@@ -325,7 +279,7 @@
         </div>
     </div>
     <!-- Testimonial 2 -->
-    <div class="min-w-[280px] bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl snap-center border border-slate-100 dark:border-slate-700 shadow-sm">
+    <div class="min-w-[280px] bg-slate-50 dark:bg-slate-800 p-6 rounded-lg snap-center border border-slate-100 dark:border-slate-700 shadow-sm">
         <div class="flex gap-1 mb-3 text-primary">
             <span class="material-symbols-outlined text-sm fill-1">star</span>
             <span class="material-symbols-outlined text-sm fill-1">star</span>
@@ -345,7 +299,7 @@
         </div>
     </div>
     <!-- Testimonial 3 -->
-    <div class="min-w-[280px] bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl snap-center border border-slate-100 dark:border-slate-700 shadow-sm">
+    <div class="min-w-[280px] bg-slate-50 dark:bg-slate-800 p-6 rounded-lg snap-center border border-slate-100 dark:border-slate-700 shadow-sm">
         <div class="flex gap-1 mb-3 text-primary">
             <span class="material-symbols-outlined text-sm fill-1">star</span>
             <span class="material-symbols-outlined text-sm fill-1">star</span>

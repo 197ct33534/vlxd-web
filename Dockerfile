@@ -1,3 +1,15 @@
+# --- Stage 1: build CSS/JS (Tailwind + Alpine) bằng Vite -> public/build ---
+FROM node:22-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY vite.config.js postcss.config.js tailwind*.js ./
+COPY resources ./resources
+COPY app ./app
+COPY public/js ./public/js
+RUN npm run build
+
+# --- Stage 2: PHP app ---
 FROM php:8.4-apache
 
 # # Install required PHP extensions and system dependencies
@@ -45,6 +57,7 @@ WORKDIR /var/www/html
 
 # Copy project code
 COPY . /var/www/html
+COPY --from=assets /app/public/build /var/www/html/public/build
 
 # Install Laravel dependencies
 RUN composer install --optimize-autoloader --no-dev

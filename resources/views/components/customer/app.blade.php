@@ -4,33 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ $title ?? 'Customer Management Dashboard' }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    {{-- Theme Tailwind: tailwind.mobile.config.js --}}
+    @vite(['resources/css/mobile.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#2a8ff4",
-                        "background-light": "#f5f7f8",
-                        "background-dark": "#101922",
-                        "text-light": "#212529",
-                        "text-dark": "#f5f7f8",
-                        "container-light": "#ffffff",
-                        "container-dark": "#1a242d",
-                        "border-light": "#e9ecef",
-                        "border-dark": "#2c3a47",
-                    },
-                    fontFamily: { "display": ["Inter", "sans-serif"] },
-                    borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "full": "9999px" },
-                    boxShadow: { 'subtle': '0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)' }
-                }
-            }
-        }
-    </script>
     <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">

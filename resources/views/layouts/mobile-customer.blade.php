@@ -10,27 +10,11 @@
     <link rel="manifest" href="/manifest.webmanifest"/>
     <link rel="icon" href="/images/logo/logo-icon.svg"/>
     <title>@yield('title', 'VLXD Đặt hàng')</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="stylesheet" href="/css/mobile-first.css"/>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#007BFF',
-                        surface: '#F5F6F8',
-                        ink: '#212529',
-                    },
-                    fontFamily: {
-                        display: ['Be Vietnam Pro', 'sans-serif'],
-                    },
-                },
-            },
-        };
-    </script>
+    {{-- Theme Tailwind: tailwind.portal.config.js --}}
+    @vite(['resources/css/portal.css', 'resources/js/alpine.js'])
     <style>
         body { font-family: 'Be Vietnam Pro', sans-serif; }
         [x-cloak] { display: none !important; }

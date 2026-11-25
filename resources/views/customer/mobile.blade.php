@@ -4,45 +4,12 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>{{ __('customer.title') }}</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    {{-- Theme Tailwind: tailwind.mobile-compact.config.js --}}
+    @vite(['resources/css/mobile-compact.css', 'resources/js/alpine.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#2a8ff4",
-                        "background-light": "#f5f7f8",
-                        "background-dark": "#101922",
-                        "text-light": "#212529",
-                        "text-dark": "#f5f7f8",
-                        "container-light": "#ffffff",
-                        "container-dark": "#1a242d",
-                        "border-light": "#e9ecef",
-                        "border-dark": "#2c3a47",
-                    },
-                    boxShadow: {
-                        subtle: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
-                    },
-                    fontFamily: {
-                        "display": ["Inter", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                },
-            },
-        }
-    </script>
-        {{-- Alpine.js --}}
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <style type="text/tailwindcss">
+    <style>
         [x-cloak] { display: none !important; }
         body {
             font-family: 'Inter', sans-serif;
