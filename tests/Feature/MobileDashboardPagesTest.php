@@ -68,6 +68,36 @@ it('renders the mobile invoice detail with print-safe chrome', function () {
         ->toMatch('/<footer[^>]*\bprint:hidden\b/');
 });
 
+it('renders the mobile invoice create form inside the dashboard shell', function () {
+    $html = $this->get(route('projects.invoices.create', $this->project))->assertOk()->getContent();
+
+    expect($html)
+        ->toBeDashboardMobilePage()
+        ->toContain('action="'.route('projects.invoices.store', $this->project).'"')
+        ->toContain('@submit="isLoading = true"')
+        ->toContain('x-text="`${items.length} mục`"')
+        ->toContain(route('projects.invoices.index', $this->project))
+        ->not->toContain('General Information')
+        ->not->toContain('Invoice Items')
+        ->not->toContain('Add Item')
+        ->not->toContain('Total Amount');
+});
+
+it('renders the mobile invoice edit form with a usable date', function () {
+    $invoice = makeInvoice($this->project);
+
+    $html = $this->get(route('invoices.edit', $invoice))->assertOk()->getContent();
+
+    expect($html)
+        ->toBeDashboardMobilePage()
+        ->toContain('action="'.route('invoices.update', $invoice).'"')
+        ->toContain('name="_method" value="PUT"')
+        ->toContain('name="invoice_date" value="'.now()->format('Y-m-d').'"')
+        ->toContain('x-text="`${items.length} mục`"')
+        ->toContain(route('invoices.destroy', $invoice))
+        ->not->toContain('Invoice Inc');
+});
+
 it('renders customer projects inside the dashboard shell', function () {
     $html = $this->get(route('customers.projects.index', $this->customer))->assertOk()->getContent();
 
