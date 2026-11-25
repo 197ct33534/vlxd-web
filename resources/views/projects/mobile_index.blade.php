@@ -11,6 +11,13 @@
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Đang có {{ $projects->count() }} dự án</p>
     </div>
 
+    <div class="flex flex-wrap gap-2">
+        @include('projects.partials.import-new-project')
+        @include('projects.partials.customer-advance')
+    </div>
+
+    @include('projects.partials.customer-balance')
+
     <div class="space-y-4">
         @forelse($projects as $project)
             {{-- Thao tác hiển thị sẵn, giống thẻ khách hàng (bỏ vuốt trái). --}}
@@ -81,6 +88,8 @@
             class="fixed right-5 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] z-30 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/40 transition-transform active:scale-90">
         <span class="material-symbols-outlined text-3xl">add</span>
     </button>
+
+    @include('projects.partials.payment-history')
 
     <!-- Modal thêm / sửa dự án -->
     <div x-cloak x-show="modalOpen" class="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 backdrop-blur-sm"

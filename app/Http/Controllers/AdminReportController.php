@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\DebtByProjectExport;
 use App\Exports\RevenueByMonthExport;
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\Project;
@@ -34,8 +35,8 @@ class AdminReportController extends Controller
             'paymentTotals' => $chart['payment_totals'],
             'totals' => [
                 'invoice' => (float) Invoice::whereNotNull('invoice_date')->sum('total_amount'),
-                'payments' => (float) Payment::receipts()->sum('amount'),
-                'debt' => (float) Project::sum('total_debt'),
+                'payments' => (float) Payment::receiptEntries()->sum('amount'),
+                'debt' => (float) Customer::totalOutstandingDebt(),
             ],
         ]);
     }
@@ -94,8 +95,8 @@ class AdminReportController extends Controller
             'paymentTotals' => $chart['payment_totals'],
             'totals' => [
                 'invoice' => (float) Invoice::whereNotNull('invoice_date')->sum('total_amount'),
-                'payments' => (float) Payment::receipts()->sum('amount'),
-                'debt' => (float) Project::sum('total_debt'),
+                'payments' => (float) Payment::receiptEntries()->sum('amount'),
+                'debt' => (float) Customer::totalOutstandingDebt(),
             ],
             'storeInfo' => $storeInfo,
             'generatedAt' => Carbon::now(),
@@ -149,7 +150,7 @@ class AdminReportController extends Controller
             }
         }
 
-        $paymentRows = Payment::query()
+        $paymentRows = Payment::receiptEntries()
             ->whereNotNull('payment_date')
             ->where('payment_date', '>=', $start->toDateString())
             ->get(['payment_date', 'amount']);

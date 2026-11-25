@@ -26,7 +26,10 @@
                     {{ __('projects.customer.title_prefix') }} <span class="text-primary">{{ $customer->name }}</span>
                 </h1>
             </div>
-            <button 
+            <div class="flex flex-wrap items-center gap-2">
+                @include('projects.partials.import-new-project')
+                @include('projects.partials.customer-advance')
+            <button
                 @click="
                     modalOpen = true; 
                     isEditing = false; 
@@ -39,7 +42,10 @@
                 <span class="material-symbols-outlined text-base">add</span>
                 <span>{{ __('projects.customer.add') }}</span>
             </button>
+            </div>
         </div>
+
+        @include('projects.partials.customer-balance')
 
         <!-- Projects Table -->
         <div class="bg-container-light dark:bg-container-dark rounded-xl shadow-subtle overflow-hidden">
@@ -115,6 +121,8 @@
                 </table>
             </div>
         </div>
+
+        @include('projects.partials.payment-history')
 
         <!-- Add/Edit Project Modal -->
         <x-modal name="modalOpen">

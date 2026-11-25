@@ -18,7 +18,10 @@ class HomeController extends Controller
             ->orderByDesc('updated_at')
             ->get(['id', 'name', 'address', 'total_invoice', 'total_paid', 'total_debt', 'status']);
 
-        $totalDebt = $projects->sum(fn ($p) => (float) $p->total_debt);
+        $customer->loadSum('advances as account_advanced', 'amount');
+        $customer->account_invoiced = $projects->sum('total_invoice');
+        $customer->account_project_paid = $projects->sum('total_paid');
+        $totalDebt = max(0, $customer->accountBalance());
 
         $recentOrders = Order::query()
             ->where('customer_id', $customer->id)

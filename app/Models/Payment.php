@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -37,6 +39,14 @@ class Payment extends Model
     public function scopeReceipts(Builder $query): Builder
     {
         return $query->where('payment_method', '!=', self::DEBT_ADJUSTMENT);
+    }
+
+    public static function receiptEntries(): QueryBuilder
+    {
+        $receipts = static::receipts()->select('payment_date', 'amount')
+            ->unionAll(CustomerAdvance::query()->where('payment_method', '!=', self::DEBT_ADJUSTMENT)->select('payment_date', 'amount'));
+
+        return DB::query()->fromSub($receipts, 'receipts');
     }
 
     public function paymentAllocations(): HasMany

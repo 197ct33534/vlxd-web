@@ -12,6 +12,65 @@ class InvoicePaymentTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_customer_debt_adjustment_changes_only_the_combined_balance(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'admin']));
+        $customer = Customer::create(['name' => 'Khách công nợ tổng']);
+        $first = $customer->projects()->create(['name' => 'Công trình 1', 'total_invoice' => 300000, 'total_debt' => 300000]);
+        $second = $customer->projects()->create(['name' => 'Công trình 2', 'total_invoice' => 200000, 'total_debt' => 200000]);
+        $url = route('customers.projects.debt-adjustment.store', $customer);
+        $payload = ['expected_debt' => 500000, 'debt_amount' => 400000, 'adjustment_reason' => 'Đối chiếu tổng'];
+        $this->post($url, $payload)->assertRedirect(route('customers.projects.index', $customer));
+        $this->post($url, $payload)->assertSessionHas('success', 'Công nợ tổng đã khớp với số tiền nhập.');
+        $this->post($url, array_replace($payload, ['debt_amount' => 450000]))->assertSessionHasErrors('debt_amount');
+        $this->post($url, array_replace($payload, ['expected_debt' => 400000, 'debt_amount' => 450000]))->assertSessionHas('success');
+
+        $this->assertDatabaseHas('customer_advances', ['customer_id' => $customer->id, 'amount' => 100000, 'payment_method' => Payment::DEBT_ADJUSTMENT]);
+        $this->assertDatabaseHas('customer_advances', ['customer_id' => $customer->id, 'amount' => -50000, 'payment_method' => Payment::DEBT_ADJUSTMENT]);
+        $this->assertDatabaseCount('customer_advances', 2);
+        $this->assertEquals(450000, Customer::withAccountTotals()->findOrFail($customer->id)->accountBalance());
+        $this->assertEquals(0, Payment::receiptEntries()->sum('amount'));
+        $this->assertDatabaseHas('projects', ['id' => $first->id, 'total_debt' => 300000]);
+        $this->assertDatabaseHas('projects', ['id' => $second->id, 'total_debt' => 200000]);
+        $this->get(route('customers.projects.index', $customer))->assertOk()
+            ->assertSee('Cập nhật công nợ tổng')->assertSee('Điều chỉnh công nợ tổng')->assertSee('450.000 ₫');
+    }
+
+    public function test_customer_advance_is_unassigned_and_reduces_only_customer_balance(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'admin']));
+        $customer = Customer::create(['name' => 'Khách ứng tiền']);
+        $first = $customer->projects()->create(['name' => 'Công trình 1', 'total_invoice' => 200000, 'total_debt' => 200000]);
+        $second = $customer->projects()->create(['name' => 'Công trình 2', 'total_invoice' => 200000, 'total_debt' => 200000]);
+        $foreign = Customer::create(['name' => 'Khách khác'])->projects()->create(['name' => 'Công trình khác']);
+        $foreign->payments()->create(['amount' => 500, 'payment_type' => 'tung_dot', 'note' => 'Phiếu của khách khác']);
+        $first->payments()->create(['amount' => 10000, 'payment_type' => 'tung_dot', 'note' => 'Phiếu riêng công trình']);
+        $first->update(['total_paid' => 10000, 'total_debt' => 190000]);
+        $url = route('customers.projects.advance.store', $customer);
+        $data = [
+            'amount' => 450000, 'payment_date' => '2026-11-25', 'payment_method' => 'bank_transfer',
+            'note' => 'Khách ứng trước', 'advance_reference' => (string) \Illuminate\Support\Str::uuid(),
+        ];
+
+        $this->post($url, $data)->assertSessionHas('success', 'Đã ghi tiền ứng của khách hàng.');
+        $this->post($url, $data)->assertSessionHas('success', 'Khoản ứng này đã được ghi.');
+        $this->assertDatabaseCount('customer_advances', 1);
+        $this->assertDatabaseHas('customer_advances', ['customer_id' => $customer->id, 'amount' => 450000]);
+        $this->assertDatabaseCount('payments', 2);
+        $this->assertDatabaseHas('projects', ['id' => $first->id, 'total_debt' => 190000]);
+        $this->assertDatabaseHas('projects', ['id' => $second->id, 'total_debt' => 200000]);
+        $this->assertDatabaseCount('payment_allocations', 0);
+        $this->assertEquals(-60000, Customer::withAccountTotals()->findOrFail($customer->id)->accountBalance());
+        $this->assertEquals(460500, Payment::receiptEntries()->sum('amount'));
+        $this->assertEquals(0, Customer::totalOutstandingDebt());
+        $this->get(route('customers.projects.index', $customer))->assertOk()
+            ->assertSee('Lịch sử thanh toán')->assertSee('2 giao dịch')
+            ->assertSee('Khoản ứng chung của khách hàng')->assertSee('Khách ứng trước')
+            ->assertSee('Phiếu riêng công trình')->assertSee('Số dư trả trước')->assertSee('60.000 ₫')
+            ->assertDontSee('Phiếu của khách khác');
+        $this->get(route('customers.index', ['sort' => 'debt_desc']))->assertOk();
+    }
+
     public function test_debt_adjustments_record_signed_differences_without_creating_receipts(): void
     {
         $this->actingAs(User::factory()->create(['role' => 'admin']));

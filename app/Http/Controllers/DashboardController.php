@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Payment;
-use App\Models\Project;
 use Carbon\Carbon;
 use Illuminate\View\View;
 
@@ -13,8 +13,8 @@ class DashboardController extends Controller
     public function index(): View
     {
         $totalInvoiceAmount = (float) Invoice::whereNotNull('invoice_date')->sum('total_amount');
-        $totalPayments = (float) Payment::receipts()->sum('amount');
-        $totalDebt = (float) Project::sum('total_debt');
+        $totalPayments = (float) Payment::receiptEntries()->sum('amount');
+        $totalDebt = (float) Customer::totalOutstandingDebt();
 
         $chart = $this->buildLast12MonthsChart();
 
@@ -58,7 +58,7 @@ class DashboardController extends Controller
             }
         }
 
-        $paymentRows = Payment::receipts()
+        $paymentRows = Payment::receiptEntries()
             ->whereNotNull('payment_date')
             ->where('payment_date', '>=', $start->toDateString())
             ->get(['payment_date', 'amount']);

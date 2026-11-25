@@ -3,9 +3,11 @@ import { Vietnamese } from 'flatpickr/dist/l10n/vn.js';
 import 'flatpickr/dist/flatpickr.css';
 
 export function createVietnameseDatePicker(element) {
+    const inDialog = Boolean(element.closest('dialog'));
     return flatpickr(element, {
         locale: { ...Vietnamese, yearAriaLabel: 'Năm', monthAriaLabel: 'Tháng' },
         disableMobile: true,
+        static: inDialog,
         dateFormat: 'Y-m-d',
         altInput: true,
         altFormat: 'd/m/Y',
@@ -17,6 +19,7 @@ export function createVietnameseDatePicker(element) {
         },
         onReady(_dates, _value, picker) {
             const display = picker.altInput;
+            if (inDialog) element.parentElement.classList.add('w-full');
             display.placeholder = 'dd/mm/yyyy';
             const label = element.getAttribute('aria-label');
             if (label) display.setAttribute('aria-label', label);

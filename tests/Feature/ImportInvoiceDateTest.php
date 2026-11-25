@@ -76,7 +76,9 @@ class ImportInvoiceDateTest extends TestCase
         $request['sheets'] = [0];
         $this->post(strtok($changed, '?'), $request)->assertSessionHas('sheet_results.0.status', 'error');
         $this->post(strtok($changed, '?'), $request + ['reviewed' => [0]])
-            ->assertSessionHas('sheet_results.0.status', 'saved');
+            ->assertRedirect(route('projects.invoices.index', $project))
+            ->assertSessionHas('import_summary.saved', 1);
+        $this->get(route('projects.invoices.index', $project))->assertSee('Đã lưu 1 sheet thành hóa đơn.');
         $this->assertDatabaseCount('invoices', 3);
     }
 
@@ -92,16 +94,40 @@ class ImportInvoiceDateTest extends TestCase
 
         $this->get($url)->assertOk()->assertSee('Trùng nội dung trong tệp');
         $this->post($url, ['project_name' => 'Công trình mới', 'sheets' => [0, 1, 2], 'confirmed' => 1])
-            ->assertSessionHas('sheet_results.0.status', 'saved')
-            ->assertSessionHas('sheet_results.1.status', 'duplicate')
-            ->assertSessionHas('sheet_results.2.status', 'saved');
+            ->assertSessionHas('import_summary.saved', 2)
+            ->assertSessionHas('import_summary.duplicate', 1);
 
         $this->assertDatabaseCount('projects', 1);
         $this->assertDatabaseCount('invoices', 2);
         $this->assertDatabaseHas('projects', ['name' => 'Công trình mới', 'total_debt' => 500000]);
     }
 
-    private function uploadWorkbook(array $rows, string $filename, ?int $projectId = null): string
+    public function test_import_from_customer_projects_keeps_that_customer_for_a_new_project(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'admin']));
+        $customer = Customer::create(['name' => 'Khách được chọn']);
+        $other = Customer::create(['name' => 'Khách khác']);
+        $foreignProject = $other->projects()->create(['name' => 'Công trình ngoài phạm vi']);
+
+        $this->get(route('customers.projects.index', $customer))->assertOk()
+            ->assertSee(route('invoice.index', ['customer_id' => $customer->id]));
+        $preview = $this->uploadWorkbook([
+            'Sheet 1' => ['16/11/2026', 'Đá 1x2', 'm3', 2, 100000],
+        ], 'hoa-don.xlsx', customerId: $customer->id);
+        $this->get($preview)->assertOk()->assertSee('Khách được chọn')->assertSee('Anh Hùng')
+            ->assertDontSee($foreignProject->name);
+
+        $payload = ['sheets' => [0], 'confirmed' => 1];
+        $this->post($preview, $payload + ['project_id' => $foreignProject->id])->assertSessionHasErrors('project_id');
+        $this->post($preview, $payload + ['project_name' => 'Công trình mới'])
+            ->assertSessionHas('import_summary.saved', 1);
+        $project = $customer->projects()->firstOrFail();
+        $this->assertSame('Công trình mới', $project->name);
+        $this->assertDatabaseHas('invoices', ['project_id' => $project->id, 'total_amount' => 200000]);
+        $this->assertDatabaseMissing('customers', ['name' => 'Anh Hùng']);
+    }
+
+    private function uploadWorkbook(array $rows, string $filename, ?int $projectId = null, ?int $customerId = null): string
     {
         $book = new Spreadsheet();
         $sheet = $book->getActiveSheet();
@@ -120,6 +146,7 @@ class ImportInvoiceDateTest extends TestCase
             (new Xlsx($book))->save($path);
             return $this->post(route('invoice.import'), [
                 'project_id' => $projectId,
+                'customer_id' => $customerId,
                 'file' => new UploadedFile($path, $filename, null, null, true),
             ])->assertRedirect()->headers->get('Location');
         } finally {

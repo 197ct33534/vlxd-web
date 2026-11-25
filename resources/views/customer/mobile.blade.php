@@ -46,14 +46,14 @@
                             {{ $customer->status == 'inactive' ? __('customer.status.inactive') : __('customer.status.active') }}
                         </span>
                     </div>
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1 min-w-0">
-                            <p class="text-base font-bold truncate text-gray-900 dark:text-white">{{ $customer->name }}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ $customer->phone }}</p>
+                    <div class="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+                        <div class="min-w-[min(100%,9rem)] flex-1">
+                            <p class="text-base font-bold text-gray-900 [overflow-wrap:anywhere] dark:text-white">{{ $customer->name }}</p>
+                            <p class="text-xs text-gray-500 [overflow-wrap:anywhere] dark:text-gray-400">{{ $customer->phone }}</p>
                         </div>
-                        <div class="text-right ml-4">
+                        <div class="max-w-full text-right">
                             <p class="text-[11px] font-semibold uppercase tracking-wide text-gray-400">Công nợ</p>
-                            <p class="text-lg font-bold {{ ($customer->total_debt ?? 0) > 0 ? 'text-red-600' : 'text-gray-900 dark:text-white' }}">{{ number_format($customer->total_debt ?? 0) }}đ</p>
+                            <p class="text-lg font-bold tabular-nums [overflow-wrap:anywhere] {{ $customer->accountBalance() > 0 ? 'text-red-600' : 'text-gray-900 dark:text-white' }}">{{ number_format(max(0, $customer->accountBalance()), 0, ',', '.') }} ₫</p>
                         </div>
                     </div>
                 </a>
@@ -79,7 +79,7 @@
     </div>
 
     <div class="px-1">
-        {{ $customers->withQueryString()->links() }}
+        {{ $customers->withQueryString()->onEachSide(1)->links('components.pagination-links', ['navigationLabel' => 'Phân trang khách hàng']) }}
     </div>
 
     {{-- Nút thêm khách: không còn thanh điều hướng dưới nên đặt sát đáy (chừa vùng an toàn của iPhone). --}}

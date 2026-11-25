@@ -31,7 +31,10 @@
 
             <form action="{{ route('invoice.import') }}" method="POST" enctype="multipart/form-data" @submit="loading = true" class="space-y-6">
                 @csrf
-                @if(isset($projectId))
+                @if($importCustomer)
+                    <input type="hidden" name="customer_id" value="{{ $importCustomer->id }}">
+                    @include('invoices.partials.import-customer-context')
+                @elseif(isset($projectId))
                     <input type="hidden" name="project_id" value="{{ $projectId }}">
                 @endif
 

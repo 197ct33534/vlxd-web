@@ -17,7 +17,10 @@
     <div class="overflow-hidden rounded-xl border border-border-light bg-container-light shadow-subtle dark:border-border-dark dark:bg-container-dark">
         <form action="{{ route('invoice.import') }}" method="POST" enctype="multipart/form-data" @submit="isLoading = true" class="space-y-5 p-4">
             @csrf
-            @if(isset($projectId))
+            @if($importCustomer)
+                <input type="hidden" name="customer_id" value="{{ $importCustomer->id }}">
+                @include('invoices.partials.import-customer-context')
+            @elseif(isset($projectId))
                 <input type="hidden" name="project_id" value="{{ $projectId }}">
                 <div>
                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Dự án</label>

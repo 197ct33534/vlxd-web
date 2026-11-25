@@ -10,7 +10,7 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Customer::query();
+        $query = Customer::withAccountTotals();
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -42,9 +42,7 @@ class CustomerController extends Controller
             'name_asc' => $query->orderBy('name'),
             'name_desc' => $query->orderByDesc('name'),
             'oldest' => $query->oldest(),
-            'debt_desc' => $query->orderByRaw('(
-                SELECT COALESCE(SUM(p.total_debt), 0) FROM projects p WHERE p.customer_id = customers.id
-            ) DESC'),
+            'debt_desc' => $query->orderByRaw('(COALESCE(account_invoiced, 0) - COALESCE(account_project_paid, 0) - COALESCE(account_advanced, 0)) DESC'),
             'projects_desc' => $query->orderByRaw('(
                 SELECT COUNT(*) FROM projects p WHERE p.customer_id = customers.id
             ) DESC'),
@@ -57,7 +55,6 @@ class CustomerController extends Controller
         }
 
         $customers = $query->withCount('projects')
-            ->withSum('projects as total_debt', 'total_debt')
             ->paginate($perPage)
             ->withQueryString();
             

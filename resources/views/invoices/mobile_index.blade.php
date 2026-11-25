@@ -34,6 +34,7 @@
     }"
     class="flex flex-col gap-4 pb-36"
 >
+    @include('invoices.partials.import-summary')
     <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
             <p class="text-xs font-bold uppercase tracking-widest text-primary">Hóa đơn công trình</p>
@@ -81,7 +82,7 @@
                 <a href="{{ route('invoices.show', $invoice->id) }}" class="block p-4 active:bg-gray-50 dark:active:bg-gray-800/60">
                     <div class="mb-2 flex items-center justify-between">
                         <span class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ $invoice->code ?? '#' . $invoice->id }}</span>
-                        <span class="text-xs font-semibold text-gray-500">Ngày xuất {{ $invoice->invoice_date?->format('d/m/Y') ?? '—' }}</span>
+                        <span class="text-right text-xs font-semibold text-gray-500">STT {{ $invoices->firstItem() + $loop->index }} · Ngày xuất {{ $invoice->invoice_date?->format('d/m/Y') ?? '—' }}</span>
                     </div>
                     <div class="flex items-center justify-between gap-3">
                         <p class="min-w-0 flex-1 truncate text-sm font-bold text-gray-900 dark:text-white">{{ $invoice->note ?? 'Hóa đơn bán hàng' }}</p>
@@ -118,7 +119,7 @@
                 <p class="mt-1 text-sm font-medium">Không có hóa đơn nào.</p>
             </div>
         @endforelse
-        {{ $invoices->onEachSide(1)->links('invoices.partials.pagination') }}
+        {{ $invoices->onEachSide(1)->links('components.pagination-links', ['navigationLabel' => 'Phân trang hóa đơn']) }}
     </div>
 
     {{-- Danh sách thanh toán --}}

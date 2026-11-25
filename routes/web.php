@@ -118,6 +118,8 @@ Route::middleware(['auth'])->group(function () {
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::post('/', 'store')->name('store');
+            Route::post('/advance', 'storeAdvance')->name('advance.store');
+            Route::post('/debt-adjustment', 'adjustDebt')->name('debt-adjustment.store');
             Route::put('/{project}', 'update')->name('update');
             Route::delete('/{project}', 'destroy')->name('destroy');
         });

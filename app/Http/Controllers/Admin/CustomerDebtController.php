@@ -17,8 +17,8 @@ class CustomerDebtController extends Controller
 {
     public function index(CreditCheckService $credit)
     {
-        $customers = Customer::with('projects')->orderBy('name')->get()->map(function (Customer $customer) use ($credit) {
-            $debt = round((float) $customer->projects->sum('total_debt'), 2);
+        $customers = Customer::withAccountTotals()->with('projects')->orderBy('name')->get()->map(function (Customer $customer) use ($credit) {
+            $debt = max(0, $customer->accountBalance());
             $exceeded = false;
             $projects = $customer->projects->map(function (Project $project) use ($credit, &$exceeded) {
                 $status = $credit->checkCreditStatus($project);

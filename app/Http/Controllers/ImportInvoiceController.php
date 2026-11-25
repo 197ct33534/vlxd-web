@@ -26,18 +26,20 @@ class ImportInvoiceController extends Controller
     {
         $importProject = Project::find($request->integer('project_id'));
         $projectId = $importProject?->id;
+        $importCustomer = $request->filled('customer_id') ? Customer::findOrFail($request->integer('customer_id')) : null;
         $agent = new \Jenssegers\Agent\Agent();
         if ($agent->isMobile()) {
-            return view('import-invoice-mobile', compact('projectId', 'importProject'));
+            return view('import-invoice-mobile', compact('projectId', 'importProject', 'importCustomer'));
         }
-        return view('import-invoice', compact('projectId', 'importProject'));
+        return view('import-invoice', compact('projectId', 'importProject', 'importCustomer'));
     }
 
     public function import(Request $request)
     {
         $request->validate([
             'file' => ['required', 'file', 'mimes:xlsx,xls', 'max:10240'],
-            'project_id' => ['nullable', 'integer', 'exists:projects,id'],
+            'project_id' => ['nullable', 'integer', 'exists:projects,id', 'prohibits:customer_id'],
+            'customer_id' => ['nullable', 'integer', 'exists:customers,id'],
         ]);
         $file = $request->file('file');
 
@@ -56,6 +58,7 @@ class ImportInvoiceController extends Controller
             'user' => $request->user()->id,
             'filename' => $file->getClientOriginalName(),
             'sheets' => $sheets,
+            'customer_id' => $request->filled('customer_id') ? $request->integer('customer_id') : null,
         ], now()->addHours(2));
 
         return redirect()->route('invoice.workbook', array_filter([
@@ -71,7 +74,10 @@ class ImportInvoiceController extends Controller
             return redirect()->route('invoice.index')->with('error', 'Bản xem trước đã hết hạn. Hãy tải lại tệp Excel.');
         }
 
-        $projects = Project::with('customer:id,name')->orderBy('name')->get();
+        $importCustomer = isset($workbook['customer_id']) ? Customer::findOrFail($workbook['customer_id']) : null;
+        $projects = Project::with('customer:id,name')
+            ->when($importCustomer, fn ($query) => $query->where('customer_id', $importCustomer->id))
+            ->orderBy('name')->get();
         $project = $projects->firstWhere('id', $request->integer('project_id'));
         $invoices = $project?->invoices()->with('items')->latest('id')->get();
         $seen = [];
@@ -97,7 +103,7 @@ class ImportInvoiceController extends Controller
             $sheets[$index] = $sheet + ['match' => $match];
         }
 
-        return view('import-workbook', compact('token', 'workbook', 'projects', 'project', 'sheets'));
+        return view('import-workbook', compact('token', 'workbook', 'projects', 'project', 'sheets', 'importCustomer'));
     }
 
     public function saveWorkbook(Request $request, string $token)
@@ -125,7 +131,11 @@ class ImportInvoiceController extends Controller
         ]);
 
         $projectId = $data['project_id'] ?? null;
-        if (!$projectId) {
+        $customerId = $workbook['customer_id'] ?? null;
+        if ($customerId && $projectId && !Project::whereKey($projectId)->where('customer_id', $customerId)->exists()) {
+            return back()->withErrors(['project_id' => 'Công trình phải thuộc khách hàng đang nhập.']);
+        }
+        if (!$projectId && !$customerId) {
             $customers = [];
             foreach ($data['sheets'] as $index) {
                 $customers[] = mb_strtolower($workbook['sheets'][$index]['khachHang']);
@@ -156,7 +166,7 @@ class ImportInvoiceController extends Controller
                     'dienThoai' => $sheet['dienThoai'],
                     'invoice_date' => $invoiceDate,
                     'tongTienChu' => $sheet['tongTienChu'],
-                ]), ['filename' => $workbook['filename']] + $sheet, in_array($index, $data['reviewed'] ?? []));
+                ]), ['filename' => $workbook['filename']] + $sheet, in_array($index, $data['reviewed'] ?? []), $customerId);
                 $projectId = $result['project']->id;
                 $results[$index] = ['status' => $result['duplicate'] ? 'duplicate' : 'saved', 'invoice_id' => $result['invoice']->id];
             } catch (\InvalidArgumentException $e) {
@@ -167,10 +177,22 @@ class ImportInvoiceController extends Controller
             }
         }
 
+        $counts = array_count_values(array_column($results, 'status'));
+        $summary = [
+            'saved' => $counts['saved'] ?? 0,
+            'duplicate' => $counts['duplicate'] ?? 0,
+            'failed' => $counts['error'] ?? 0,
+        ];
+        if ($projectId && !$summary['failed']) {
+            return redirect()->route('projects.invoices.index', $projectId)
+                ->with('import_summary', $summary);
+        }
+
         return redirect()->route('invoice.workbook', [
             'token' => $token,
             'project_id' => $projectId,
         ])->with('sheet_results', $results)
+            ->with('import_summary', $summary)
             ->withInput($request->only('invoice_dates') + ($projectId ? [] : $request->only('project_name', 'sheets', 'reviewed')));
     }
 
@@ -346,7 +368,7 @@ class ImportInvoiceController extends Controller
         }
     }
 
-    private function persistInvoice(Request $request, ?array $source = null, bool $reviewed = false): array
+    private function persistInvoice(Request $request, ?array $source = null, bool $reviewed = false, ?int $customerId = null): array
     {
         // Giải mã items đã được chuyển từ preview
         $items = $source['items'] ?? (json_decode(base64_decode($request->input('items', '')), true) ?: []);
@@ -372,10 +394,12 @@ class ImportInvoiceController extends Controller
             $invoiceDate = $this->normalizeImportDate($invoiceDateInput) ?? today()->toDateString();
 
             if ($request->filled('project_id')) {
-                $project = Project::lockForUpdate()->findOrFail($request->input('project_id'));
+                $project = Project::lockForUpdate()
+                    ->when($customerId, fn ($query) => $query->where('customer_id', $customerId))
+                    ->findOrFail($request->input('project_id'));
                 $customer = $project->customer;
             } else {
-                $customer = Customer::firstOrCreate(
+                $customer = $customerId ? Customer::findOrFail($customerId) : Customer::firstOrCreate(
                     ['name' => $customerName],
                     ['address' => $customerAddress, 'phone' => $customerPhone]
                 );

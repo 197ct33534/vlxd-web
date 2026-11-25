@@ -1,5 +1,5 @@
 @if ($paginator->hasPages())
-    <nav aria-label="Phân trang hóa đơn" class="flex flex-wrap items-center justify-center gap-2 py-3 text-sm">
+    <nav aria-label="{{ $navigationLabel ?? 'Phân trang' }}" class="flex flex-wrap items-center justify-center gap-2 py-3 text-sm">
         @if ($paginator->onFirstPage())
             <span aria-disabled="true" class="rounded-lg border border-border-light px-3 py-2 text-gray-500 dark:border-border-dark">Trang trước</span>
         @else

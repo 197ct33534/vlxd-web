@@ -11,6 +11,12 @@
         <p class="break-all text-sm text-gray-500">{{ $workbook['filename'] }} · {{ count($sheets) }} sheet</p>
     </div>
 
+    @if($importCustomer)
+        @include('invoices.partials.import-customer-context')
+    @endif
+
+    @include('invoices.partials.import-summary')
+
     @if ($errors->any())
         <ul role="alert" class="space-y-1 rounded-lg bg-red-50 p-4 text-sm text-red-800">
             @foreach ($errors->all() as $error)
@@ -35,13 +41,18 @@
         <p x-cloak x-show="selectedProject !== comparedProject" class="text-sm">Bấm Đối chiếu để kiểm tra các sheet theo công trình vừa chọn.</p>
     </form>
 
+    @php
+        $canImport = collect($sheets)->contains(fn ($sheet) => in_array($sheet['match']['status'], ['ready', 'legacy', 'changed', 'overlap', 'other_project'], true));
+    @endphp
     <form action="{{ route('invoice.workbook.save', $token) }}" method="POST" class="space-y-4"
-        @submit="if (selectedProject !== comparedProject) $event.preventDefault()">
+        x-data="{ selected: 0, saving: false, countSelected(form) { this.selected = form.querySelectorAll('[data-workbook-sheet]:checked').length } }"
+        x-init="countSelected($el)" @change="countSelected($el)" @pageshow.window="saving = false; countSelected($el)"
+        @submit="if (selectedProject !== comparedProject || !selected || saving) { $event.preventDefault() } else { saving = true }">
         @csrf
         @if ($project)
             <input type="hidden" name="project_id" value="{{ $project->id }}">
             <p class="text-sm">Nơi lưu: <a class="font-semibold underline" href="{{ route('projects.invoices.index', $project) }}">{{ $project->customer->name }} · {{ $project->name }}</a></p>
-        @else
+        @elseif($canImport)
             <div>
                 <label for="workbook-new-project" class="block text-sm font-semibold">Tên công trình mới</label>
                 <input id="workbook-new-project" name="project_name" type="text" value="{{ old('project_name') }}" required maxlength="255"
@@ -80,7 +91,7 @@
                         <p class="font-semibold">{{ $labels[$status] }}</p>
                         @if ($status === 'ready' || $needsReview)
                             <label class="flex items-center gap-2">
-                                <input type="checkbox" name="sheets[]" value="{{ $index }}"
+                                <input type="checkbox" name="sheets[]" value="{{ $index }}" data-workbook-sheet
                                     @checked(in_array($index, (array) old('sheets', $status === 'ready' ? [$index] : [])))>
                                 Chọn nhập
                             </label>
@@ -154,12 +165,22 @@
             </section>
         @endforeach
 
+        @if($canImport)
         <label class="flex items-center gap-2 text-sm">
             <input type="checkbox" name="confirmed" value="1" required>
             Tôi đã kiểm tra công trình và ngày của các sheet đã chọn
         </label>
-        <button type="submit" :disabled="selectedProject !== comparedProject"
-            class="rounded-lg bg-primary px-5 py-3 font-semibold text-white disabled:opacity-50">Lưu các sheet đã chọn</button>
+        <button type="submit" :disabled="selectedProject !== comparedProject || !selected || saving"
+            class="rounded-lg bg-primary px-5 py-3 font-semibold text-white disabled:opacity-50">
+            <span x-show="!saving">Lưu các sheet đã chọn</span>
+            <span x-cloak x-show="saving">Đang lưu…</span>
+        </button>
+        @else
+            <p class="text-sm text-gray-600 dark:text-gray-300">Không còn sheet có thể lưu ở công trình đang chọn.</p>
+            @if($project)
+                <a href="{{ route('projects.invoices.index', $project) }}" class="font-semibold text-primary underline">Về danh sách hóa đơn</a>
+            @endif
+        @endif
     </form>
 </div>
 @endsection

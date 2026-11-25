@@ -4,6 +4,7 @@
 
 @section('content')
     <div class="flex flex-col gap-6">
+        @include('invoices.partials.import-summary')
         <!-- Header -->
         <div class="flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-2">
@@ -36,6 +37,7 @@
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-background-light dark:bg-background-dark">
                         <tr>
+                            <th scope="col" class="px-3 py-4 text-center font-bold">STT</th>
                             <th class="px-6 py-4 font-bold">{{ __('invoices.table.date') }}</th>
                             <th class="px-6 py-4 font-bold">{{ __('invoices.table.code') }}</th>
                             <th class="px-6 py-4 font-bold text-center">{{ __('invoices.table.total_amount') }}</th>
@@ -47,6 +49,7 @@
                     <tbody>
                         @forelse($invoices as $invoice)
                             <tr class="bg-container-light dark:bg-container-dark border-b dark:border-border-dark hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors">
+                                <td class="px-3 py-4 text-center tabular-nums">{{ $invoices->firstItem() + $loop->index }}</td>
                                 <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $invoice->invoice_date?->format('d/m/Y') ?? '—' }}</td>
                                 <td class="px-6 py-4">{{ $invoice->code ?? '#' . $invoice->id }}</td>
                                 <td class="px-6 py-4 text-center font-bold text-blue-600">
@@ -87,7 +90,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
                                     <div class="flex flex-col items-center justify-center gap-2">
                                         <span class="material-symbols-outlined text-4xl text-gray-300">receipt_long</span>
                                         <p>{{ __('invoices.empty_project') }}</p>
@@ -100,7 +103,7 @@
         </div>
 
         <div class="px-4 py-3 border-t border-border-light dark:border-border-dark">
-            {{ $invoices->onEachSide(1)->links('invoices.partials.pagination') }}
+            {{ $invoices->onEachSide(1)->links('components.pagination-links', ['navigationLabel' => 'Phân trang hóa đơn']) }}
         </div>
 
         <!-- Payment History & Actions -->
