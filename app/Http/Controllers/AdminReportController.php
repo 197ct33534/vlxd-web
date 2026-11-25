@@ -34,7 +34,7 @@ class AdminReportController extends Controller
             'paymentTotals' => $chart['payment_totals'],
             'totals' => [
                 'invoice' => (float) Invoice::whereNotNull('invoice_date')->sum('total_amount'),
-                'payments' => (float) Payment::sum('amount'),
+                'payments' => (float) Payment::receipts()->sum('amount'),
                 'debt' => (float) Project::sum('total_debt'),
             ],
         ]);
@@ -94,7 +94,7 @@ class AdminReportController extends Controller
             'paymentTotals' => $chart['payment_totals'],
             'totals' => [
                 'invoice' => (float) Invoice::whereNotNull('invoice_date')->sum('total_amount'),
-                'payments' => (float) Payment::sum('amount'),
+                'payments' => (float) Payment::receipts()->sum('amount'),
                 'debt' => (float) Project::sum('total_debt'),
             ],
             'storeInfo' => $storeInfo,

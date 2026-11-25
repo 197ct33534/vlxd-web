@@ -55,10 +55,11 @@
                 <dd class="font-bold text-gray-900 dark:text-white">{{ number_format($project->total_invoice) }}đ</dd>
             </div>
             <div>
-                <dt class="text-xs text-gray-500 dark:text-gray-400">Đã thanh toán</dt>
+                <dt class="text-xs text-gray-500 dark:text-gray-400">Đã thanh toán / điều chỉnh</dt>
                 <dd class="font-bold text-green-600">{{ number_format($project->total_paid) }}đ</dd>
             </div>
         </dl>
+        @include('invoices.partials.debt-adjustment')
     </section>
 
     {{-- Tab hóa đơn / thanh toán --}}
@@ -126,15 +127,16 @@
             <article data-payment-card="{{ $payment->id }}" class="overflow-hidden rounded-xl border border-border-light bg-container-light shadow-subtle dark:border-border-dark dark:bg-container-dark">
                 <div class="p-4">
                     <div class="mb-2 flex items-center justify-between">
-                        <span class="text-xs font-bold uppercase tracking-wider text-green-600">Thanh toán</span>
+                        <span class="text-xs font-bold uppercase tracking-wider {{ $payment->isDebtAdjustment() ? 'text-amber-700 dark:text-amber-300' : 'text-green-600' }}">{{ $payment->isDebtAdjustment() ? 'Điều chỉnh công nợ' : 'Thanh toán' }}</span>
                         <span class="text-xs font-semibold text-gray-500">{{ \Carbon\Carbon::parse($payment->payment_date)->format('d/m/Y') }}</span>
                     </div>
                     <div class="flex items-center justify-between gap-3">
-                        <p class="min-w-0 flex-1 truncate text-sm font-bold text-gray-900 dark:text-white">{{ $payment->note ?? 'Thanh toán thủ công' }}</p>
-                        <p class="shrink-0 text-base font-black text-green-600">+{{ number_format($payment->amount) }}đ</p>
+                        <p class="min-w-0 flex-1 break-words text-sm font-bold text-gray-900 dark:text-white">{{ $payment->note ?? 'Thanh toán thủ công' }}</p>
+                        <p class="shrink-0 text-base font-black {{ $payment->isDebtAdjustment() ? 'text-amber-700 dark:text-amber-300' : 'text-green-600' }}">{{ $payment->amount >= 0 ? '+' : '' }}{{ number_format($payment->amount, 0, ',', '.') }} ₫</p>
                     </div>
                 </div>
 
+                @unless ($payment->isDebtAdjustment())
                 <div class="grid grid-cols-2 border-t border-border-light text-sm font-semibold dark:border-border-dark">
                     <button type="button" @click="openEditPayment({{ json_encode($payment) }})" class="flex min-h-[44px] items-center justify-center gap-1.5 border-r border-border-light text-gray-700 active:bg-gray-100 dark:border-border-dark dark:text-gray-300 dark:active:bg-gray-800">
                         <span class="material-symbols-outlined text-lg">edit</span>
@@ -149,6 +151,7 @@
                         </button>
                     </form>
                 </div>
+                @endunless
             </article>
         @empty
             <div class="rounded-xl border border-dashed border-border-light py-10 text-center text-gray-500 dark:border-border-dark">

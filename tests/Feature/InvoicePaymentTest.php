@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Customer;
+use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -10,6 +11,34 @@ use Tests\TestCase;
 class InvoicePaymentTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_debt_adjustments_record_signed_differences_without_creating_receipts(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'admin']));
+        $project = Customer::create(['name' => 'Khách đối chiếu'])->projects()->create(['name' => 'Công trình đối chiếu']);
+        $project->invoices()->create(['invoice_date' => '2026-11-15', 'total_amount' => 500000]);
+        $project->payments()->create(['amount' => 100000, 'payment_type' => 'tung_dot']);
+        $url = route('projects.debt-adjustments.store', $project);
+        $reason = 'Đối chiếu sổ';
+
+        $this->post($url, ['debt_amount' => 300000, 'expected_debt' => 400000, 'adjustment_reason' => $reason])->assertSessionHas('success');
+        $this->assertDatabaseHas('projects', ['id' => $project->id, 'total_debt' => 300000]);
+        $this->assertDatabaseHas('payments', ['project_id' => $project->id, 'amount' => 100000, 'payment_method' => Payment::DEBT_ADJUSTMENT]);
+
+        $this->post($url, ['debt_amount' => 420000, 'expected_debt' => 400000, 'adjustment_reason' => $reason])->assertSessionHasErrors('debt_amount');
+        $request = ['debt_amount' => 420000, 'expected_debt' => 300000, 'adjustment_reason' => $reason];
+        $this->post($url, $request)->assertSessionHas('success');
+        $this->post($url, $request)->assertSessionHas('success', 'Công nợ đã khớp với số tiền nhập.');
+        $this->assertDatabaseHas('projects', ['id' => $project->id, 'total_debt' => 420000]);
+        $this->assertDatabaseCount('payments', 3);
+        $adjustment = $project->payments()->latest('id')->firstOrFail();
+        $this->assertEquals(-120000, $adjustment->amount);
+        $this->assertStringContainsString($reason, $adjustment->note);
+        $this->assertEquals(100000, $project->payments()->receipts()->sum('amount'));
+        $this->assertDatabaseCount('payment_allocations', 0);
+        $this->put(route('payments.update', $adjustment))->assertForbidden();
+        $this->delete(route('payments.destroy', $adjustment))->assertForbidden();
+    }
 
     public function test_invoice_moves_only_within_customer_and_recalculates_both_projects(): void
     {

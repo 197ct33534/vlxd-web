@@ -141,6 +141,7 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/invoices/{invoice}/project', 'moveToProject')->name('invoices.move-project');
         Route::delete('/invoices/{invoice}', 'destroy')->name('invoices.destroy');
         Route::post('/projects/{project}/payments', 'storePayment')->name('projects.payments.store');
+        Route::post('/projects/{project}/debt-adjustments', 'adjustDebt')->name('projects.debt-adjustments.store');
         Route::put('/payments/{payment}', 'updatePayment')->name('payments.update');
         Route::delete('/payments/{payment}', 'destroyPayment')->name('payments.destroy');
         Route::post('/invoices/{invoice}/pay', 'markAsPaid')->name('invoices.pay');

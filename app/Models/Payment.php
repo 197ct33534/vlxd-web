@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Payment extends Model
 {
     use HasFactory;
+    public const DEBT_ADJUSTMENT = 'debt_adjustment';
     protected $fillable = [
         'project_id',
         'payment_date',
@@ -25,6 +27,16 @@ class Payment extends Model
     public function project()
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function isDebtAdjustment(): bool
+    {
+        return $this->payment_method === self::DEBT_ADJUSTMENT;
+    }
+
+    public function scopeReceipts(Builder $query): Builder
+    {
+        return $query->where('payment_method', '!=', self::DEBT_ADJUSTMENT);
     }
 
     public function paymentAllocations(): HasMany

@@ -336,6 +336,8 @@ class InvoiceController extends Controller
      */
     public function updatePayment(Request $request, \App\Models\Payment $payment, PaymentAllocationService $allocations)
     {
+        abort_if($payment->isDebtAdjustment(), 403);
+
         $request->validate([
             'payment_date' => 'required|date',
             'amount' => 'required|numeric|min:0',
@@ -371,6 +373,8 @@ class InvoiceController extends Controller
      */
     public function destroyPayment(\App\Models\Payment $payment)
     {
+        abort_if($payment->isDebtAdjustment(), 403);
+
         $project = $payment->project;
 
         \Illuminate\Support\Facades\DB::transaction(function () use ($payment, $project) {
@@ -381,6 +385,53 @@ class InvoiceController extends Controller
         });
 
         return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.payment_deleted'));
+    }
+
+    public function adjustDebt(Request $request, Project $project)
+    {
+        $data = $request->validate([
+            'debt_amount' => ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:9999999999999.99'],
+            'expected_debt' => ['required', 'numeric', 'min:0'],
+            'adjustment_reason' => ['required', 'string', 'max:255'],
+        ]);
+
+        $recorded = DB::transaction(function () use ($project, $data) {
+            $project = Project::lockForUpdate()->findOrFail($project->id);
+            $this->projectDebt->recalculate($project->id);
+            $project->refresh();
+            $current = (float) $project->total_debt;
+            $target = round((float) $data['debt_amount'], 2);
+
+            if ($current === $target) {
+                return false;
+            }
+            if ($current !== round((float) $data['expected_debt'], 2)) {
+                throw ValidationException::withMessages(['debt_amount' => 'Công nợ đã thay đổi. Hãy kiểm tra số dư mới rồi thử lại.']);
+            }
+
+            $amount = round((float) $project->total_invoice - (float) $project->total_paid - $target, 2);
+            if (abs($amount) > 9999999999999.99) {
+                throw ValidationException::withMessages(['debt_amount' => 'Chênh lệch vượt giới hạn lưu trữ.']);
+            }
+            $project->payments()->create([
+                'payment_date' => now(),
+                'amount' => $amount,
+                'payment_method' => Payment::DEBT_ADJUSTMENT,
+                'payment_type' => Payment::normalizeType('tung_dot'),
+                'for_project' => 'project',
+                'note' => sprintf('Điều chỉnh công nợ: %s ₫ → %s ₫. %s',
+                    rtrim(rtrim(number_format($current, 2, ',', '.'), '0'), ','),
+                    rtrim(rtrim(number_format($target, 2, ',', '.'), '0'), ','),
+                    $data['adjustment_reason']
+                ),
+            ]);
+            $this->projectDebt->recalculate($project->id);
+
+            return true;
+        }, 3);
+
+        return redirect()->route('projects.invoices.index', $project)
+            ->with('success', $recorded ? 'Đã ghi phiếu điều chỉnh công nợ.' : 'Công nợ đã khớp với số tiền nhập.');
     }
 
     /**

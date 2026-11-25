@@ -174,10 +174,11 @@
                                 <tr class="bg-container-light dark:bg-container-dark border-b dark:border-border-dark hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors">
                                     <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($payment->payment_date)->format('d/m/Y') }}</td>
                                     <td class="px-6 py-4">{{ $payment->note ?? __('invoices.payment_note_default') }}</td>
-                                    <td class="px-6 py-4 text-right font-bold text-green-600">
+                                    <td class="px-6 py-4 text-right font-bold {{ $payment->isDebtAdjustment() ? 'text-amber-700 dark:text-amber-300' : 'text-green-600' }}">
                                         {{ number_format($payment->amount, 0, ',', '.') }} đ
                                     </td>
                                     <td class="px-6 py-4 text-right">
+                                        @unless ($payment->isDebtAdjustment())
                                         <div class="flex flex-wrap items-center justify-end gap-1.5">
                                             <button type="button" @click="openEditModal({{ $payment }})"
                                                     class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400">
@@ -195,6 +196,7 @@
                                                 </button>
                                             </form>
                                         </div>
+                                        @endunless
                                     </td>
                                 </tr>
                             @empty
@@ -208,7 +210,7 @@
                         @if($payments->isNotEmpty())
                         <tfoot class="bg-gray-50 dark:bg-gray-800 font-bold text-gray-900 dark:text-white">
                             <tr>
-                                <td colspan="2" class="px-6 py-4 text-right">{{ __('invoices.total_paid_footer') }}</td>
+                                <td colspan="2" class="px-6 py-4 text-right">Tổng thanh toán và điều chỉnh</td>
                                 <td class="px-6 py-4 text-right text-green-600">{{ number_format($project->total_paid, 0, ',', '.') }} đ</td>
                                 <td></td>
                             </tr>
@@ -227,7 +229,7 @@
                         <span class="font-bold text-blue-600 text-lg">{{ number_format($project->total_invoice, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between items-center border-t border-gray-100 dark:border-gray-700 pt-3">
-                        <span class="text-gray-500 dark:text-gray-400">{{ __('invoices.summary.total_paid') }}</span>
+                        <span class="text-gray-500 dark:text-gray-400">Đã thanh toán / điều chỉnh</span>
                         <span class="font-bold text-green-600 text-lg">{{ number_format($project->total_paid, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between items-center border-t border-gray-100 dark:border-gray-700 pt-3">
@@ -235,6 +237,7 @@
                         <span class="font-bold text-red-600 text-xl">{{ number_format($project->total_debt, 0, ',', '.') }}</span>
                     </div>
                 </div>
+                @include('invoices.partials.debt-adjustment')
             </div>
 
             <!-- Payment Modal -->
