@@ -20,17 +20,62 @@
                     </span>
                 </div>
             </div>
-            <form method="POST" action="{{ route('admin.customers.credit', $row['customer']) }}" class="flex flex-wrap gap-2 items-end text-sm">
+            <form method="POST" action="{{ route('admin.customers.credit', $row['customer']) }}" class="grid grid-cols-2 gap-2 items-end text-sm md:flex md:flex-wrap">
                 @csrf
-                <label>Hạn mức khách (0 = không giới hạn)
-                    <input type="number" name="credit_limit" min="0" step="1000" value="{{ $row['customer']->credit_limit }}" class="block rounded-lg border-gray-300">
+                <label class="min-w-0">Hạn mức khách <span class="text-gray-400">(0 = không giới hạn)</span>
+                    <input type="number" name="credit_limit" min="0" step="1000" value="{{ $row['customer']->credit_limit }}" class="block w-full rounded-lg border-gray-300 md:w-auto">
                 </label>
-                <label>Số ngày nợ
-                    <input type="number" name="credit_days" min="0" value="{{ $row['customer']->credit_days }}" class="block w-24 rounded-lg border-gray-300">
+                <label class="min-w-0">Số ngày nợ
+                    <input type="number" name="credit_days" min="0" value="{{ $row['customer']->credit_days }}" class="block w-full rounded-lg border-gray-300 md:w-24">
                 </label>
-                <button class="rounded-lg bg-gray-800 text-white font-bold px-3 py-2">Lưu hạn mức</button>
+                <button class="col-span-2 min-h-[44px] rounded-lg bg-gray-800 text-white font-bold px-3 py-2 md:min-h-0">Lưu hạn mức</button>
             </form>
-            <div class="overflow-x-auto">
+
+            {{-- Mobile: mỗi công trình một khối xếp dọc (bảng 5 cột kèm 2 form phải cuộn ngang). --}}
+            <div data-mobile-debt-projects class="flex flex-col gap-3 md:hidden">
+                @foreach($row['projects'] as $line)
+                    <div class="rounded-lg border border-gray-200 p-3 space-y-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="font-semibold leading-snug">{{ $line['project']->name }}</p>
+                                <p class="mt-0.5 text-xs {{ $line['credit']['is_exceeded'] ? 'font-semibold text-red-700' : 'text-emerald-700' }}">
+                                    {{ $line['credit']['is_exceeded'] ? $line['credit']['reason'] : 'Bình thường' }}
+                                </p>
+                            </div>
+                            <div class="shrink-0 text-right">
+                                <p class="text-[11px] font-semibold uppercase tracking-wide text-gray-400">Nợ</p>
+                                <p class="font-bold text-red-600">{{ number_format($line['project']->total_debt, 0, ',', '.') }} đ</p>
+                            </div>
+                        </div>
+
+                        <form method="POST" action="{{ route('admin.projects.credit', $line['project']) }}" class="grid grid-cols-2 gap-2 text-xs">
+                            @csrf
+                            <label class="min-w-0 text-gray-500">Hạn mức riêng
+                                <input type="number" name="credit_limit" min="0" step="1000" placeholder="theo khách" value="{{ $line['project']->credit_limit }}" class="mt-0.5 block w-full rounded-lg border-gray-300 text-sm">
+                            </label>
+                            <label class="min-w-0 text-gray-500">Số ngày nợ
+                                <input type="number" name="credit_days" min="0" placeholder="theo khách" value="{{ $line['project']->credit_days }}" class="mt-0.5 block w-full rounded-lg border-gray-300 text-sm">
+                            </label>
+                            <button class="col-span-2 min-h-[44px] rounded-lg bg-primary/10 text-sm font-bold text-primary active:bg-primary/20">Lưu hạn mức công trình</button>
+                        </form>
+
+                        <form method="GET" action="{{ route('admin.projects.reconciliation-pdf', $line['project']) }}" class="grid grid-cols-2 gap-2 text-xs" target="_blank">
+                            <label class="min-w-0 text-gray-500">Đối soát từ
+                                <input type="date" name="from_date" value="2000-01-01" class="mt-0.5 block w-full rounded-lg border-gray-300 text-sm">
+                            </label>
+                            <label class="min-w-0 text-gray-500">Đến
+                                <input type="date" name="to_date" value="{{ now()->toDateString() }}" class="mt-0.5 block w-full rounded-lg border-gray-300 text-sm">
+                            </label>
+                            <button class="col-span-2 inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg border border-gray-300 text-sm font-bold text-gray-700 active:bg-gray-100">
+                                <span class="material-symbols-outlined text-lg leading-none">picture_as_pdf</span>
+                                Xuất PDF đối soát
+                            </button>
+                        </form>
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="hidden md:block overflow-x-auto" data-desktop-debt-table>
                 <table class="w-full text-sm">
                     <thead class="text-left text-gray-500">
                         <tr>
