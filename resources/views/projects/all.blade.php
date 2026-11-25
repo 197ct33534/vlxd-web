@@ -13,7 +13,59 @@
             </div>
         </div>
 
-        <div class="bg-container-light dark:bg-container-dark rounded-xl shadow-subtle overflow-hidden border border-border-light dark:border-border-dark">
+        {{-- Mobile: mỗi dự án một thẻ (bảng 6 cột phải cuộn ngang, rất khó đọc trên điện thoại). --}}
+        <div data-mobile-project-list class="flex flex-col gap-3 md:hidden">
+            @forelse($projects as $project)
+                <article class="rounded-xl border border-border-light bg-container-light p-4 shadow-subtle dark:border-border-dark dark:bg-container-dark">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <h2 class="text-base font-bold leading-snug text-gray-900 dark:text-white">{{ $project->name }}</h2>
+                            <a href="{{ route('customers.projects.index', $project->customer_id) }}"
+                               class="mt-0.5 inline-flex max-w-full items-center gap-1 text-sm text-gray-500 hover:text-primary dark:text-gray-400">
+                                <span class="material-symbols-outlined text-base leading-none">person</span>
+                                <span class="truncate">{{ $project->customer->name ?? '—' }}</span>
+                            </a>
+                        </div>
+                        <div class="shrink-0 text-right">
+                            <p class="text-[11px] font-semibold uppercase tracking-wide text-gray-400">Công nợ</p>
+                            <p class="text-base font-bold text-red-600">{{ number_format($project->total_debt ?? 0) }}</p>
+                        </div>
+                    </div>
+
+                    <dl class="mt-3 grid grid-cols-2 gap-2 rounded-lg bg-background-light p-3 text-sm dark:bg-background-dark">
+                        <div>
+                            <dt class="text-xs text-gray-500 dark:text-gray-400">Tổng HĐ</dt>
+                            <dd class="font-semibold text-gray-900 dark:text-white">{{ number_format($project->total_invoice ?? 0) }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-xs text-gray-500 dark:text-gray-400">Đã thu</dt>
+                            <dd class="font-semibold text-green-600">{{ number_format($project->total_paid ?? 0) }}</dd>
+                        </div>
+                    </dl>
+
+                    <div class="mt-3 grid grid-cols-2 gap-2">
+                        <a href="{{ route('projects.invoices.index', $project->id) }}"
+                           class="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg bg-primary/10 px-3 text-sm font-semibold text-primary active:bg-primary/20">
+                            <span class="material-symbols-outlined text-lg leading-none">receipt_long</span>
+                            <span>{{ __('projects.customer.btn.invoices') }}</span>
+                        </a>
+                        <a href="{{ route('invoice.index', ['project_id' => $project->id]) }}"
+                           class="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg border border-border-light px-3 text-sm font-semibold text-gray-700 active:bg-gray-100 dark:border-border-dark dark:text-gray-300">
+                            <span class="material-symbols-outlined text-lg leading-none">upload_file</span>
+                            <span>{{ __('projects.customer.btn.import') }}</span>
+                        </a>
+                    </div>
+                </article>
+            @empty
+                <p class="rounded-xl border border-dashed border-border-light p-8 text-center text-sm text-gray-500 dark:border-border-dark">Chưa có dự án nào.</p>
+            @endforelse
+
+            @if($projects->hasPages())
+                <div class="pt-1">{{ $projects->links() }}</div>
+            @endif
+        </div>
+
+        <div class="hidden md:block bg-container-light dark:bg-container-dark rounded-xl shadow-subtle overflow-hidden border border-border-light dark:border-border-dark" data-desktop-project-table>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                     <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-background-light dark:bg-background-dark">
