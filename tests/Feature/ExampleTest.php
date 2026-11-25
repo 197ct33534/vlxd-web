@@ -1,19 +1,9 @@
 <?php
 
-namespace Tests\Feature;
+it('renders the public landing page', function () {
+    $this->get('/')->assertOk();
+});
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
-
-class ExampleTest extends TestCase
-{
-    /**
-     * A basic test example.
-     */
-    public function test_the_application_returns_a_successful_response(): void
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-    }
-}
+it('redirects guests away from the admin dashboard', function () {
+    $this->get(route('admin.reports.index'))->assertRedirect(route('login'));
+});

@@ -1,0 +1,13 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    paths:
+        - app/
+
+    # 0 (lỏng) → 9 (chặt). Bắt đầu ở 5; lỗi cũ nằm trong baseline,
+    # chỉ code mới phải sạch. Tăng dần level khi đã dọn baseline.
+    level: 5
+
+    tmpDir: storage/framework/cache/phpstan

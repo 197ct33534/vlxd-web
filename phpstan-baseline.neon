@@ -1,0 +1,81 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Customer\\:\\:\\$projects\\.$#"
+			count: 2
+			path: app/Http/Controllers/Admin/CustomerDebtController.php
+
+		-
+			message: "#^Relation 'projects' is not found in App\\\\Models\\\\Customer model\\.$#"
+			count: 1
+			path: app/Http/Controllers/Admin/CustomerDebtController.php
+
+		-
+			message: "#^Relation 'customer' is not found in App\\\\Models\\\\Project model\\.$#"
+			count: 3
+			path: app/Http/Controllers/AdminReportController.php
+
+		-
+			message: "#^Call to an undefined method Laravel\\\\Sanctum\\\\Contracts\\\\HasAbilities\\:\\:delete\\(\\)\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/AuthTokenController.php
+
+		-
+			message: "#^Using nullsafe method call on non\\-nullable type Laravel\\\\Sanctum\\\\Contracts\\\\HasAbilities\\. Use \\-\\> instead\\.$#"
+			count: 1
+			path: app/Http/Controllers/Api/AuthTokenController.php
+
+		-
+			message: "#^Relation 'projects' is not found in App\\\\Models\\\\Customer model\\.$#"
+			count: 2
+			path: app/Http/Controllers/CustomerController.php
+
+		-
+			message: "#^Relation 'user' is not found in App\\\\Models\\\\DailyReport model\\.$#"
+			count: 1
+			path: app/Http/Controllers/DailyReportController.php
+
+		-
+			message: "#^If condition is always true\\.$#"
+			count: 1
+			path: app/Http/Controllers/ImportInvoiceController.php
+
+		-
+			message: "#^Unreachable statement \\- code above always terminates\\.$#"
+			count: 1
+			path: app/Http/Controllers/ImportInvoiceController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Invoice\\:\\:\\$project\\.$#"
+			count: 3
+			path: app/Http/Controllers/InvoiceController.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Payment\\:\\:\\$project\\.$#"
+			count: 2
+			path: app/Http/Controllers/InvoiceController.php
+
+		-
+			message: "#^Method App\\\\Http\\\\Controllers\\\\PriceHistoryController\\:\\:buildSummaries\\(\\) should return Illuminate\\\\Support\\\\Collection\\<int, object\\> but returns Illuminate\\\\Support\\\\Collection\\<int, object\\{product_name\\: string, unit\\: string, line_count\\: int, latest_price\\: float, latest_date\\: mixed, latest_invoice_id\\: mixed, latest_invoice_code\\: mixed, has_variation\\: bool, delta_vs_previous\\: float\\|null, direction\\: string\\|null, abs_change\\: float\\|null\\}&stdClass\\>\\.$#"
+			count: 1
+			path: app/Http/Controllers/PriceHistoryController.php
+
+		-
+			message: "#^Parameter \\#1 \\$grouped of method App\\\\Http\\\\Controllers\\\\PriceHistoryController\\:\\:buildSummaries\\(\\) expects Illuminate\\\\Support\\\\Collection\\<string, Illuminate\\\\Support\\\\Collection\\<int, object\\>\\>, Illuminate\\\\Support\\\\Collection\\<string, Illuminate\\\\Support\\\\Collection\\<int, stdClass\\>\\> given\\.$#"
+			count: 1
+			path: app/Http/Controllers/PriceHistoryController.php
+
+		-
+			message: "#^Relation 'customer' is not found in App\\\\Models\\\\Project model\\.$#"
+			count: 1
+			path: app/Http/Controllers/ProjectController.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: app/Models/StoreInfo.php
+
+		-
+			message: "#^Access to an undefined property App\\\\Models\\\\Project\\:\\:\\$customer\\.$#"
+			count: 1
+			path: app/Services/CreditCheckService.php
