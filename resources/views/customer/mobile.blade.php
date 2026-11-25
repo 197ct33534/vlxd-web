@@ -111,61 +111,9 @@
 
         <div class="space-y-4">
             @forelse($customers as $customer)
-                <div 
-                    class="relative overflow-hidden rounded-xl shadow-sm bg-slate-100 dark:bg-slate-800"
-                    x-data="{ 
-                        swipeX: 0, 
-                        startX: 0, 
-                        maxSwipe: -240, 
-                        threshold: -60,
-                        isSwiping: false,
-                        handleTouchStart(e) {
-                            this.startX = e.touches[0].clientX;
-                            this.isSwiping = true;
-                        },
-                        handleTouchMove(e) {
-                            let diff = e.touches[0].clientX - this.startX;
-                            this.swipeX = Math.min(0, Math.max(this.maxSwipe, diff));
-                        },
-                        handleTouchEnd() {
-                            this.isSwiping = false;
-                            if (this.swipeX < this.threshold) {
-                                this.swipeX = this.maxSwipe;
-                            } else {
-                                this.swipeX = 0;
-                            }
-                        }
-                    }"
-                >
-                    <!-- Actions Menu (Behind) -->
-                    <div class="absolute inset-0 flex justify-end h-full">
-                        <a href="{{ route('customers.index') }}" class="w-[60px] h-full flex flex-col items-center justify-center bg-slate-400 text-white text-[10px] font-bold">
-                            <span class="material-symbols-outlined mb-1">visibility</span>
-                            XEM
-                        </a>
-                        <a href="{{ route('customers.projects.index', $customer->id) }}" class="w-[60px] h-full flex flex-col items-center justify-center bg-indigo-500 text-white text-[10px] font-bold">
-                            <span class="material-symbols-outlined mb-1">folder_open</span>
-                            DỰ ÁN
-                        </a>
-                        <button @click="openEdit({{ json_encode($customer) }})" class="w-[60px] h-full flex flex-col items-center justify-center bg-amber-500 text-white text-[10px] font-bold font-bold">
-                            <span class="material-symbols-outlined mb-1">edit</span>
-                            SỬA
-                        </button>
-                        <button @click="openDelete('{{ route('customers.destroy', $customer->id) }}')" class="w-[60px] h-full flex flex-col items-center justify-center bg-red-600 text-white text-[10px] font-bold">
-                            <span class="material-symbols-outlined mb-1">delete</span>
-                            XÓA
-                        </button>
-                    </div>
-
-                    <!-- Customer Card (Swipable Foreground) -->
-                    <div 
-                        class="relative bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-800 transition-transform cursor-grab active:cursor-grabbing"
-                        :class="isSwiping ? 'duration-0' : 'duration-300'"
-                        :style="`transform: translateX(${swipeX}px)`"
-                        @touchstart="handleTouchStart($event)"
-                        @touchmove="handleTouchMove($event)"
-                        @touchend="handleTouchEnd()"
-                    >
+                {{-- Thao tác hiển thị sẵn (trước đây phải vuốt trái mới thấy, dễ vướng khi cuộn dọc). --}}
+                <article data-customer-card="{{ $customer->id }}" class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <a href="{{ route('customers.projects.index', $customer->id) }}" class="block p-4 active:bg-slate-50 dark:active:bg-slate-800/60">
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">#{{ $customer->id }}</span>
                             <span class="inline-flex items-center rounded-full {{ $customer->status == 'inactive' ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-600' : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600' }} px-2.5 py-0.5 text-xs font-bold">
@@ -178,14 +126,27 @@
                                 <p class="text-xs text-slate-500 dark:text-slate-400">{{ $customer->phone }}</p>
                             </div>
                             <div class="text-right ml-4">
-                                <p class="text-lg font-bold text-slate-900 dark:text-white">{{ number_format($customer->total_debt ?? 0) }}đ</p>
-                                <div class="text-primary text-xs font-semibold flex items-center justify-end gap-1 mt-1">
-                                    {{ $customer->projects_count }} dự án <span class="material-symbols-outlined text-[10px] text-slate-400">swipe_left</span>
-                                </div>
+                                <p class="text-[11px] font-semibold uppercase tracking-wide text-slate-400">Công nợ</p>
+                                <p class="text-lg font-bold {{ ($customer->total_debt ?? 0) > 0 ? 'text-red-600' : 'text-slate-900 dark:text-white' }}">{{ number_format($customer->total_debt ?? 0) }}đ</p>
                             </div>
                         </div>
+                    </a>
+
+                    <div class="grid grid-cols-3 border-t border-slate-100 text-sm font-semibold dark:border-slate-800">
+                        <a href="{{ route('customers.projects.index', $customer->id) }}" class="flex min-h-[44px] items-center justify-center gap-1.5 text-primary active:bg-primary/10">
+                            <span class="material-symbols-outlined text-lg">folder_open</span>
+                            Dự án ({{ $customer->projects_count }})
+                        </a>
+                        <button type="button" @click="openEdit({{ json_encode($customer) }})" class="flex min-h-[44px] items-center justify-center gap-1.5 border-x border-slate-100 text-slate-700 active:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:active:bg-slate-800">
+                            <span class="material-symbols-outlined text-lg">edit</span>
+                            Sửa
+                        </button>
+                        <button type="button" @click="openDelete('{{ route('customers.destroy', $customer->id) }}')" class="flex min-h-[44px] items-center justify-center gap-1.5 text-red-600 active:bg-red-50 dark:active:bg-red-900/20">
+                            <span class="material-symbols-outlined text-lg">delete</span>
+                            Xóa
+                        </button>
                     </div>
-                </div>
+                </article>
             @empty
                 <div class="text-center py-10">
                     <p class="text-slate-500">{{ __('customer.empty') }}</p>
