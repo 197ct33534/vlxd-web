@@ -119,6 +119,9 @@
                 date: '{{ date('Y-m-d') }}',
                 amount: '',
                 note: '',
+                method: 'cash',
+                reference: '',
+                invoiceId: '',
                 projectId: {{ $project->id }},
                 
                 openAddModal() {
@@ -127,6 +130,9 @@
                     this.date = '{{ date('Y-m-d') }}';
                     this.amount = '';
                     this.note = '';
+                    this.method = 'cash';
+                    this.reference = '';
+                    this.invoiceId = '';
                     this.paymentModalOpen = true;
                 },
 
@@ -137,6 +143,9 @@
                     this.date = payment.payment_date.split(' ')[0]; 
                     this.amount = payment.amount;
                     this.note = payment.note || '';
+                    this.method = payment.payment_method || 'cash';
+                    this.reference = payment.reference_code ?? '';
+                    this.invoiceId = payment.payment_allocations[0]?.invoice_id ?? '';
                     this.paymentModalOpen = true;
                 },
 
@@ -266,14 +275,14 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Hình thức</label>
-                                    <select name="payment_method" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm">
+                                    <select name="payment_method" x-model="method" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm">
                                         <option value="cash">Tiền mặt</option>
                                         <option value="bank_transfer">Chuyển khoản</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Mã giao dịch</label>
-                                    <input type="text" name="reference_code" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm">
+                                    <input type="text" name="reference_code" x-model="reference" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Ảnh bill chuyển khoản</label>
@@ -281,7 +290,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Phân bổ</label>
-                                    <select name="invoice_id" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm">
+                                    <select name="invoice_id" x-model="invoiceId" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm">
                                         <option value="">Tự động trừ hóa đơn cũ nhất (FIFO)</option>
                                         @foreach($project->invoices()->orderBy('invoice_date')->get() as $inv)
                                             <option value="{{ $inv->id }}">{{ $inv->code ?: ('#'.$inv->id) }} — {{ number_format($inv->total_amount, 0, ',', '.') }}</option>

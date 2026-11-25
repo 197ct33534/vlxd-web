@@ -26,7 +26,9 @@ class InvoiceController extends Controller
     {
         $invoices = $project->invoices()->latest('invoice_date')->paginate(15);
         // Fetch payments ordered by date descending
-        $payments = $project->payments()->latest('payment_date')->get();
+        $payments = $project->payments()
+            ->with(['paymentAllocations' => fn ($query) => $query->orderBy('id')])
+            ->latest('payment_date')->get();
 
         $agent = new \Jenssegers\Agent\Agent();
         if ($agent->isMobile()) {
@@ -51,6 +53,7 @@ class InvoiceController extends Controller
 
         $agent = new \Jenssegers\Agent\Agent();
         if ($agent->isMobile()) {
+            $invoice->loadSum('paymentAllocations', 'amount');
             return view('invoices.mobile_show', compact('invoice'));
         }
         

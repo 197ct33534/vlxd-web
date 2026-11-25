@@ -59,6 +59,9 @@
         @if(session('error'))
             <div class="mb-4 rounded-xl bg-red-50 text-red-800 px-4 py-3 text-sm font-medium">{{ session('error') }}</div>
         @endif
+        @unless($__env->hasSection('inline_validation_errors'))
+            <x-validation-errors />
+        @endunless
         @yield('content')
     </main>
 

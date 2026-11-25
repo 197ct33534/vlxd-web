@@ -17,9 +17,15 @@
                 <p class="text-xs font-bold uppercase tracking-wider text-primary">Mã hóa đơn</p>
                 <h1 class="text-2xl font-black text-gray-900 dark:text-white">{{ $invoice->code ?? '#' . $invoice->id }}</h1>
             </div>
-            <span class="rounded-full border border-emerald-200 bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                Đã thanh toán
-            </span>
+            @if(round((float) $invoice->total_amount - (float) $invoice->payment_allocations_sum_amount, 2) <= 0)
+                <span class="rounded-full border border-emerald-200 bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                    Đã thanh toán
+                </span>
+            @else
+                <span class="rounded-full border border-amber-200 bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                    Còn nợ
+                </span>
+            @endif
         </div>
         <dl class="grid grid-cols-2 gap-4">
             <div>

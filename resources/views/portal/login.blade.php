@@ -1,5 +1,7 @@
 @extends('layouts.mobile-customer')
 
+@section('inline_validation_errors', '1')
+
 @section('title', 'Đăng nhập VLXD')
 @section('heading', 'Xin chào')
 

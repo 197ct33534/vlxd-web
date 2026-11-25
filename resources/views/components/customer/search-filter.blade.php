@@ -22,7 +22,7 @@
             });
         },
         resetFilters() {
-            window.location.href = @json(route('customers.index'));
+            window.location.href = @js(route('customers.index'));
         }
      }">
     <div class="border-b border-border-light px-4 py-3 dark:border-border-dark sm:px-5">
