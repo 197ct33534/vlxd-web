@@ -11,7 +11,6 @@ export default defineConfig({
                 'resources/css/portal.css',
                 'resources/css/mobile.css',
                 'resources/css/mobile-compact.css',
-                'resources/css/import.css',
                 'resources/css/landing.css',
                 'resources/js/alpine.js',
             ],
