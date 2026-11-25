@@ -1,5 +1,5 @@
 @props(['heading' => null])
-<header class="flex-shrink-0 border-b border-border-light bg-container-light shadow-subtle dark:border-border-dark dark:bg-container-dark">
+<header class="flex-shrink-0 print:hidden border-b border-border-light bg-container-light shadow-subtle dark:border-border-dark dark:bg-container-dark">
     <div class="flex items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <div class="flex min-w-0 flex-1 items-center gap-2">
             <button

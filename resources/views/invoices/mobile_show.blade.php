@@ -1,182 +1,111 @@
-<!DOCTYPE html>
-<html class="light" lang="vi">
-<head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Chi tiết hóa đơn - {{ $invoice->code ?? '#' . $invoice->id }}</title>
-    <!-- Tailwind CSS -->
-    {{-- Theme Tailwind: tailwind.mobile-compact.config.js --}}
-    @vite(['resources/css/mobile-compact.css', 'resources/js/alpine.js'])
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-    <!-- Material Symbols -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    
-    
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
-            vertical-align: middle;
-        }
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        [x-cloak] { display: none !important; }
-    </style>
-    
-    {{-- Alpine.js --}}
-</head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased font-display" x-data="{ isLoading: false }">
-    
-    <!-- Loading Indicator -->
-    <div x-cloak x-show="isLoading" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-2xl flex flex-col items-center gap-4">
-            <svg class="animate-spin h-10 w-10 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span class="text-slate-700 dark:text-slate-200 font-medium text-sm">{{ __('common.loading') }}</span>
+@extends('layouts.dashboard')
+
+@section('title', 'Hóa đơn '.($invoice->code ?? '#'.$invoice->id))
+@section('page_heading', 'Chi tiết hóa đơn')
+
+@section('content')
+<div class="flex flex-col gap-4 pb-28 print:pb-0">
+    <a href="{{ route('projects.invoices.index', $invoice->project_id) }}" class="-ml-1 inline-flex min-h-[44px] items-center gap-1 self-start text-sm font-semibold text-gray-500 hover:text-primary dark:text-gray-400 print:hidden">
+        <span class="material-symbols-outlined text-xl">arrow_back</span>
+        Quay lại danh sách hóa đơn
+    </a>
+
+    {{-- Mã + trạng thái --}}
+    <section class="rounded-xl border border-border-light bg-container-light p-4 shadow-subtle dark:border-border-dark dark:bg-container-dark">
+        <div class="mb-4 flex items-start justify-between gap-3">
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-primary">Mã hóa đơn</p>
+                <h1 class="text-2xl font-black text-gray-900 dark:text-white">{{ $invoice->code ?? '#' . $invoice->id }}</h1>
+            </div>
+            <span class="rounded-full border border-emerald-200 bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                Đã thanh toán
+            </span>
+        </div>
+        <dl class="grid grid-cols-2 gap-4">
+            <div>
+                <dt class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Ngày xuất</dt>
+                <dd class="text-sm font-medium">{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d/m/Y') }}</dd>
+            </div>
+            <div class="text-right">
+                <dt class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Dự án</dt>
+                <dd class="truncate text-sm font-medium">{{ $invoice->project->name }}</dd>
+            </div>
+        </dl>
+    </section>
+
+    {{-- Khách hàng + công trình --}}
+    <section class="grid gap-3">
+        <div class="rounded-xl border border-border-light bg-container-light p-4 shadow-subtle dark:border-border-dark dark:bg-container-dark">
+            <div class="mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined text-xl text-primary">person</span>
+                <h2 class="font-bold text-gray-700 dark:text-gray-300">Khách hàng</h2>
+            </div>
+            <p class="text-base font-bold text-gray-900 dark:text-white">{{ $invoice->project->customer->name ?? '—' }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $invoice->project->customer->phone ?? '' }}</p>
+            <p class="mt-1 text-sm leading-relaxed text-gray-500 dark:text-gray-400">{{ $invoice->project->customer->address ?? '' }}</p>
+        </div>
+
+        <div class="rounded-xl border border-border-light bg-container-light p-4 shadow-subtle dark:border-border-dark dark:bg-container-dark">
+            <div class="mb-2 flex items-center gap-2">
+                <span class="material-symbols-outlined text-xl text-primary">assignment</span>
+                <h2 class="font-bold text-gray-700 dark:text-gray-300">Chi tiết dự án</h2>
+            </div>
+            <p class="text-base font-bold text-gray-900 dark:text-white">{{ $invoice->project->name }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $invoice->project->address }}</p>
+        </div>
+    </section>
+
+    {{-- Dòng vật liệu --}}
+    <section>
+        <div class="mb-3 flex items-center justify-between px-1">
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Sản phẩm / Dịch vụ</h2>
+            <span class="rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500 dark:bg-gray-800">{{ $invoice->items->count() }} mục</span>
+        </div>
+        <div class="space-y-3">
+            @foreach($invoice->items as $item)
+                <div class="rounded-xl border border-border-light bg-container-light p-4 shadow-subtle dark:border-border-dark dark:bg-container-dark">
+                    <div class="mb-2 flex items-start justify-between gap-3">
+                        <h3 class="font-semibold text-gray-900 dark:text-white">{{ $item->product_name }}</h3>
+                        <span class="shrink-0 font-bold text-gray-900 dark:text-white">{{ number_format($item->amount) }}đ</span>
+                    </div>
+                    <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                        <span>Số lượng: {{ $item->quantity }} {{ $item->unit }}</span>
+                        <span>{{ number_format($item->price) }}đ / đơn vị</span>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
+    {{-- Tổng tiền --}}
+    <section class="rounded-xl border border-border-light bg-container-light p-4 shadow-subtle dark:border-border-dark dark:bg-container-dark">
+        <div class="flex justify-between gap-3 text-sm">
+            <span class="text-gray-500 dark:text-gray-400">Ghi chú</span>
+            <span class="text-right font-medium italic">{{ $invoice->note ?? '-' }}</span>
+        </div>
+        @if($invoice->total_text)
+            <p class="mt-2 text-right text-xs italic text-gray-400">({{ $invoice->total_text }})</p>
+        @endif
+        <div class="mt-3 flex items-center justify-between border-t border-border-light pt-3 dark:border-border-dark">
+            <span class="text-lg font-bold text-gray-900 dark:text-white">Tổng cộng</span>
+            <span class="text-2xl font-black text-primary">{{ number_format($invoice->total_amount) }}đ</span>
+        </div>
+    </section>
+
+    <p class="text-center text-xs text-gray-400">Hóa đơn được tạo tự động bởi hệ thống.</p>
+
+    {{-- Thanh thao tác dính đáy: In / PDF (ẩn khi in). --}}
+    <div class="fixed inset-x-0 bottom-0 z-30 border-t border-border-light bg-container-light/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-md dark:border-border-dark dark:bg-container-dark/95 lg:left-64 print:hidden">
+        <div class="mx-auto grid max-w-md grid-cols-2 gap-3">
+            <button type="button" onclick="window.print()" class="flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-gray-100 font-bold text-gray-900 active:scale-[0.98] dark:bg-gray-800 dark:text-gray-100">
+                <span class="material-symbols-outlined text-[20px]">print</span>
+                {{ __('invoices.print') }}
+            </button>
+            <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank" class="flex min-h-[48px] items-center justify-center gap-2 rounded-lg bg-primary font-bold text-white shadow-lg shadow-primary/25 active:scale-[0.98]">
+                <span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+                {{ __('invoices.pdf') }}
+            </a>
         </div>
     </div>
-
-    <!-- Main Container -->
-    <div class="max-w-md mx-auto min-h-screen bg-white dark:bg-slate-900 shadow-xl flex flex-col relative pb-32">
-        
-        <!-- Top Navigation -->
-        <header class="sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('projects.invoices.index', $invoice->project_id) }}" @click="isLoading = true" class="inline-flex max-w-[55%] items-center gap-1.5 -ml-2 rounded-lg p-2 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800">
-                    <span class="material-symbols-outlined shrink-0 text-slate-600 dark:text-slate-400">arrow_back</span>
-                    <span class="truncate text-xs font-semibold text-slate-600 dark:text-slate-300">{{ __('nav.back_short') }}</span>
-                </a>
-                <h1 class="min-w-0 flex-1 truncate text-lg font-bold tracking-tight">{{ __('invoices.show_title', ['code' => $invoice->code ?? '#' . $invoice->id]) }}</h1>
-            </div>
-            <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank" class="inline-flex max-w-[42%] flex-shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-violet-600 hover:bg-slate-100 dark:hover:bg-slate-800">
-                <span class="material-symbols-outlined shrink-0">picture_as_pdf</span>
-                <span class="truncate text-xs font-bold">{{ __('invoices.pdf') }}</span>
-            </a>
-        </header>
-
-        <!-- Main Content Scroll Area -->
-        <main class="flex-1 overflow-y-auto">
-            <!-- Header Section: ID & Status -->
-            <section class="p-6 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <p class="text-sm font-medium text-primary mb-1 uppercase tracking-wider">Mã hóa đơn</p>
-                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ $invoice->code ?? '#' . $invoice->id }}</h2>
-                    </div>
-                    <span class="px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-sm font-bold border border-emerald-200 dark:border-emerald-800">
-                        Đã thanh toán
-                    </span>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="flex flex-col">
-                        <span class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Ngày xuất</span>
-                        <span class="text-sm font-medium">{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d/m/Y') }}</span>
-                    </div>
-                    <div class="flex flex-col text-right">
-                        <span class="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold">Dự án</span>
-                        <span class="text-sm font-medium truncate">{{ $invoice->project->name }}</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Info Cards Section -->
-            <section class="p-4 space-y-4">
-                <!-- Customer Card -->
-                <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="material-symbols-outlined text-primary text-xl">person</span>
-                        <h3 class="font-bold text-slate-700 dark:text-slate-300">Khách hàng</h3>
-                    </div>
-                    <p class="text-base font-bold text-slate-900 dark:text-white">{{ $invoice->project->customer->name ?? 'N/A' }}</p>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">{{ $invoice->project->customer->phone ?? '' }}</p>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
-                        {{ $invoice->project->customer->address ?? '' }}
-                    </p>
-                </div>
-
-                <!-- Project Card -->
-                <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="material-symbols-outlined text-primary text-xl">assignment</span>
-                        <h3 class="font-bold text-slate-700 dark:text-slate-300">Chi tiết dự án</h3>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <p class="text-base font-bold text-slate-900 dark:text-white">{{ $invoice->project->name }}</p>
-                            <p class="text-sm text-slate-500 dark:text-slate-400">{{ $invoice->project->address }}</p>
-                        </div>
-                        <div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                            <span class="material-symbols-outlined">web</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Line Items List -->
-            <section class="px-4 py-2">
-                <div class="flex items-center justify-between mb-4 px-2">
-                    <h3 class="text-lg font-bold text-slate-900 dark:text-white">Sản phẩm / Dịch vụ</h3>
-                    <span class="text-xs font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">{{ $invoice->items->count() }} mục</span>
-                </div>
-                <div class="space-y-3">
-                    @foreach($invoice->items as $item)
-                    <div class="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-                        <div class="flex justify-between items-start mb-2">
-                            <h4 class="font-semibold text-slate-900 dark:text-white pr-4">{{ $item->product_name }}</h4>
-                            <span class="font-bold text-slate-900 dark:text-white">{{ number_format($item->amount) }}đ</span>
-                        </div>
-                        <div class="flex justify-between items-center text-sm text-slate-500 dark:text-slate-400">
-                            <span>Số lượng: {{ $item->quantity }} {{ $item->unit }}</span>
-                            <span>{{ number_format($item->price) }}đ / đơn vị</span>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </section>
-
-            <!-- Financial Summary -->
-            <section class="p-6 mt-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
-                <div class="space-y-3">
-                    <div class="flex justify-between text-sm">
-                        <span class="text-slate-500 dark:text-slate-400">Ghi chú</span>
-                        <span class="font-medium italic">{{ $invoice->note ?? '-' }}</span>
-                    </div>
-                    @if($invoice->total_text)
-                    <div class="text-right text-xs text-slate-400 italic mb-2">
-                        ({{ $invoice->total_text }})
-                    </div>
-                    @endif
-                    <div class="pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
-                        <span class="text-lg font-bold text-slate-900 dark:text-white">Tổng cộng</span>
-                        <span class="text-2xl font-black text-primary">{{ number_format($invoice->total_amount) }}đ</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Footer Placeholder -->
-            <div class="px-4 pb-12">
-                <div class="w-full h-12 flex items-center justify-center text-xs text-slate-400">
-                    <p>Hóa đơn được tạo tự động bởi hệ thống.</p>
-                </div>
-            </div>
-        </main>
-
-        <!-- Sticky Bottom Bar Actions -->
-        <footer class="absolute bottom-0 left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 p-4 pb-8 z-30">
-            <div class="grid grid-cols-2 gap-3 max-w-md mx-auto">
-                <button type="button" onclick="window.print()" class="flex h-12 items-center justify-center gap-2 rounded-xl bg-slate-100 font-bold text-slate-900 transition-all active:scale-[0.98] dark:bg-slate-800 dark:text-slate-100">
-                    <span class="material-symbols-outlined text-[20px]">print</span>
-                    <span>{{ __('invoices.print') }}</span>
-                </button>
-                <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank" class="flex h-12 items-center justify-center gap-2 rounded-xl bg-primary font-bold text-white shadow-lg shadow-primary/25 transition-all active:scale-[0.98]">
-                    <span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
-                    <span>{{ __('invoices.pdf') }}</span>
-                </a>
-            </div>
-        </footer>
-    </div>
-</body>
-</html>
+</div>
+@endsection

@@ -1,5 +1,5 @@
 <aside
-    class="fixed inset-y-0 left-0 z-50 flex w-[min(18rem,88vw)] flex-shrink-0 flex-col justify-between border-r border-border-light bg-container-light p-4 shadow-xl transition-transform duration-300 ease-out dark:border-border-dark dark:bg-container-dark lg:static lg:z-auto lg:w-64 lg:max-w-none lg:shadow-subtle
+    class="print:hidden fixed inset-y-0 left-0 z-50 flex w-[min(18rem,88vw)] flex-shrink-0 flex-col justify-between border-r border-border-light bg-container-light p-4 shadow-xl transition-transform duration-300 ease-out dark:border-border-dark dark:bg-container-dark lg:static lg:z-auto lg:w-64 lg:max-w-none lg:shadow-subtle
            -translate-x-full transform lg:translate-x-0"
     :class="{ 'translate-x-0': $store.layout.sidebarOpen }"
     @keydown.window.escape="$store.layout.closeSidebar()"
