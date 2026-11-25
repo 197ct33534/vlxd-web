@@ -22,7 +22,10 @@
     @stack('head')
 </head>
 @php($store = \App\Models\StoreInfo::current())
-@php($hasPortalNav = (bool) session('portal_customer_id'))
+{{-- Có thanh điều hướng dưới: khách portal đã đăng nhập, hoặc trang tự khai báo
+     @section('bottom_nav') có nội dung (vd. tài xế). Khi đó chừa chỗ và ẩn CTA dính đáy.
+     (portal/login khai báo section rỗng để ẩn nav — không tính.) --}}
+@php($hasPortalNav = session('portal_customer_id') || trim($__env->yieldContent('bottom_nav')) !== '')
 <body class="bg-surface text-ink min-h-screen {{ $hasPortalNav ? 'has-portal-nav pb-40' : 'pb-28' }}">
 
     <header class="sticky top-0 z-30 bg-white/95 border-b border-gray-200 backdrop-blur px-4 py-3">
