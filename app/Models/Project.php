@@ -31,6 +31,11 @@ class Project extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    public function displayName(): string
+    {
+        return trim((string) $this->name) ?: (trim((string) $this->address) ?: '—');
+    }
     public function invoices()
     {
         return $this->hasMany(Invoice::class);

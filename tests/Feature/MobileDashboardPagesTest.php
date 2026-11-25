@@ -3,6 +3,8 @@
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Project;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 beforeEach(function () {
     useMobileUserAgent();
@@ -56,6 +58,12 @@ it('renders the mobile invoice detail with print-safe chrome', function () {
     $invoice = makeInvoice($this->project);
 
     $html = $this->get(route('invoices.show', $invoice))->assertOk()->getContent();
+    $breadcrumbs = str($html)->after('aria-label="Đường dẫn điều hướng"')->before('</nav>');
+    expect((string) $breadcrumbs)
+        ->toContain(route('customers.projects.index', $this->customer))
+        ->toContain(route('projects.invoices.index', $this->project))
+        ->toContain('aria-current="page"')
+        ->toContain('HD-T1');
 
     expect($html)
         ->toBeDashboardMobilePage()
@@ -105,48 +113,39 @@ it('renders the mobile Excel upload step inside the dashboard shell', function (
         ->toBeDashboardMobilePage()
         ->toContain('action="'.route('invoice.import').'"')
         ->toContain('@submit="isLoading = true"')
-        ->toContain('Thầu Khung')
+        ->toContain('name="file"')
         ->not->toContain('dark_mode');
 });
 
-it('renders the mobile sheet selection step inside the dashboard shell', function () {
-    $html = view('import-sheet-selection-mobile', [
-        'sheetNames' => ['Sheet1', 'Sheet2'],
-        'storedFilePath' => 'imports/x.xlsx',
-        'projectId' => null,
-    ])->render();
-
-    expect($html)
-        ->toBeDashboardMobilePage()
-        ->toContain('Sheet2')
-        ->toContain('Tiếp tục')
-        ->toContain('action="'.route('invoice.import').'"')
-        ->toContain('@submit="isLoading = true"');
-});
-
-it('renders the mobile import preview step inside the dashboard shell', function () {
-    $html = view('import-result-mobile', [
-        'khachHang' => 'Thầu A',
-        'diaChi' => '',
-        'dienThoai' => '',
-        'items' => [[
-            'stt' => 1, 'ngay_thang' => '01/11/2026', 'ten_vat_lieu' => 'Xi măng', 'don_vi_tinh' => 'bao',
-            'so_luong' => 10, 'don_gia' => 90000, 'thanh_tien' => 900000,
+it('renders the mobile workbook preview inside the dashboard shell', function () {
+    $token = (string) Str::uuid();
+    Cache::put('invoice-import:'.$token, [
+        'user' => auth()->id(),
+        'filename' => 'hoa-don.xlsx',
+        'sheets' => [[
+            'name' => 'Sheet1',
+            'khachHang' => 'Thầu Khung',
+            'diaChi' => 'Quận 9',
+            'ngayCuoi' => '01/11/2026',
+            'tongTien' => 900000,
+            'advancePayments' => [],
+            'items' => [[
+                'ngay_thang' => '01/11/2026', 'ten_vat_lieu' => 'Xi măng', 'don_vi_tinh' => 'bao',
+                'so_luong' => 10, 'don_gia' => 90000, 'thanh_tien' => 900000,
+            ]],
         ]],
-        'advancePayments' => [],
-        'tongTien' => 900000,
-        'tongTienUng' => 0,
-        'tongTienChu' => 'Chín trăm nghìn đồng',
-        'ngayCuoi' => '01/11/2026',
-        'projectId' => null,
-    ])->render();
+    ], now()->addMinutes(5));
+
+    $html = $this->get(route('invoice.workbook', ['token' => $token, 'project_id' => $this->project->id]))
+        ->assertOk()->getContent();
 
     expect($html)
         ->toBeDashboardMobilePage()
         ->toContain('Xi măng')
-        ->toContain('action="'.route('invoice.save').'"')
-        ->toContain('@submit="isLoading = true"')
-        ->not->toContain('dark_mode');
+        ->toContain('01/11/2026')
+        ->toContain('Lưu các sheet đã chọn')
+        ->toContain('action="'.route('invoice.workbook.save', $token).'"')
+        ->toContain('$store.layout.toggleSidebar()');
 });
 
 it('renders customer projects inside the dashboard shell', function () {
@@ -165,6 +164,7 @@ it('renders customer projects inside the dashboard shell', function () {
         ->toContain('Công trình Khung')
         ->toContain('31/12/2026')
         ->toContain(route('projects.invoices.index', $this->project))
+        ->toContain(route('invoice.index', ['project_id' => $this->project->id]))
         ->toContain('openEdit(')
         ->toContain("confirmDelete('".route('customers.projects.destroy', ['customer' => $this->customer->id, 'project' => $this->project->id])."')");
 });

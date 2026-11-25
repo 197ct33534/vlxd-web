@@ -34,17 +34,12 @@
     }"
     class="flex flex-col gap-4 pb-36"
 >
-    {{-- Quay lại + tên công trình (topbar dashboard không có nút back). --}}
     <div class="flex items-start justify-between gap-3">
         <div class="min-w-0">
-            <a href="{{ route('customers.projects.index', $project->customer_id) }}" class="-ml-1 inline-flex min-h-[44px] items-center gap-1 text-sm font-semibold text-gray-500 hover:text-primary dark:text-gray-400">
-                <span class="material-symbols-outlined text-xl">arrow_back</span>
-                Quay lại dự án
-            </a>
             <p class="text-xs font-bold uppercase tracking-widest text-primary">Hóa đơn công trình</p>
             <h1 class="text-2xl font-black tracking-tight text-text-light dark:text-text-dark">{{ $project->name }}</h1>
         </div>
-        <a href="{{ route('projects.price_history', $project->id) }}" class="mt-11 inline-flex min-h-[44px] shrink-0 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-primary hover:bg-primary/10">
+        <a href="{{ route('projects.price_history', $project->id) }}" class="inline-flex min-h-[44px] shrink-0 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-primary hover:bg-primary/10">
             <span class="material-symbols-outlined text-lg">trending_up</span>
             {{ __('invoices.price_history') }}
         </a>
@@ -85,13 +80,17 @@
                 <a href="{{ route('invoices.show', $invoice->id) }}" class="block p-4 active:bg-gray-50 dark:active:bg-gray-800/60">
                     <div class="mb-2 flex items-center justify-between">
                         <span class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ $invoice->code ?? '#' . $invoice->id }}</span>
-                        <span class="text-xs font-semibold text-gray-500">{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d/m/Y') }}</span>
+                        <span class="text-xs font-semibold text-gray-500">Ngày xuất {{ $invoice->invoice_date?->format('d/m/Y') ?? '—' }}</span>
                     </div>
                     <div class="flex items-center justify-between gap-3">
                         <p class="min-w-0 flex-1 truncate text-sm font-bold text-gray-900 dark:text-white">{{ $invoice->note ?? 'Hóa đơn bán hàng' }}</p>
                         <p class="shrink-0 text-base font-black text-primary">{{ number_format($invoice->total_amount) }}đ</p>
                     </div>
                 </a>
+
+                <div class="border-t border-border-light px-4 py-1 dark:border-border-dark">
+                    <x-invoice-payment-status :invoice="$invoice" />
+                </div>
 
                 <div class="grid grid-cols-3 border-t border-border-light text-sm font-semibold dark:border-border-dark">
                     <a href="{{ route('invoices.pdf', $invoice->id) }}" target="_blank" class="flex min-h-[44px] items-center justify-center gap-1.5 text-primary active:bg-primary/10">

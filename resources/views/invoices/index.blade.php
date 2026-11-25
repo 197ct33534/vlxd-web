@@ -40,18 +40,20 @@
                             <th class="px-6 py-4 font-bold">{{ __('invoices.table.code') }}</th>
                             <th class="px-6 py-4 font-bold text-center">{{ __('invoices.table.total_amount') }}</th>
                             <th class="px-6 py-4 font-bold">{{ __('invoices.table.note') }}</th>
+                            <th class="px-6 py-4 font-bold">Thanh toán</th>
                             <th class="px-6 py-4 font-bold text-right">{{ __('common.actions') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($invoices as $invoice)
                             <tr class="bg-container-light dark:bg-container-dark border-b dark:border-border-dark hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors">
-                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d/m/Y') }}</td>
+                                <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ $invoice->invoice_date?->format('d/m/Y') ?? '—' }}</td>
                                 <td class="px-6 py-4">{{ $invoice->code ?? '#' . $invoice->id }}</td>
                                 <td class="px-6 py-4 text-center font-bold text-blue-600">
                                     {{ number_format($invoice->total_amount, 0, ',', '.') }} đ
                                 </td>
                                 <td class="px-6 py-4 truncate max-w-xs">{{ $invoice->note ?? '-' }}</td>
+                                <td class="px-6 py-4"><x-invoice-payment-status :invoice="$invoice" /></td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex flex-wrap items-center justify-end gap-1.5">
                                         <button type="button" @click="openInvoiceModal({{ $invoice->id }})"
@@ -65,15 +67,6 @@
                                             <span class="material-symbols-outlined text-base leading-none">picture_as_pdf</span>
                                             <span>{{ __('invoices.btn_pdf') }}</span>
                                         </a>
-                                        <form action="{{ route('invoices.pay', $invoice->id) }}" method="POST" class="inline-flex"
-                                              onsubmit="return confirm(@js(__('invoices.confirm_mark_paid', ['amount' => number_format($invoice->total_amount, 0, ',', '.') . ' đ'])));">
-                                            @csrf
-                                            <button type="submit"
-                                                    class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-green-50 hover:text-green-700 dark:text-gray-400 dark:hover:bg-green-900/20">
-                                                <span class="material-symbols-outlined text-base leading-none">check_circle</span>
-                                                <span>{{ __('invoices.btn_mark_paid') }}</span>
-                                            </button>
-                                        </form>
                                         <a href="{{ route('invoices.edit', $invoice->id) }}"
                                            class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-blue-50 hover:text-blue-600 dark:text-gray-400">
                                             <span class="material-symbols-outlined text-base leading-none">edit</span>
@@ -94,7 +87,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                                <td colspan="6" class="px-6 py-12 text-center text-gray-500">
                                     <div class="flex flex-col items-center justify-center gap-2">
                                         <span class="material-symbols-outlined text-4xl text-gray-300">receipt_long</span>
                                         <p>{{ __('invoices.empty_project') }}</p>

@@ -5,12 +5,7 @@
 
 @section('content')
 <div x-data="projectManager()" class="flex flex-col gap-4 pb-20">
-    {{-- Quay lại + thông tin khách (topbar dashboard không có nút back). --}}
     <div>
-        <a href="{{ route('customers.index') }}" class="-ml-1 inline-flex min-h-[44px] items-center gap-1 text-sm font-semibold text-gray-500 hover:text-primary dark:text-gray-400">
-            <span class="material-symbols-outlined text-xl">arrow_back</span>
-            Quay lại khách hàng
-        </a>
         <p class="text-xs font-bold uppercase tracking-widest text-primary">Khách hàng</p>
         <h1 class="text-3xl font-black tracking-tight text-text-light dark:text-text-dark">{{ $customer->name }}</h1>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Đang có {{ $projects->count() }} dự án</p>
@@ -52,10 +47,16 @@
                     </dl>
                 </a>
 
-                <div class="grid grid-cols-3 border-t border-border-light text-sm font-semibold dark:border-border-dark">
+                <div class="grid grid-cols-4 border-t border-border-light text-sm font-semibold dark:border-border-dark">
                     <a href="{{ route('projects.invoices.index', $project->id) }}" class="flex min-h-[44px] items-center justify-center gap-1.5 text-primary active:bg-primary/10">
                         <span class="material-symbols-outlined text-lg">receipt_long</span>
                         Hóa đơn
+                    </a>
+                    <a href="{{ route('invoice.index', ['project_id' => $project->id]) }}"
+                        aria-label="Nhập hóa đơn Excel"
+                        class="flex min-h-[44px] items-center justify-center gap-1 border-l border-border-light text-primary active:bg-primary/10 dark:border-border-dark">
+                        <span class="material-symbols-outlined text-lg" aria-hidden="true">upload_file</span>
+                        Excel
                     </a>
                     <button type="button" @click="openEdit({{ json_encode($project) }})" class="flex min-h-[44px] items-center justify-center gap-1.5 border-x border-border-light text-gray-700 active:bg-gray-100 dark:border-border-dark dark:text-gray-300 dark:active:bg-gray-800">
                         <span class="material-symbols-outlined text-lg">edit</span>

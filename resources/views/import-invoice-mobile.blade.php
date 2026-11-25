@@ -10,6 +10,10 @@
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Đọc dữ liệu hóa đơn từ tệp Excel.</p>
     </div>
 
+    @if(session('error') || $errors->any())
+        <p role="alert" class="rounded-lg bg-red-50 p-3 text-sm text-red-700">{{ session('error') ?? $errors->first() }}</p>
+    @endif
+
     <div class="overflow-hidden rounded-xl border border-border-light bg-container-light shadow-subtle dark:border-border-dark dark:bg-container-dark">
         <form action="{{ route('invoice.import') }}" method="POST" enctype="multipart/form-data" @submit="isLoading = true" class="space-y-5 p-4">
             @csrf
@@ -18,21 +22,7 @@
                 <div>
                     <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Dự án</label>
                     <div class="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        {{ \App\Models\Project::find($projectId)->name ?? 'Dự án #'.$projectId }}
-                    </div>
-                </div>
-            @else
-                <div>
-                    <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300" for="customer-select">Chọn khách hàng</label>
-                    <div class="relative">
-                        <span class="material-symbols-outlined pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[20px] text-gray-400">person_search</span>
-                        <select name="customer_id" id="customer-select"
-                            class="w-full appearance-none rounded-lg border-border-light bg-background-light py-3 pl-10 pr-10 text-sm focus:border-primary focus:ring-primary dark:border-border-dark dark:bg-background-dark">
-                            <option disabled selected value="">Chọn khách hàng</option>
-                            @foreach(\App\Models\Customer::orderBy('name')->get() as $customer)
-                                <option value="{{ $customer->id }}">{{ $customer->name }}</option>
-                            @endforeach
-                        </select>
+                        {{ $importProject->name }}
                     </div>
                 </div>
             @endif

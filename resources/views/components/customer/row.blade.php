@@ -32,11 +32,6 @@
                 <span>{{ __('customer.view_projects') }}</span>
             </a>
             <button type="button"
-                class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800">
-                <span class="material-symbols-outlined text-base leading-none">visibility</span>
-                <span>{{ __('customer.btn.preview') }}</span>
-            </button>
-            <button type="button"
                 @click="$dispatch('open-edit-customer', { customer: {{ json_encode($customer) }} })"
                 class="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold text-gray-600 hover:bg-primary/10 hover:text-primary dark:text-gray-400">
                 <span class="material-symbols-outlined text-base leading-none">edit</span>

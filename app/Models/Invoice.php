@@ -31,6 +31,15 @@ class Invoice extends Model
         return $this->hasMany(PaymentAllocation::class);
     }
 
+    public function outstandingAmount(): float
+    {
+        $allocated = array_key_exists('payment_allocations_sum_amount', $this->attributes)
+            ? $this->payment_allocations_sum_amount
+            : $this->paymentAllocations()->sum('amount');
+
+        return max(0, round((float) $this->total_amount - (float) $allocated, 2));
+    }
+
     public function items()
     {
         return $this->hasMany(InvoiceItem::class);

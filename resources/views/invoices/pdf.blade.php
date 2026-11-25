@@ -226,14 +226,8 @@
                 </tr>
                 <tr>
                     <td class="label">Công trình</td>
-                    <td class="value">{{ $invoice->project->name ?? '—' }}</td>
+                    <td class="value">{{ $invoice->project->displayName() }}</td>
                 </tr>
-                @if($invoice->project->address)
-                    <tr>
-                        <td class="label">Địa chỉ</td>
-                        <td class="value-normal">{{ $invoice->project->address }}</td>
-                    </tr>
-                @endif
                 @if($invoice->note)
                     <tr>
                         <td class="label">Ghi chú</td>
@@ -259,7 +253,12 @@
             @foreach($invoice->items as $index => $item)
                 <tr>
                     <td class="col-num">{{ $index + 1 }}</td>
-                    <td>{{ $item->product_name }}</td>
+                    <td>
+                        @if ($deliveryDate = $item->deliveryDate())
+                            <span class="col-num">Ngày giao hàng {{ $deliveryDate }}</span><br>
+                        @endif
+                        {{ $item->product_name }}
+                    </td>
                     <td class="col-num">{{ $item->unit }}</td>
                     <td class="col-num">{{ $item->quantity }}</td>
                     <td class="col-right">{{ number_format($item->price, 0, ',', '.') }}</td>

@@ -173,6 +173,7 @@
     "msg.quotation_empty": "Hiện chưa có dữ liệu báo giá từ lịch sử mua hàng.",
     "msg.import_temp_missing": "File tạm hết hạn hoặc không tìm thấy. Vui lòng tải lên lại.",
     "msg.import_save_failed": "Lưu dữ liệu thất bại: :error",
+    "msg.import_invalid_date": "Ngày \":date\" không hợp lệ. Hãy dùng định dạng ngày/tháng/năm.",
     "msg.import_success": "Đã import và lưu hóa đơn thành công.",
     "msg.import_success_alt": "Đã import và lưu dữ liệu thành công.",
 
@@ -231,7 +232,7 @@
 
     "invoices.title_suffix": "Hóa đơn",
     "invoices.project_label": "Dự án",
-    "invoices.table.date": "Ngày",
+    "invoices.table.date": "Ngày xuất",
     "invoices.table.code": "Mã",
     "invoices.table.total": "Tổng tiền",
     "invoices.table.note": "Ghi chú",

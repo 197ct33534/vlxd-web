@@ -125,6 +125,8 @@ Route::middleware(['auth'])->group(function () {
     Route::controller(ImportInvoiceController::class)->group(function () {
         Route::get('/import-invoice', 'index')->name('invoice.index');
         Route::post('/import-invoice', 'import')->name('invoice.import');
+        Route::get('/import/workbooks/{token}', 'workbook')->whereUuid('token')->name('invoice.workbook');
+        Route::post('/import/workbooks/{token}', 'saveWorkbook')->whereUuid('token')->name('invoice.workbook.save');
         Route::post('/import/save', 'save')->name('invoice.save');
     });
 
@@ -136,6 +138,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/invoices/{invoice}', 'show')->name('invoices.show');
         Route::get('/invoices/{invoice}/edit', 'edit')->name('invoices.edit');
         Route::put('/invoices/{invoice}', 'update')->name('invoices.update');
+        Route::patch('/invoices/{invoice}/project', 'moveToProject')->name('invoices.move-project');
         Route::delete('/invoices/{invoice}', 'destroy')->name('invoices.destroy');
         Route::post('/projects/{project}/payments', 'storePayment')->name('projects.payments.store');
         Route::put('/payments/{payment}', 'updatePayment')->name('payments.update');

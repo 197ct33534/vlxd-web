@@ -5,10 +5,10 @@
 
 @section('content')
 <div class="flex flex-col gap-4 pb-28 print:pb-0">
-    <a href="{{ route('projects.invoices.index', $invoice->project_id) }}" class="-ml-1 inline-flex min-h-[44px] items-center gap-1 self-start text-sm font-semibold text-gray-500 hover:text-primary dark:text-gray-400 print:hidden">
-        <span class="material-symbols-outlined text-xl">arrow_back</span>
-        Quay lại danh sách hóa đơn
-    </a>
+
+    <div class="overflow-hidden rounded-xl border border-border-light bg-container-light dark:border-border-dark dark:bg-container-dark">
+        @include('invoices.partials.store-header')
+    </div>
 
     {{-- Mã + trạng thái --}}
     <section class="rounded-xl border border-border-light bg-container-light p-4 shadow-subtle dark:border-border-dark dark:bg-container-dark">
@@ -17,7 +17,7 @@
                 <p class="text-xs font-bold uppercase tracking-wider text-primary">Mã hóa đơn</p>
                 <h1 class="text-2xl font-black text-gray-900 dark:text-white">{{ $invoice->code ?? '#' . $invoice->id }}</h1>
             </div>
-            @if(round((float) $invoice->total_amount - (float) $invoice->payment_allocations_sum_amount, 2) <= 0)
+            @if($invoice->outstandingAmount() <= 0)
                 <span class="rounded-full border border-emerald-200 bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
                     Đã thanh toán
                 </span>
@@ -34,7 +34,7 @@
             </div>
             <div class="text-right">
                 <dt class="text-xs font-semibold uppercase text-gray-500 dark:text-gray-400">Dự án</dt>
-                <dd class="truncate text-sm font-medium">{{ $invoice->project->name }}</dd>
+                <dd class="truncate text-sm font-medium">{{ $invoice->project->displayName() }}</dd>
             </div>
         </dl>
     </section>
@@ -48,7 +48,9 @@
             </div>
             <p class="text-base font-bold text-gray-900 dark:text-white">{{ $invoice->project->customer->name ?? '—' }}</p>
             <p class="text-sm text-gray-500 dark:text-gray-400">{{ $invoice->project->customer->phone ?? '' }}</p>
-            <p class="mt-1 text-sm leading-relaxed text-gray-500 dark:text-gray-400">{{ $invoice->project->customer->address ?? '' }}</p>
+            @if (filled($invoice->project->customer->address) && trim($invoice->project->customer->address) !== trim((string) $invoice->project->address))
+                <p class="mt-1 text-sm leading-relaxed text-gray-500 dark:text-gray-400">{{ $invoice->project->customer->address }}</p>
+            @endif
         </div>
 
         <div class="rounded-xl border border-border-light bg-container-light p-4 shadow-subtle dark:border-border-dark dark:bg-container-dark">
@@ -56,8 +58,7 @@
                 <span class="material-symbols-outlined text-xl text-primary">assignment</span>
                 <h2 class="font-bold text-gray-700 dark:text-gray-300">Chi tiết dự án</h2>
             </div>
-            <p class="text-base font-bold text-gray-900 dark:text-white">{{ $invoice->project->name }}</p>
-            <p class="text-sm text-gray-500 dark:text-gray-400">{{ $invoice->project->address }}</p>
+            <p class="text-base font-bold text-gray-900 dark:text-white">{{ $invoice->project->displayName() }}</p>
         </div>
     </section>
 
@@ -71,6 +72,7 @@
             @foreach($invoice->items as $item)
                 <div class="rounded-xl border border-border-light bg-container-light p-4 shadow-subtle dark:border-border-dark dark:bg-container-dark">
                     <div class="mb-2 flex items-start justify-between gap-3">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Ngày giao hàng {{ $item->deliveryDate() ?? '—' }}</p>
                         <h3 class="font-semibold text-gray-900 dark:text-white">{{ $item->product_name }}</h3>
                         <span class="shrink-0 font-bold text-gray-900 dark:text-white">{{ number_format($item->amount) }}đ</span>
                     </div>
@@ -97,6 +99,8 @@
             <span class="text-2xl font-black text-primary">{{ number_format($invoice->total_amount) }}đ</span>
         </div>
     </section>
+
+    <x-move-invoice-project :invoice="$invoice" :projects="$projects" />
 
     <p class="text-center text-xs text-gray-400">Hóa đơn được tạo tự động bởi hệ thống.</p>
 

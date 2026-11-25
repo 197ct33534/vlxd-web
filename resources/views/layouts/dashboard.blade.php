@@ -62,6 +62,8 @@
                 <x-slot:heading>@yield('page_heading', 'Quản trị')</x-slot:heading>
             </x-topbar>
 
+            <x-dashboard-breadcrumbs :import-project="$importProject ?? $project ?? null" />
+
             <main class="flex-1 min-w-0 w-full overflow-y-auto overflow-x-hidden px-3 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-5 sm:pt-6 sm:pb-[max(1.5rem,env(safe-area-inset-bottom))] lg:px-8 lg:pt-8 lg:pb-[max(2rem,env(safe-area-inset-bottom))] mf-admin-main print:overflow-visible print:p-0">
                 <div class="mx-auto w-full min-w-0 max-w-full">
                     <x-validation-errors />

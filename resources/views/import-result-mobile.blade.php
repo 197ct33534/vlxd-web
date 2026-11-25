@@ -106,17 +106,16 @@
         @endforeach
     </section>
 
+    <x-import-project-fields :projects="$projects" :project-id="$projectId" form-id="import-save-form" />
+
     {{-- Thanh lưu dính đáy --}}
     <div class="fixed inset-x-0 bottom-0 z-30 border-t border-border-light bg-container-light/95 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] backdrop-blur-md dark:border-border-dark dark:bg-container-dark/95 lg:left-64">
         <div class="mx-auto flex max-w-md flex-col gap-2">
-            <form action="{{ route('invoice.save') }}" method="POST" @submit="isLoading = true">
+            <form id="import-save-form" action="{{ route('invoice.save') }}" method="POST" @submit="isLoading = true">
                 @csrf
                 <input type="hidden" name="khachHang" value="{{ $khachHang }}">
                 <input type="hidden" name="diaChi" value="{{ $diaChi }}">
                 <input type="hidden" name="dienThoai" value="{{ $dienThoai }}">
-                @if(isset($projectId))
-                    <input type="hidden" name="project_id" value="{{ $projectId }}">
-                @endif
                 <input type="hidden" name="tongTien" value="{{ $tongTien }}">
                 <input type="hidden" name="tongTienChu" value="{{ $tongTienChu }}">
                 <input type="hidden" name="ngayCuoi" value="{{ $ngayCuoi }}">

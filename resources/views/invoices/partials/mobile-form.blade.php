@@ -19,8 +19,8 @@
         {{-- Thông tin chung --}}
         <section class="space-y-4 rounded-xl border border-border-light bg-container-light p-4 shadow-subtle dark:border-border-dark dark:bg-container-dark">
             <div>
-                <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Ngày xuất</label>
-                <input type="date" name="invoice_date" value="{{ $invoiceDate }}" required
+                <label for="invoice-date" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Ngày xuất</label>
+                <input id="invoice-date" type="date" name="invoice_date" value="{{ old('invoice_date', $invoiceDate) }}" required x-vietnamese-date
                     class="w-full rounded-lg border-border-light bg-background-light p-3 text-sm focus:border-primary focus:ring-primary dark:border-border-dark dark:bg-background-dark">
             </div>
             <div>
@@ -54,6 +54,11 @@
                         <input type="text" :name="`items[${index}][product_name]`" x-model="item.product_name" required placeholder="Nhập tên sản phẩm"
                             class="w-full rounded-lg border-border-light bg-background-light p-2.5 text-sm font-semibold focus:border-primary focus:ring-primary dark:border-border-dark dark:bg-background-dark">
                     </div>
+                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400">
+                        Ngày giao hàng
+                        <input type="date" :name="'items[' + index + '][date]'" x-model="item.date" x-vietnamese-date="item.date"
+                            class="mt-1 w-full rounded-lg border-border-light bg-background-light p-2.5 text-sm dark:border-border-dark dark:bg-background-dark">
+                    </label>
                     <div class="grid grid-cols-3 gap-2">
                         <div>
                             <label class="mb-1 block text-xs font-semibold text-gray-500 dark:text-gray-400">Đơn vị</label>
@@ -110,15 +115,16 @@
         return {
             items: initialItems.length
                 ? initialItems.map((item) => ({
+                    date: item.date ?? '',
                     product_name: item.product_name ?? '',
                     unit: item.unit ?? '',
                     quantity: parseFloat(item.quantity) || 0,
                     price: parseFloat(item.price) || 0,
                 }))
-                : [{ product_name: '', unit: '', quantity: 1, price: 0 }],
+                : [{ product_name: '', date: '', unit: '', quantity: 1, price: 0 }],
 
             addItem() {
-                this.items.push({ product_name: '', unit: '', quantity: 1, price: 0 });
+                this.items.push({ product_name: '', date: '', unit: '', quantity: 1, price: 0 });
             },
 
             removeItem(index) {

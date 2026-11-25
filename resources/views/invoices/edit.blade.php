@@ -31,8 +31,8 @@
             <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">{{ __('invoices.edit.general_info') }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{{ __('common.date') }}</label>
-                    <input type="date" name="invoice_date" required value="{{ $invoice->invoice_date }}"
+                    <label for="invoice-date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ngày xuất</label>
+                    <input id="invoice-date" type="date" name="invoice_date" required value="{{ old('invoice_date', $invoice->invoice_date?->toDateString()) }}" x-vietnamese-date
                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-primary focus:border-primary">
                 </div>
                 <div>
@@ -63,6 +63,7 @@
                     <thead class="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700/50">
                         <tr>
                             <th class="px-4 py-3 rounded-l-lg">{{ __('invoices.table.product_name') }}</th>
+                            <th class="px-4 py-3 whitespace-nowrap">Ngày giao hàng</th>
                             <th class="px-4 py-3 w-32">{{ __('common.unit') }}</th>
                             <th class="px-4 py-3 w-32 text-right">{{ __('common.quantity') }}</th>
                             <th class="px-4 py-3 w-40 text-right">{{ __('common.price') }}</th>
@@ -76,6 +77,10 @@
                                 <td class="px-4 py-2">
                                     <input type="text" :name="`items[${index}][product_name]`" x-model="item.product_name" required placeholder="Item name"
                                            class="w-full border-0 bg-transparent focus:ring-0 p-0 text-sm font-medium placeholder-gray-400 dark:text-white">
+                                </td>
+                                <td class="px-4 py-2">
+                                    <input type="date" :name="'items[' + index + '][date]'" x-model="item.date" x-vietnamese-date="item.date" aria-label="Ngày giao hàng"
+                                        class="rounded-lg border-gray-200 text-sm dark:border-gray-700 dark:bg-gray-800">
                                 </td>
                                 <td class="px-4 py-2">
                                     <input type="text" :name="`items[${index}][unit]`" x-model="item.unit" placeholder="kg, m..."
@@ -102,7 +107,7 @@
                     </tbody>
                     <tfoot class="border-t border-gray-200 dark:border-gray-700">
                         <tr>
-                            <td colspan="4" class="px-4 py-4 text-right font-bold text-lg">{{ __('invoices.edit_total_label') }}</td>
+                            <td colspan="5" class="px-4 py-4 text-right font-bold text-lg">{{ __('invoices.edit_total_label') }}</td>
                             <td class="px-4 py-4 text-right font-black text-xl text-primary">
                                 <span x-text="formatNumber(totalAmount)"></span> đ
                             </td>
@@ -133,8 +138,9 @@
 <script>
     function invoiceForm() {
         return {
-            items: @json($invoice->items).map(function(item) {
+            items: @js(old('items', $editItems)).map(function(item) {
                 return {
+                    date: item.date ?? '',
                     product_name: item.product_name,
                     unit: item.unit,
                     quantity: parseFloat(item.quantity),
@@ -143,7 +149,7 @@
             }),
             
             addItem() {
-                this.items.push({ product_name: '', unit: '', quantity: 1, price: 0 });
+                this.items.push({ product_name: '', date: '', unit: '', quantity: 1, price: 0 });
             },
             
             removeItem(index) {

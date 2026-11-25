@@ -146,9 +146,7 @@
                     <input type="hidden" name="khachHang" value="{{ $khachHang }}">
                     <input type="hidden" name="diaChi" value="{{ $diaChi }}">
                     <input type="hidden" name="dienThoai" value="{{ $dienThoai }}">
-                    @if(isset($projectId))
-                        <input type="hidden" name="project_id" value="{{ $projectId }}">
-                    @endif
+                    <x-import-project-fields :projects="$projects" :project-id="$projectId" />
                     <input type="hidden" name="tongTien" value="{{ $tongTien }}">
                     <input type="hidden" name="tongTienChu" value="{{ $tongTienChu }}">
                     <input type="hidden" name="ngayCuoi" value="{{ $ngayCuoi }}">

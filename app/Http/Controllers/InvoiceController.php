@@ -12,6 +12,8 @@ use App\Support\VietnameseCurrency;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class InvoiceController extends Controller
 {
@@ -24,7 +26,11 @@ class InvoiceController extends Controller
      */
     public function index(Project $project)
     {
-        $invoices = $project->invoices()->latest('invoice_date')->paginate(15);
+        $invoices = $project->invoices()
+            ->withSum('paymentAllocations', 'amount')
+            ->latest('invoice_date')
+            ->orderByDesc('id')
+            ->paginate(15);
         // Fetch payments ordered by date descending
         $payments = $project->payments()
             ->with(['paymentAllocations' => fn ($query) => $query->orderBy('id')])
@@ -45,19 +51,60 @@ class InvoiceController extends Controller
     {
         // Load relationships if necessary
         $invoice->load(['items', 'project.customer']);
+        $storeInfo = StoreInfo::current();
 
         // Modal xem nhanh trên danh sách: fetch gửi X-Requested-With; thêm ?modal=1 để chắc chắn trả partial
         if ($request->ajax() || $request->boolean('modal')) {
-            return view('invoices.partials.details', compact('invoice'));
+            return view('invoices.partials.details', compact('invoice', 'storeInfo'));
         }
 
+        $projects = $invoice->project->customer->projects()->whereKeyNot($invoice->project_id)->orderBy('name')->get();
         $agent = new \Jenssegers\Agent\Agent();
         if ($agent->isMobile()) {
             $invoice->loadSum('paymentAllocations', 'amount');
-            return view('invoices.mobile_show', compact('invoice'));
+            return view('invoices.mobile_show', compact('invoice', 'projects', 'storeInfo'));
         }
         
-        return view('invoices.show', compact('invoice'));
+        return view('invoices.show', compact('invoice', 'projects', 'storeInfo'));
+    }
+
+    public function moveToProject(Request $request, Invoice $invoice)
+    {
+        $data = $request->validate([
+            'project_id' => ['nullable', 'integer', 'required_without:project_name', 'prohibits:project_name'],
+            'project_name' => ['nullable', 'string', 'max:255', 'required_without:project_id'],
+        ]);
+
+        DB::transaction(function () use ($invoice, $data) {
+            $invoice = Invoice::lockForUpdate()->findOrFail($invoice->id);
+            $source = $invoice->project;
+            if ($invoice->paymentAllocations()->exists() || DB::table('orders')->where('invoice_id', $invoice->id)->exists()) {
+                throw ValidationException::withMessages(['project_id' => 'Hóa đơn đã có khoản thu hoặc đơn hàng liên kết. Cần xử lý liên kết trước khi chuyển.']);
+            }
+
+            $customer = $source->customer()->lockForUpdate()->firstOrFail();
+            if (isset($data['project_id'])) {
+                $destination = $customer->projects()->whereKeyNot($source->id)->find($data['project_id']);
+                if (!$destination) {
+                    throw ValidationException::withMessages(['project_id' => 'Hãy chọn công trình khác thuộc cùng khách hàng.']);
+                }
+            } else {
+                if ($customer->projects()->where('name', $data['project_name'])->exists()) {
+                    throw ValidationException::withMessages(['project_name' => 'Công trình này đã tồn tại. Hãy chọn trong danh sách.']);
+                }
+                $destination = $customer->projects()->create(['name' => $data['project_name']]);
+            }
+
+            Project::whereKey([$source->id, $destination->id])->orderBy('id')->lockForUpdate()->get();
+            if ($invoice->import_hash && $destination->invoices()->where('import_hash', $invoice->import_hash)->exists()) {
+                throw ValidationException::withMessages(['project_id' => 'Công trình đích đã có hóa đơn trùng nội dung nhập Excel.']);
+            }
+            $invoice->project()->associate($destination)->save();
+            $this->projectDebt->recalculate($source->id);
+            $this->projectDebt->recalculate($destination->id);
+        }, 3);
+
+        return redirect()->route('invoices.show', $invoice)->with('success', 'Đã chuyển hóa đơn sang công trình mới.');
     }
 
     /**
@@ -146,12 +193,13 @@ class InvoiceController extends Controller
     public function store(Request $request, Project $project)
     {
         $request->validate([
-            'invoice_date' => 'required|date',
+            'invoice_date' => 'required|date_format:Y-m-d',
             'items' => 'required|array|min:1',
             'items.*.product_name' => 'required|string',
             'items.*.unit' => 'nullable|string',
             'items.*.quantity' => 'required|numeric|min:0',
             'items.*.price' => 'required|numeric|min:0',
+            'items.*.date' => 'nullable|date_format:Y-m-d',
         ]);
 
         \Illuminate\Support\Facades\DB::transaction(function () use ($request, $project) {
@@ -163,6 +211,7 @@ class InvoiceController extends Controller
                 $totalAmount += $lineTotal;
                 $itemsData[] = [
                     'product_name' => $item['product_name'],
+                    'date' => $item['date'] ?? null,
                     'unit' => $item['unit'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
@@ -196,13 +245,17 @@ class InvoiceController extends Controller
     public function edit(Invoice $invoice)
     {
         $invoice->load(['items', 'project']);
+        $editItems = $invoice->items->map(fn ($item) => [
+            ...$item->only(['product_name', 'unit', 'quantity', 'price']),
+            'date' => $item->deliveryDate('Y-m-d'),
+        ]);
         
         $agent = new \Jenssegers\Agent\Agent();
         if ($agent->isMobile()) {
-            return view('invoices.mobile_edit', compact('invoice'));
+            return view('invoices.mobile_edit', compact('invoice', 'editItems'));
         }
 
-        return view('invoices.edit', compact('invoice'));
+        return view('invoices.edit', compact('invoice', 'editItems'));
     }
 
     /**
@@ -211,12 +264,13 @@ class InvoiceController extends Controller
     public function update(Request $request, Invoice $invoice)
     {
         $request->validate([
-            'invoice_date' => 'required|date',
+            'invoice_date' => 'required|date_format:Y-m-d',
             'items' => 'required|array|min:1',
             'items.*.product_name' => 'required|string',
             'items.*.unit' => 'nullable|string',
             'items.*.quantity' => 'required|numeric|min:0',
             'items.*.price' => 'required|numeric|min:0',
+            'items.*.date' => 'nullable|date_format:Y-m-d',
         ]);
 
         $project = $invoice->project;
@@ -230,6 +284,7 @@ class InvoiceController extends Controller
                 $totalAmount += $lineTotal;
                 $itemsData[] = [
                     'product_name' => $item['product_name'],
+                    'date' => $item['date'] ?? null,
                     'unit' => $item['unit'],
                     'quantity' => $item['quantity'],
                     'price' => $item['price'],
@@ -335,18 +390,28 @@ class InvoiceController extends Controller
     {
         $project = $invoice->project;
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($invoice, $project) {
+        $recorded = DB::transaction(function () use ($invoice, $project) {
+            $invoice = Invoice::lockForUpdate()->findOrFail($invoice->id);
+            $amount = $invoice->outstandingAmount();
+            if ($amount <= 0) {
+                return false;
+            }
+
             $payment = $project->payments()->create([
                 'payment_date' => now(),
-                'amount' => $invoice->total_amount,
+                'amount' => $amount,
                 'note' => 'Payment for invoice #' . ($invoice->code ?? $invoice->id),
                 'payment_type' => Payment::normalizeType('tung_dot'),
                 'payment_method' => 'cash',
             ]);
 
-            app(PaymentAllocationService::class)->allocate($payment, $invoice->id);
-        });
+            $invoice->paymentAllocations()->create(['payment_id' => $payment->id, 'amount' => $amount]);
+            $this->projectDebt->recalculate($project->id);
 
-        return redirect()->route('projects.invoices.index', $project->id)->with('success', __('msg.invoice_marked_paid'));
+            return true;
+        }, 3);
+
+        return redirect()->route('projects.invoices.index', $project->id)
+            ->with('success', $recorded ? __('msg.invoice_marked_paid') : 'Hóa đơn này đã thu đủ.');
     }
 }
