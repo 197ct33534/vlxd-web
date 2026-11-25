@@ -33,6 +33,8 @@
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark min-h-screen antialiased">
     <div class="flex h-screen min-h-[100dvh] w-full max-w-[100vw] overflow-x-hidden print:block print:h-auto print:min-h-0" x-data="{ toastVisible: false, toastMessage: '', isLoading: false }"
+        {{-- Bấm Back: trình duyệt khôi phục trang từ bfcache kèm isLoading = true → tắt overlay. --}}
+        @pageshow.window="if ($event.persisted) isLoading = false"
         @click="
             const link = $event.target.closest('a');
             if (link && link.href && !link.href.includes('#') && !link.getAttribute('href').startsWith('javascript:') && !link.hasAttribute('download') && link.target !== '_blank' && !link.hasAttribute('data-no-loading')) {

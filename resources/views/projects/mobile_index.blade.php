@@ -77,7 +77,7 @@
     </div>
 
     <button type="button" @click="openAdd()" aria-label="Thêm dự án"
-            class="fixed right-5 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/40 transition-transform active:scale-90">
+            class="fixed right-5 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] z-30 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg shadow-primary/40 transition-transform active:scale-90">
         <span class="material-symbols-outlined text-3xl">add</span>
     </button>
 

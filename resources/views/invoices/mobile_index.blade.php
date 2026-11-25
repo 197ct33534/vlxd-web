@@ -157,7 +157,7 @@
     </div>
 
     {{-- Nút nổi: thêm thanh toán / tạo hóa đơn --}}
-    <div class="fixed right-5 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] z-40 flex flex-col items-end gap-3">
+    <div class="fixed right-5 bottom-[calc(1.25rem+env(safe-area-inset-bottom))] z-30 flex flex-col items-end gap-3">
         <button type="button" @click="openAddPayment()" class="flex min-h-[44px] items-center gap-1.5 rounded-full bg-green-600 px-4 text-sm font-bold text-white shadow-lg shadow-green-600/30 transition-transform active:scale-95">
             <span class="material-symbols-outlined text-xl">add_card</span>
             {{ __('invoices.add_payment') }}

@@ -168,3 +168,24 @@ it('renders customer projects inside the dashboard shell', function () {
         ->toContain('openEdit(')
         ->toContain("confirmDelete('".route('customers.projects.destroy', ['customer' => $this->customer->id, 'project' => $this->project->id])."')");
 });
+
+it('clears the loading overlay when the browser restores a page from the back-forward cache', function () {
+    $html = $this->get(route('customers.index'))->assertOk()->getContent();
+
+    expect($html)->toContain('@pageshow.window="if ($event.persisted) isLoading = false"');
+});
+
+it('keeps floating action buttons below the sidebar backdrop', function (string $routeName) {
+    $params = match ($routeName) {
+        'customers.projects.index' => [$this->customer],
+        'projects.invoices.index' => [$this->project],
+        default => [],
+    };
+
+    $html = $this->get(route($routeName, $params))->assertOk()->getContent();
+
+    // Backdrop sidebar là z-40; nút nổi phải nằm dưới nó để không bấm được khi sidebar mở.
+    expect($html)
+        ->toMatch('/fixed right-5[^"]*\bz-30\b/')
+        ->not->toMatch('/fixed right-5[^"]*\bz-40\b/');
+})->with(['customers.index', 'customers.projects.index', 'projects.invoices.index']);
