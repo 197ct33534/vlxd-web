@@ -98,6 +98,57 @@ it('renders the mobile invoice edit form with a usable date', function () {
         ->not->toContain('Invoice Inc');
 });
 
+it('renders the mobile Excel upload step inside the dashboard shell', function () {
+    $html = $this->get(route('invoice.index'))->assertOk()->getContent();
+
+    expect($html)
+        ->toBeDashboardMobilePage()
+        ->toContain('action="'.route('invoice.import').'"')
+        ->toContain('@submit="isLoading = true"')
+        ->toContain('Thầu Khung')
+        ->not->toContain('dark_mode');
+});
+
+it('renders the mobile sheet selection step inside the dashboard shell', function () {
+    $html = view('import-sheet-selection-mobile', [
+        'sheetNames' => ['Sheet1', 'Sheet2'],
+        'storedFilePath' => 'imports/x.xlsx',
+        'projectId' => null,
+    ])->render();
+
+    expect($html)
+        ->toBeDashboardMobilePage()
+        ->toContain('Sheet2')
+        ->toContain('Tiếp tục')
+        ->toContain('action="'.route('invoice.import').'"')
+        ->toContain('@submit="isLoading = true"');
+});
+
+it('renders the mobile import preview step inside the dashboard shell', function () {
+    $html = view('import-result-mobile', [
+        'khachHang' => 'Thầu A',
+        'diaChi' => '',
+        'dienThoai' => '',
+        'items' => [[
+            'stt' => 1, 'ngay_thang' => '01/11/2026', 'ten_vat_lieu' => 'Xi măng', 'don_vi_tinh' => 'bao',
+            'so_luong' => 10, 'don_gia' => 90000, 'thanh_tien' => 900000,
+        ]],
+        'advancePayments' => [],
+        'tongTien' => 900000,
+        'tongTienUng' => 0,
+        'tongTienChu' => 'Chín trăm nghìn đồng',
+        'ngayCuoi' => '01/11/2026',
+        'projectId' => null,
+    ])->render();
+
+    expect($html)
+        ->toBeDashboardMobilePage()
+        ->toContain('Xi măng')
+        ->toContain('action="'.route('invoice.save').'"')
+        ->toContain('@submit="isLoading = true"')
+        ->not->toContain('dark_mode');
+});
+
 it('renders customer projects inside the dashboard shell', function () {
     $html = $this->get(route('customers.projects.index', $this->customer))->assertOk()->getContent();
 
