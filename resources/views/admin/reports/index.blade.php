@@ -11,7 +11,7 @@
                 <h1 class="text-3xl font-black tracking-tight text-text-light dark:text-text-dark">{{ __('reports.title') }}</h1>
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ __('reports.subtitle') }}</p>
             </div>
-            <div class="flex flex-wrap gap-2">
+            <div class="grid w-full gap-2 sm:flex sm:w-auto sm:flex-wrap">
                 <a href="{{ route('admin.reports.export.debt_excel') }}" data-no-loading class="inline-flex items-center gap-2 rounded-lg border border-emerald-600 bg-emerald-50 px-4 py-2.5 text-sm font-bold text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-200 dark:hover:bg-emerald-900/50">
                     <span class="material-symbols-outlined text-lg">table</span>
                     {{ __('reports.export.debt_excel') }}
@@ -42,7 +42,7 @@
             </div>
         </div>
 
-        <div class="rounded-xl border border-border-light bg-container-light p-6 shadow-subtle dark:border-border-dark dark:bg-container-dark">
+        <div class="rounded-xl border border-border-light bg-container-light p-4 shadow-subtle sm:p-6 dark:border-border-dark dark:bg-container-dark">
             <h2 class="mb-4 text-lg font-bold text-text-light dark:text-text-dark">{{ __('reports.chart_12m') }}</h2>
             <div class="h-72 w-full">
                 <canvas id="adminReportChart"></canvas>
@@ -54,7 +54,37 @@
             <div class="border-b border-border-light px-4 py-3 dark:border-border-dark">
                 <h2 class="text-lg font-bold text-text-light dark:text-text-dark">{{ __('reports.table_debt_title') }}</h2>
             </div>
-            <div class="overflow-x-auto">
+            {{-- Mobile: mỗi công trình một thẻ (bảng min-width 800px đẩy các cột tiền ra ngoài màn hình). --}}
+            <div data-mobile-report-projects class="divide-y divide-border-light md:hidden dark:divide-border-dark">
+                @forelse($projects as $p)
+                    <div class="px-4 py-3">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="font-semibold leading-snug text-gray-900 dark:text-white">{{ $p->name }}</p>
+                                <p class="truncate text-sm text-gray-500 dark:text-gray-400">{{ $p->customer->name ?? '—' }}</p>
+                            </div>
+                            <div class="shrink-0 text-right">
+                                <p class="text-[11px] font-semibold uppercase tracking-wide text-gray-400">{{ __('reports.col_debt') }}</p>
+                                <p class="font-bold tabular-nums text-red-600 dark:text-red-400">{{ number_format($p->total_debt, 0, ',', '.') }}</p>
+                            </div>
+                        </div>
+                        <dl class="mt-2 grid grid-cols-2 gap-2 text-sm">
+                            <div>
+                                <dt class="text-xs text-gray-500 dark:text-gray-400">{{ __('reports.col_invoiced') }}</dt>
+                                <dd class="font-medium tabular-nums text-gray-900 dark:text-white">{{ number_format($p->total_invoice, 0, ',', '.') }}</dd>
+                            </div>
+                            <div>
+                                <dt class="text-xs text-gray-500 dark:text-gray-400">{{ __('reports.col_paid') }}</dt>
+                                <dd class="font-medium tabular-nums text-green-600 dark:text-green-400">{{ number_format($p->total_paid, 0, ',', '.') }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                @empty
+                    <p class="px-4 py-8 text-center text-sm text-gray-500">{{ __('reports.empty_projects') }}</p>
+                @endforelse
+            </div>
+
+            <div class="hidden md:block overflow-x-auto" data-desktop-report-table>
                 <table class="w-full min-w-[800px] text-left text-sm">
                     <thead class="border-b border-border-light bg-background-light text-xs font-bold uppercase text-gray-600 dark:border-border-dark dark:bg-background-dark dark:text-gray-400">
                         <tr>
@@ -91,6 +121,11 @@
         const invoiceData = @json($invoiceTotals);
         const paymentData = @json($paymentTotals);
         const fmt = (n) => new Intl.NumberFormat('vi-VN').format(Math.round(n));
+        // Màn hẹp: trục Y rút gọn ("20 Tr") để biểu đồ không mất 1/3 chiều ngang cho nhãn.
+        const isNarrow = window.matchMedia('(max-width: 767px)').matches;
+        const fmtTick = isNarrow
+            ? (n) => new Intl.NumberFormat('vi-VN', { notation: 'compact', maximumFractionDigits: 1 }).format(n)
+            : fmt;
         new Chart(document.getElementById('adminReportChart'), {
             type: 'bar',
             data: {
@@ -114,10 +149,13 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    y: { beginAtZero: true, ticks: { callback: (v) => fmt(v) } },
+                    y: { beginAtZero: true, ticks: { callback: (v) => fmtTick(v) } },
                     x: { stacked: false },
                 },
-                plugins: { legend: { position: 'bottom' } },
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${fmt(ctx.parsed.y)} đ` } },
+                },
             },
         });
     </script>
